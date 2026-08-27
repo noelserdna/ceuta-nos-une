@@ -49,6 +49,22 @@ export interface Env {
   RESEND_FROM?: string;
   TURNSTILE_SECRET_KEY?: string;
   TURNSTILE_SITE_KEY?: string;
+  PROXY_TOKEN?: string;
+}
+
+/**
+ * IP del visitante. Cuando la web se sirve desde Vercel, el Worker ve la IP de
+ * Vercel: la real llega en x-visitante-ip, pero solo se acepta si viene con el
+ * token compartido, porque si no cualquiera podría falsear su IP llamando al
+ * Worker directamente y saltarse los limites anti-spam.
+ */
+function ipVisitante(request: Request, env: Env): string {
+  const token = request.headers.get("x-proxy-token");
+  if (env.PROXY_TOKEN && token && timingSafeEqual(token, env.PROXY_TOKEN)) {
+    const real = request.headers.get("x-visitante-ip");
+    if (real) return real;
+  }
+  return clientIp(request);
 }
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -233,7 +249,7 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
     return fail("Las propuestas de lugares estan cerradas por ahora.", 403);
   }
 
-  const ip = clientIp(request);
+  const ip = ipVisitante(request, env);
   const { success } = await env.RL_PLACES.limit({ key: ip });
   if (!success) return fail("Demasiadas propuestas seguidas. Prueba dentro de un minuto.", 429);
 
@@ -275,7 +291,7 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
   if (missing.length) return fail("Faltan datos obligatorios: " + missing.join(", ") + ".");
   if (!place.submitter_email) return fail("Necesitamos un correo de contacto valido para poder verificar el lugar.");
 
-  const ipHash = await hashIp(request, env.IP_SALT ?? "sin-sal");
+  const ipHash = await hashIp(ipVisitante(request, env), env.IP_SALT ?? "sin-sal");
 
   const row = await env.DB.prepare(
     `INSERT INTO places (city, province, venue, address, event_date, event_time, lat, lon,
@@ -405,7 +421,7 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
     return fail("El muro de apoyo esta cerrado por ahora.", 403);
   }
 
-  const ip = clientIp(request);
+  const ip = ipVisitante(request, env);
   const { success } = await env.RL_MESSAGES.limit({ key: ip });
   if (!success) return fail("Has publicado varios mensajes seguidos. Espera un minuto, por favor.", 429);
 
@@ -453,7 +469,7 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
     });
   }
 
-  const ipHash = await hashIp(request, env.IP_SALT ?? "sin-sal");
+  const ipHash = await hashIp(ipVisitante(request, env), env.IP_SALT ?? "sin-sal");
 
   try {
     const row = await env.DB.prepare(
@@ -482,7 +498,7 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
 }
 
 async function reportMessage(request: Request, env: Env, id: number): Promise<Response> {
-  const { success } = await env.RL_REPORTS.limit({ key: clientIp(request) });
+  const { success } = await env.RL_REPORTS.limit({ key: ipVisitante(request, env) });
   if (!success) return fail("Demasiados avisos seguidos.", 429);
 
   await env.DB.prepare("UPDATE messages SET reports = reports + 1 WHERE id = ?").bind(id).run();
@@ -518,7 +534,7 @@ async function serveImage(request: Request, env: Env, key: string): Promise<Resp
  * cachear en el borde, como pide su politica de uso.
  */
 async function geocode(request: Request, env: Env): Promise<Response> {
-  const { success } = await env.RL_GEOCODE.limit({ key: clientIp(request) });
+  const { success } = await env.RL_GEOCODE.limit({ key: ipVisitante(request, env) });
   if (!success) return fail("Demasiadas busquedas seguidas.", 429);
 
   const q = cleanLine(new URL(request.url).searchParams.get("q"), 200);
@@ -613,7 +629,7 @@ async function adminLogin(request: Request, env: Env): Promise<Response> {
   const secret = adminSecret(env);
   if (!secret) return fail("SESSION_SECRET o ADMIN_PASSWORD deben tener al menos 8 caracteres.", 503);
 
-  const { success } = await env.RL_LOGIN.limit({ key: clientIp(request) });
+  const { success } = await env.RL_LOGIN.limit({ key: ipVisitante(request, env) });
   if (!success) return fail("Demasiados intentos. Espera un minuto.", 429);
 
   let payload: { password?: string };

@@ -96,9 +96,8 @@ async function sha256Hex(input: string): Promise<string> {
  * Nunca se guarda la IP en claro: se guarda un hash con sal, suficiente para
  * detectar abusos y borrar por lotes, pero no reversible.
  */
-export async function hashIp(request: Request, salt: string): Promise<string> {
-  const ip = request.headers.get("cf-connecting-ip") ?? "0.0.0.0";
-  return (await sha256Hex(salt + "|" + ip)).slice(0, 32);
+export async function hashIp(ip: string, salt: string): Promise<string> {
+  return (await sha256Hex(salt + "|" + (ip || "0.0.0.0"))).slice(0, 32);
 }
 
 export function clientIp(request: Request): string {

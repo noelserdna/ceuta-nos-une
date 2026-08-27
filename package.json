@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "typescript": "^7.0.2",
+    "vercel": "^59.9.1",
     "wrangler": "^4.127.0"
   }
 }
