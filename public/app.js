@@ -103,6 +103,9 @@ async function cargarConfig() {
 
   // Solo se ofrece un correo si de verdad hay uno configurado: un enlace a una
   // dirección que no existe es peor que no ofrecer ninguna.
+  const antes = $("#antes-contacto");
+  if (c.contact_email && antes) antes.href = "mailto:" + c.contact_email;
+
   const contacto = $("#pie-contacto");
   if (c.contact_email && contacto) {
     contacto.append(document.createTextNode(", o escríbenos a "));
@@ -687,9 +690,15 @@ function prepararPrevia() {
     estado.fotoElegida = preparada;
     img.src = URL.createObjectURL(preparada);
     previa.hidden = false;
+    const etiqueta = $("#etiqueta-foto");
+    if (etiqueta) etiqueta.lastChild.textContent = " Cambiar la foto";
   });
 
-  $("#previa-quitar").addEventListener("click", limpiar);
+  $("#previa-quitar")?.addEventListener("click", () => {
+    limpiar();
+    const etiqueta = $("#etiqueta-foto");
+    if (etiqueta) etiqueta.lastChild.textContent = " Elegir una foto del móvil";
+  });
 }
 
 async function enviarMensaje(ev) {
@@ -709,6 +718,9 @@ async function enviarMensaje(ev) {
   if (estado.fotoElegida) datos.append("photo", estado.fotoElegida);
 
   boton.disabled = true;
+  boton.setAttribute("aria-busy", "true");
+  const textoBoton = boton.textContent;
+  boton.textContent = "Publicando…";
   mostrarEstado(salida, "Publicando…");
 
   try {
@@ -745,6 +757,8 @@ async function enviarMensaje(ev) {
     window.turnstile?.reset();
   } finally {
     boton.disabled = false;
+    boton.removeAttribute("aria-busy");
+    boton.textContent = textoBoton;
   }
 }
 
@@ -834,9 +848,19 @@ function conectarEventos() {
   const cuerpo = $("#m-body");
   const restantes = $("#m-restantes");
   cuerpo?.addEventListener("input", () => {
+    // Crecer con el texto: sin esto se ven 4 líneas de las 14 que ocupa un
+    // mensaje normal. field-sizing lo hace solo donde está soportado.
+    if (!CSS.supports("field-sizing", "content")) {
+      cuerpo.style.height = "auto";
+      cuerpo.style.height = Math.min(cuerpo.scrollHeight, window.innerHeight * 0.6) + "px";
+    }
     const quedan = 800 - cuerpo.value.length;
-    restantes.textContent = String(quedan);
-    restantes.parentElement.classList.toggle("contador--limite", quedan < 60);
+    if (restantes) {
+      // Solo se avisa cuando queda poco: antes ponía "800 caracteres" de
+      // entrada y parecía que había que escribir 800.
+      restantes.textContent = quedan < 150 ? "Te quedan " + quedan + " letras" : "";
+      restantes.parentElement?.classList.toggle("contador--limite", quedan < 60);
+    }
   });
 
   document.addEventListener("click", (ev) => {

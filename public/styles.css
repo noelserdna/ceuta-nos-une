@@ -1028,3 +1028,80 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 /* 19. Las fotos provocaban saltos de maquetación al cargar dentro de columns */
 .postal__foto { aspect-ratio: 4 / 3; }
+
+/* ============================== muro: formulario en móvil ================ */
+/* Medido en un iPhone real: el formulario ocupaba 1,02 pantallas y el botón
+   Publicar quedaba 175 px por debajo del pliegue. Lo secundario se pliega y el
+   estado sube por encima del botón, que es donde se lee. */
+
+html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a un ancla */
+
+/* El textarea crece con el texto: antes se veían 4 líneas de las 14 que
+   ocupaba un mensaje normal, y había que hacer scroll dentro de la caja. */
+.postal-nueva__cuerpo textarea {
+  field-sizing: content;
+  max-height: 60svh;
+  resize: none;              /* el tirador no sirve con el dedo y ocupa una esquina */
+}
+
+.campo__titulo {
+  font-family: var(--texto); font-weight: 700; font-size: 0.85rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--oro);
+}
+
+/* Bloque plegable con lo opcional */
+.extra {
+  border: 2px solid rgba(247, 227, 211, 0.28);
+  padding: 0 0.9rem;
+}
+.extra > summary {
+  list-style: none; cursor: pointer;
+  padding: 0.9rem 0; min-height: 44px;
+  display: flex; align-items: center; gap: 0.6rem;
+  font-weight: 700; font-size: 0.92rem; color: var(--oro);
+}
+.extra > summary::-webkit-details-marker { display: none; }
+.extra > summary::before {
+  content: "+"; font-family: var(--display); font-size: 1.2rem; line-height: 1;
+  width: 1.5rem; height: 1.5rem; flex: none;
+  display: grid; place-items: center;
+  background: var(--oro); color: var(--tinta);
+}
+.extra[open] > summary::before { content: "−"; }
+.extra[open] { padding-bottom: 1.1rem; }
+.extra .campo + .campo { margin-top: 1rem; }
+
+/* El control de fichero nativo solo tenía 21,7 px pulsables y mostraba
+   "Ningún ar...ccionado", cortado a la mitad. Ahora es una etiqueta-botón. */
+.boton--foto {
+  justify-self: stretch; width: 100%;
+  font-family: var(--texto); font-weight: 700; font-size: 0.92rem;
+  letter-spacing: 0.06em; text-transform: none;
+  padding: 0.8rem 1.2rem;
+}
+#m-photo:focus-visible + .boton--foto { outline: 3px solid var(--oro); outline-offset: 3px; }
+
+.antes {
+  margin: 0; padding: 0.9rem 1rem;
+  border-left: 4px solid rgba(247, 227, 211, 0.3);
+  font-size: 0.9rem; line-height: 1.55; color: rgba(247, 227, 211, 0.75);
+}
+.antes a { color: var(--oro); }
+
+/* Etiquetas: estaban a 10,88 px en versalitas, el punto más difícil de leer
+   del formulario justo donde va la única instrucción de cada campo. */
+.postal-nueva .campo label,
+.postal-nueva .campo__titulo { font-size: 0.82rem; letter-spacing: 0.1em; }
+.postal-nueva .campo__ayuda { font-size: 0.88rem; }
+
+.postal-nueva .previa__quitar {
+  position: static; margin-top: 0.6rem;
+  min-height: 44px; padding: 0.5rem 1rem; font-size: 0.75rem;
+}
+
+@media (max-width: 860px) {
+  /* Publicar es el objetivo principal: ocupaba 124 px pegado a la izquierda */
+  .postal-nueva__meta .boton--brasa { justify-self: stretch; width: 100%; }
+  /* A 320 px, márgenes y padding se comían el 30 % del ancho */
+  .postal-nueva { width: calc(100% - clamp(1rem, 4vw, 6rem)); }
+}

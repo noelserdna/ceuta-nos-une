@@ -177,29 +177,49 @@
   <form class="postal-nueva" id="form-mensaje" novalidate>
     <div class="postal-nueva__cuerpo">
       <label class="visualmente-oculto" for="m-body">Tu mensaje</label>
-      <textarea id="m-body" name="body" rows="4" maxlength="800" required placeholder="Escribe tu mensaje de apoyo…"></textarea>
-      <p class="contador"><span id="m-restantes">800</span> caracteres</p>
+      <textarea id="m-body" name="body" rows="4" maxlength="800" required
+                placeholder="Escribe tu mensaje de apoyo…"></textarea>
+      <p class="contador"><span id="m-restantes"></span></p>
     </div>
 
     <div class="postal-nueva__meta">
       <div class="campo">
-        <label for="m-author">Firma <b aria-hidden="true">*</b></label>
-        <input id="m-author" name="author" required maxlength="60" placeholder="Tu nombre o apodo">
-      </div>
-      <div class="campo">
-        <label for="m-origin">Desde dónde</label>
-        <input id="m-origin" name="origin" maxlength="60" placeholder="Ceuta, Melilla, Madrid…">
+        <label for="m-author">¿Cómo quieres firmar?</label>
+        <input id="m-author" name="author" required maxlength="60" autocomplete="name"
+               pattern=".*\S.*" placeholder="Tu nombre o un apodo">
+        <p class="campo__ayuda">No hace falta tu nombre real: vale cualquier apodo.</p>
       </div>
 
-      <div class="campo">
-        <label for="m-photo">Una foto (opcional)</label>
-        <input id="m-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-        <p class="campo__ayuda">Máximo 5 MB. Se reduce en tu propio móvil antes de subirla.</p>
-        <div class="previa" id="previa" hidden>
-          <img id="previa-img" alt="Vista previa de la foto elegida">
-          <button type="button" class="previa__quitar" id="previa-quitar">Quitar</button>
+      <!-- Lo secundario, plegado: entre el mensaje y el botón había 377 px de
+           campos opcionales que empujaban Publicar fuera de la pantalla. -->
+      <details class="extra">
+        <summary>Añadir mi ciudad o una foto</summary>
+
+        <div class="campo">
+          <label for="m-origin">Desde dónde escribes</label>
+          <input id="m-origin" name="origin" maxlength="60" autocomplete="address-level2"
+                 placeholder="Ceuta, Melilla, Madrid…">
         </div>
-      </div>
+
+        <div class="campo">
+          <span class="campo__titulo">Una foto</span>
+          <input id="m-photo" name="photo" type="file" class="visualmente-oculto"
+                 accept="image/jpeg,image/png,image/webp,image/gif">
+          <label class="boton boton--linea boton--foto" for="m-photo" id="etiqueta-foto">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17" fill="none"
+                 stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="11" r="2"/>
+              <path d="m3 17 5-4 4 3 3-2 6 5"/>
+            </svg>
+            Elegir una foto del móvil
+          </label>
+          <p class="campo__ayuda">Se verá en el muro junto a tu mensaje. Se envía reducida, así que gasta pocos datos.</p>
+          <div class="previa" id="previa" hidden>
+            <img id="previa-img" alt="Vista previa de la foto elegida">
+            <button type="button" class="previa__quitar" id="previa-quitar">Quitar la foto</button>
+          </div>
+        </div>
+      </details>
 
       <!-- Campo trampa para bots: invisible y sin foco para las personas -->
       <div class="trampa" aria-hidden="true">
@@ -209,8 +229,16 @@
 
       <div class="turnstile" id="turnstile-mensaje"></div>
 
-      <button type="submit" class="boton boton--brasa" id="btn-mensaje">Publicar</button>
+      <p class="antes">
+        Tu mensaje y tu firma se verán en esta página y puede leerlos cualquiera. No te
+        pedimos correo, ni teléfono, ni DNI. Si mañana quieres que lo quitemos,
+        <a href="#pie-contacto" id="antes-contacto">escríbenos</a> y lo borramos.
+      </p>
+
+      <!-- El estado va ANTES del botón: estando después quedaba fuera de la
+           pantalla en el móvil y los errores no se veían. -->
       <p class="estado" id="estado-mensaje" role="status" aria-live="polite"></p>
+      <button type="submit" class="boton boton--brasa" id="btn-mensaje">Publicar mi mensaje</button>
     </div>
   </form>
 
