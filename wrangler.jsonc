@@ -49,7 +49,7 @@
   // Anti-spam: los mensajes se publican sin moderacion, asi que el limite es la
   // primera linea de defensa junto con Turnstile (opcional) y el panel de admin.
   "ratelimits": [
-    { "name": "RL_MESSAGES", "namespace_id": "1001", "simple": { "limit": 4, "period": 60 } },
+    { "name": "RL_MESSAGES", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } },
     { "name": "RL_PLACES", "namespace_id": "1002", "simple": { "limit": 3, "period": 60 } },
     { "name": "RL_GEOCODE", "namespace_id": "1003", "simple": { "limit": 20, "period": 60 } },
     { "name": "RL_REPORTS", "namespace_id": "1004", "simple": { "limit": 10, "period": 60 } },

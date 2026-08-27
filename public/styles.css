@@ -1014,3 +1014,17 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .vacio p { margin: 0; }
 /* En las páginas donde la marca del pie es un enlace, conserva su color */
 .pie__marca a { color: inherit; text-decoration: none; }
+
+/* En pantalla táctil no hay hover: sin esto, el botón para avisar de un
+   contenido inadecuado queda invisible para la mayoría de visitantes, y es el
+   único mecanismo de moderación pública de un muro que se publica sin revisar. */
+@media (hover: none) {
+  .postal__reportar { opacity: 1; }
+}
+.postal__reportar { min-height: 44px; font-size: 0.7rem; }
+
+/* 21. El contador quedaba por debajo del contraste legible */
+.contador { font-size: 0.76rem; color: rgba(247, 227, 211, 0.8); }
+
+/* 19. Las fotos provocaban saltos de maquetación al cargar dentro de columns */
+.postal__foto { aspect-ratio: 4 / 3; }

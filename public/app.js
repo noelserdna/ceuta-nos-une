@@ -28,6 +28,7 @@ const estado = {
   siguienteMensaje: null,
   cargandoMensajes: false,
   fotoElegida: null,
+  turnoFoto: 0,
 };
 
 let mapa = null;
@@ -38,15 +39,22 @@ let pinPropuesta = null;
 /* ------------------------------------------------------------------ util -- */
 
 async function pedir(url, opciones = {}) {
-  const res = await fetch(url, { credentials: "same-origin", ...opciones });
+  let res;
+  try {
+    res = await fetch(url, { credentials: "same-origin", ...opciones });
+  } catch {
+    // Fallo de red: el navegador da un mensaje en inglés ("Load failed",
+    // "Failed to fetch") que no le dice nada a nadie.
+    throw new Error("No se ha podido conectar. Comprueba la cobertura y vuelve a intentarlo.");
+  }
   let datos = {};
   try {
     datos = await res.json();
   } catch {
-    datos = { ok: false, error: "Respuesta inesperada del servidor." };
+    datos = { ok: false, error: "No hemos podido completar la operación. Inténtalo dentro de un momento." };
   }
   if (!res.ok || datos.ok === false) {
-    throw new Error(datos.error || "No ha sido posible completar la operación.");
+    throw new Error(datos.error || "No hemos podido completar la operación. Inténtalo dentro de un momento.");
   }
   return datos;
 }
@@ -112,8 +120,10 @@ async function cargarConfig() {
     arrancarCuentaAtras(c.event_date);
   }
 
-  if (!c.places_open) cerrarFormulario("#form-lugar", "Las propuestas de lugares están cerradas.");
-  if (!c.messages_open) cerrarFormulario("#form-mensaje", "El muro está cerrado por ahora.");
+  // Solo se cierra si el servidor lo dice expresamente: si la configuración no
+  // llegó (un corte de red), se deja abierto y ya validará el servidor.
+  if (c.places_open === false) cerrarFormulario("#form-lugar", "Las propuestas de lugares están cerradas.");
+  if (c.messages_open === false) cerrarFormulario("#form-mensaje", "El muro está cerrado por ahora.");
 
   if (c.turnstile_site_key) cargarTurnstile(c.turnstile_site_key);
 }
@@ -513,6 +523,9 @@ async function cargarMensajes(masAntiguos = false) {
   if (!$("#mensajes") || estado.cargandoMensajes) return;
   estado.cargandoMensajes = true;
 
+  const boton = $("#btn-mas");
+  if (masAntiguos && boton) { boton.disabled = true; boton.textContent = "Cargando…"; }
+
   const url = masAntiguos && estado.siguienteMensaje
     ? "/api/messages?before=" + estado.siguienteMensaje
     : "/api/messages";
@@ -524,7 +537,7 @@ async function cargarMensajes(masAntiguos = false) {
 
     datos.messages.forEach((m) => contenedor.append(postal(m)));
     estado.siguienteMensaje = datos.next;
-    $("#btn-mas").hidden = !datos.next;
+    if (boton) { boton.hidden = !datos.next; boton.textContent = "Ver más mensajes"; }
     const cifra = $("#cifra-mensajes");
     if (cifra) cifra.textContent = String(datos.total ?? datos.messages.length);
 
@@ -532,11 +545,18 @@ async function cargarMensajes(masAntiguos = false) {
       contenedor.append(crear("p", "vacio", "Todavía no hay mensajes. Sé la primera persona en dejar uno."));
     }
   } catch (err) {
-    if (!masAntiguos) {
-      $("#mensajes").replaceChildren(crear("p", "vacio", "No hemos podido cargar los mensajes: " + err.message));
+    const contenedor = $("#mensajes");
+    if (!masAntiguos && contenedor) {
+      contenedor.replaceChildren(crear("p", "vacio", "No hemos podido cargar los mensajes. " + err.message));
+    } else if (masAntiguos) {
+      // Antes no pasaba nada al fallar: la gente pulsaba y pulsaba sin respuesta
+      const boton = $("#btn-mas");
+      if (boton) { boton.textContent = "No se ha podido cargar. Toca para reintentar"; boton.hidden = false; }
     }
   } finally {
     estado.cargandoMensajes = false;
+    const boton = $("#btn-mas");
+    if (boton) boton.disabled = false;
   }
 }
 
@@ -593,21 +613,25 @@ async function prepararFoto(archivo) {
 
   const LADO_MAX = 1600;
   try {
-    const bitmap = await createImageBitmap(archivo);
+    // Sin esto, las fotos hechas en vertical salen giradas 90°: el canvas no
+    // aplica la orientación EXIF por sí solo en todos los navegadores.
+    const bitmap = await createImageBitmap(archivo, { imageOrientation: "from-image" });
+    // Se recodifica siempre, aunque la foto sea pequeña: al pasar por el canvas
+    // se pierden los metadatos EXIF, que suelen incluir las coordenadas GPS de
+    // donde se hizo. Publicarlas sin avisar sería un problema serio.
     const escala = Math.min(1, LADO_MAX / Math.max(bitmap.width, bitmap.height));
-    if (escala === 1 && archivo.size < 900 * 1024) {
-      bitmap.close();
-      return archivo;
-    }
 
     const lienzo = document.createElement("canvas");
     lienzo.width = Math.round(bitmap.width * escala);
     lienzo.height = Math.round(bitmap.height * escala);
-    lienzo.getContext("2d").drawImage(bitmap, 0, 0, lienzo.width, lienzo.height);
+    const ctx = lienzo.getContext("2d");
+    ctx.fillStyle = "#FDF1E6";                 // sin esto, un PNG transparente sale con fondo negro
+    ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+    ctx.drawImage(bitmap, 0, 0, lienzo.width, lienzo.height);
     bitmap.close();
 
     const blob = await new Promise((resolve) => lienzo.toBlob(resolve, "image/jpeg", 0.82));
-    if (!blob || blob.size >= archivo.size) return archivo;
+    if (!blob) return archivo;
     return new File([blob], "foto.jpg", { type: "image/jpeg" });
   } catch {
     return archivo;
@@ -620,28 +644,52 @@ function prepararPrevia() {
   const img = $("#previa-img");
   if (!entrada || !previa || !img) return;
 
+  const limpiar = () => {
+    if (img.src.startsWith("blob:")) URL.revokeObjectURL(img.src);  // si no, cada foto queda retenida en memoria
+    estado.fotoElegida = null;
+    previa.hidden = true;
+    entrada.value = "";
+  };
+
   entrada.addEventListener("change", async () => {
     const archivo = entrada.files?.[0];
-    if (!archivo) {
-      previa.hidden = true;
-      estado.fotoElegida = null;
-      return;
-    }
+    const salida = $("#estado-mensaje");
+    const boton = $("#btn-mensaje");
+    if (!archivo) { limpiar(); return; }
+
     if (archivo.size > 12 * 1024 * 1024) {
-      mostrarEstado($("#estado-mensaje"), "Esa imagen es demasiado grande.", "mal");
-      entrada.value = "";
+      limpiar();
+      mostrarEstado(salida, "Esa foto pesa más de 12 MB. Elige otra.", "mal");
       return;
     }
-    estado.fotoElegida = await prepararFoto(archivo);
-    img.src = URL.createObjectURL(estado.fotoElegida);
+
+    // Preparar la foto tarda segundos en un móvil normal. Sin avisar, la gente
+    // pulsaba Publicar antes de tiempo y el mensaje salía sin foto.
+    const turno = ++estado.turnoFoto;
+    if (boton) boton.disabled = true;
+    mostrarEstado(salida, "Preparando la foto…");
+
+    const preparada = await prepararFoto(archivo);
+    if (turno !== estado.turnoFoto) return;   // se eligió otra foto mientras tanto
+
+    if (boton) boton.disabled = false;
+
+    // El servidor rechaza a partir de 5 MB: mejor avisar ahora que después de
+    // subirla entera con mala cobertura.
+    if (preparada.size > 3.5 * 1024 * 1024) {
+      limpiar();
+      mostrarEstado(salida, "Esa foto sigue pesando demasiado después de reducirla. Prueba con otra, o envía el mensaje sin foto.", "mal");
+      return;
+    }
+
+    mostrarEstado(salida, "");
+    if (img.src.startsWith("blob:")) URL.revokeObjectURL(img.src);
+    estado.fotoElegida = preparada;
+    img.src = URL.createObjectURL(preparada);
     previa.hidden = false;
   });
 
-  $("#previa-quitar").addEventListener("click", () => {
-    entrada.value = "";
-    estado.fotoElegida = null;
-    previa.hidden = true;
-  });
+  $("#previa-quitar").addEventListener("click", limpiar);
 }
 
 async function enviarMensaje(ev) {
@@ -664,7 +712,11 @@ async function enviarMensaje(ev) {
   mostrarEstado(salida, "Publicando…");
 
   try {
-    const res = await pedir("/api/messages", { method: "POST", body: datos });
+    const res = await pedir("/api/messages", {
+      method: "POST",
+      body: datos,
+      signal: AbortSignal.timeout(90000),   // en redes saturadas la petición se queda colgada
+    });
     mostrarEstado(salida, "¡Gracias! Tu mensaje ya está en el muro.", "ok");
 
     const nueva = postal(res.message);
@@ -677,11 +729,20 @@ async function enviarMensaje(ev) {
     form.reset();
     estado.fotoElegida = null;
     $("#previa").hidden = true;
-    $("#m-restantes").textContent = "800";
+    const restantes = $("#m-restantes");
+    if (restantes) {
+      restantes.textContent = "800";
+      restantes.parentElement?.classList.remove("contador--limite");
+    }
     window.turnstile?.reset();
     nueva.scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (err) {
-    mostrarEstado(salida, err.message, "mal");
+    mostrarEstado(salida, err.name === "TimeoutError"
+      ? "Está tardando demasiado. Mira si tu mensaje aparece aquí abajo; si no está, vuelve a pulsar Publicar."
+      : err.message, "mal");
+    // El token de Turnstile caduca a los 5 minutos y no se puede reutilizar:
+    // sin reiniciarlo, el segundo intento fallaría siempre.
+    window.turnstile?.reset();
   } finally {
     boton.disabled = false;
   }

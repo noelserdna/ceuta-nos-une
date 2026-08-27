@@ -246,7 +246,7 @@ async function listPlaces(env: Env): Promise<Response> {
 async function createPlace(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const settings = await loadSettings(env);
   if (settings.places_open === "0") {
-    return fail("Las propuestas de lugares estan cerradas por ahora.", 403);
+    return fail("Las propuestas de lugares están cerradas por ahora.", 403);
   }
 
   const ip = ipVisitante(request, env);
@@ -261,7 +261,7 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
   }
 
   if (!(await turnstileOk(env, String(payload.turnstile_token ?? ""), ip))) {
-    return fail("No hemos podido verificar que no eres un robot. Recarga la pagina.", 403);
+    return fail("No hemos podido comprobar que no eres un robot. Vuelve a pulsar el botón.", 403);
   }
 
   const place = {
@@ -289,7 +289,7 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
   if (!place.event_time) missing.push("hora");
   if (!place.event_date) missing.push("fecha");
   if (missing.length) return fail("Faltan datos obligatorios: " + missing.join(", ") + ".");
-  if (!place.submitter_email) return fail("Necesitamos un correo de contacto valido para poder verificar el lugar.");
+  if (!place.submitter_email) return fail("Necesitamos un correo de contacto válido para poder verificar el lugar.");
 
   const ipHash = await hashIp(ipVisitante(request, env), env.IP_SALT ?? "sin-sal");
 
@@ -361,7 +361,7 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
   return json({
     ok: true,
     id: placeId,
-    message: "Gracias. Revisaremos el lugar y aparecera en el mapa en cuanto lo confirmemos.",
+    message: "Gracias. Revisaremos el lugar y aparecerá en el mapa en cuanto lo confirmemos.",
   });
 }
 
@@ -418,12 +418,12 @@ async function listMessages(request: Request, env: Env): Promise<Response> {
 async function createMessage(request: Request, env: Env): Promise<Response> {
   const settings = await loadSettings(env);
   if (settings.messages_open === "0") {
-    return fail("El muro de apoyo esta cerrado por ahora.", 403);
+    return fail("El muro de apoyo está cerrado por ahora.", 403);
   }
 
   const ip = ipVisitante(request, env);
   const { success } = await env.RL_MESSAGES.limit({ key: ip });
-  if (!success) return fail("Has publicado varios mensajes seguidos. Espera un minuto, por favor.", 429);
+  if (!success) return fail("Estamos recibiendo muchos mensajes desde tu conexión. Espera un minuto y vuelve a pulsar Publicar: no se pierde nada de lo que has escrito.", 429);
 
   let form: FormData;
   try {
@@ -433,20 +433,32 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
   }
 
   if (!(await turnstileOk(env, String(form.get("turnstile_token") ?? ""), ip))) {
-    return fail("No hemos podido verificar que no eres un robot. Recarga la pagina.", 403);
+    return fail("No hemos podido comprobar que no eres un robot. Vuelve a pulsar el botón.", 403);
   }
 
   // Campo trampa: los formularios automatizados lo rellenan, las personas no.
   if (cleanLine(form.get("website"), 50)) {
-    return json({ ok: true, id: 0, message: "Gracias por tu mensaje." });
+    // Misma forma que una publicación normal: el cliente pinta la respuesta y
+    // con un string en vez de un objeto se rompía a la vista del usuario.
+    return json({
+      ok: true,
+      message: {
+        id: 0,
+        author: cleanLine(form.get("author"), 60),
+        origin: null,
+        body: cleanText(form.get("body"), 800),
+        created_at: new Date().toISOString(),
+        photo_url: null,
+      },
+    });
   }
 
   const author = cleanLine(form.get("author"), 60);
   const origin = cleanLine(form.get("origin"), 60);
   const body = cleanText(form.get("body"), 800);
 
-  if (!author) return fail("Pon al menos un nombre o un apodo para firmar.");
-  if (body.length < 3) return fail("Escribe tu mensaje de apoyo.");
+  if (!author) return fail("Falta la firma. Pon tu nombre o un apodo.");
+  if (body.length < 1) return fail("Escribe tu mensaje de apoyo.");   // un emoji o un "sí" también es apoyo
 
   let photoKey: string | null = null;
   let photoType: string | null = null;
@@ -455,7 +467,7 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
   const photo = form.get("photo");
   if (photo instanceof File && photo.size > 0) {
     if (photo.size > MAX_PHOTO_BYTES) {
-      return fail("La imagen ocupa mas de 5 MB. Prueba con una mas ligera.", 413);
+      return fail("Esa foto pesa demasiado. Prueba con otra.", 413);
     }
     const buffer = await photo.arrayBuffer();
     const kind = sniffImage(buffer);
@@ -535,7 +547,7 @@ async function serveImage(request: Request, env: Env, key: string): Promise<Resp
  */
 async function geocode(request: Request, env: Env): Promise<Response> {
   const { success } = await env.RL_GEOCODE.limit({ key: ipVisitante(request, env) });
-  if (!success) return fail("Demasiadas busquedas seguidas.", 429);
+  if (!success) return fail("Demasiadas búsquedas seguidas.", 429);
 
   const q = cleanLine(new URL(request.url).searchParams.get("q"), 200);
   if (q.length < 3) return json({ ok: true, results: [] });
@@ -622,7 +634,7 @@ async function serveTile(path: string): Promise<Response> {
 async function adminLogin(request: Request, env: Env): Promise<Response> {
   if (!env.ADMIN_PASSWORD) {
     return fail(
-      "El panel no esta configurado. Ejecuta: npx wrangler secret put ADMIN_PASSWORD",
+      "El panel no está configurado. Ejecuta: npx wrangler secret put ADMIN_PASSWORD",
       503,
     );
   }
@@ -636,12 +648,12 @@ async function adminLogin(request: Request, env: Env): Promise<Response> {
   try {
     payload = (await request.json()) as { password?: string };
   } catch {
-    return fail("Peticion no valida.");
+    return fail("Petición no válida.");
   }
 
   const given = String(payload.password ?? "");
   if (given.length !== env.ADMIN_PASSWORD.length || !timingSafeEqual(given, env.ADMIN_PASSWORD)) {
-    return fail("Contrasena incorrecta.", 401);
+    return fail("Contraseña incorrecta.", 401);
   }
 
   const token = await createSessionToken(secret, SESSION_TTL);
@@ -675,7 +687,7 @@ async function adminUpdatePlace(request: Request, env: Env, id: number): Promise
   try {
     payload = (await request.json()) as Record<string, unknown>;
   } catch {
-    return fail("Peticion no valida.");
+    return fail("Petición no válida.");
   }
 
   const sets: string[] = [];
@@ -688,7 +700,7 @@ async function adminUpdatePlace(request: Request, env: Env, id: number): Promise
 
   if (typeof payload.status === "string") {
     if (!["pending", "approved", "rejected"].includes(payload.status)) {
-      return fail("Estado no valido.");
+      return fail("Estado no válido.");
     }
     push("status", payload.status);
     sets.push("reviewed_at = datetime('now')");
@@ -705,12 +717,12 @@ async function adminUpdatePlace(request: Request, env: Env, id: number): Promise
   if (typeof payload.source_url === "string") push("source_url", cleanUrl(payload.source_url) || null);
   if (payload.event_date !== undefined) {
     const d = cleanDate(payload.event_date);
-    if (!d) return fail("Fecha no valida.");
+    if (!d) return fail("Fecha no válida.");
     push("event_date", d);
   }
   if (payload.event_time !== undefined) {
     const t = cleanTime(payload.event_time);
-    if (!t) return fail("Hora no valida.");
+    if (!t) return fail("Hora no válida.");
     push("event_time", t);
   }
   if (payload.lat !== undefined) push("lat", cleanCoord(payload.lat, 90));
@@ -751,7 +763,7 @@ async function adminUpdateMessage(request: Request, env: Env, id: number): Promi
   try {
     payload = (await request.json()) as { hidden?: boolean; reports?: number };
   } catch {
-    return fail("Peticion no valida.");
+    return fail("Petición no válida.");
   }
   if (typeof payload.hidden === "boolean") {
     await env.DB.prepare("UPDATE messages SET hidden = ? WHERE id = ?")
@@ -792,7 +804,7 @@ async function adminSaveSettings(request: Request, env: Env): Promise<Response> 
   try {
     payload = (await request.json()) as Record<string, unknown>;
   } catch {
-    return fail("Peticion no valida.");
+    return fail("Petición no válida.");
   }
 
   const statements: D1PreparedStatement[] = [];
@@ -839,12 +851,12 @@ export default {
 
     try {
       if (path.startsWith("/tiles/")) {
-        if (method !== "GET" && method !== "HEAD") return fail("Metodo no permitido", 405);
+        if (method !== "GET" && method !== "HEAD") return fail("Método no permitido", 405);
         return await serveTile(path);
       }
 
       if (path.startsWith("/img/")) {
-        if (method !== "GET" && method !== "HEAD") return fail("Metodo no permitido", 405);
+        if (method !== "GET" && method !== "HEAD") return fail("Método no permitido", 405);
         return await serveImage(request, env, decodeURIComponent(path.slice(5)));
       }
 
@@ -870,7 +882,7 @@ export default {
         if (path === "/api/admin/session" && method === "GET") {
           return json({ ok: true, authenticated: await isAdmin(request, env) });
         }
-        if (!(await isAdmin(request, env))) return fail("Necesitas iniciar sesion.", 401);
+        if (!(await isAdmin(request, env))) return fail("Necesitas iniciar sesión.", 401);
 
         if (path === "/api/admin/places" && method === "GET") return await adminPlaces(request, env);
         if (path === "/api/admin/messages" && method === "GET") return await adminMessages(request, env);
@@ -894,7 +906,7 @@ export default {
       return await env.ASSETS.fetch(request);
     } catch (err) {
       console.error("Error en", method, path, err);
-      return fail("Ha ocurrido un error inesperado. Intentalo de nuevo.", 500);
+      return fail("Ha ocurrido un error inesperado. Inténtalo de nuevo.", 500);
     }
   },
 } satisfies ExportedHandler<Env>;
