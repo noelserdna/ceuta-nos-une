@@ -1,0 +1,18 @@
+# Copia este fichero a .dev.vars para desarrollo local.
+# En produccion se cargan con: npx wrangler secret put NOMBRE
+
+# Contrasena del panel de administracion (/admin)
+ADMIN_PASSWORD=cambia-esto-en-local
+
+# Clave para firmar la cookie de sesion del admin (cadena larga y aleatoria)
+SESSION_SECRET=cadena-larga-aleatoria-de-al-menos-32-caracteres
+
+# Sal para anonimizar las IP antes de guardarlas (RGPD: nunca se guarda la IP en claro)
+IP_SALT=otra-cadena-larga-aleatoria
+
+# OPCIONAL - envio del aviso por correo cuando alguien propone un lugar.
+# Sin esta clave el aviso queda igualmente guardado en D1 y visible en /admin.
+RESEND_API_KEY=
+
+# OPCIONAL - Turnstile (anti-bot). Sin estas claves el widget se desactiva solo.
+TURNSTILE_SECRET_KEY=

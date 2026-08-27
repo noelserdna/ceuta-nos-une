@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ceuta nos une · 2 de septiembre</title>
+<meta name="description" content="Mapa y listado de los lugares donde se concentra la ciudadanía el 2 de septiembre. Propón un lugar confirmado y deja tu mensaje de apoyo a Ceuta.">
+<meta name="theme-color" content="#0B1220">
+<meta property="og:title" content="Ceuta nos une · 2 de septiembre">
+<meta property="og:description" content="Una misma hora, muchas plazas. Consulta dónde, propón un lugar y deja tu mensaje de apoyo.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=DM+Mono:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="/vendor/leaflet.css">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="saltar" href="#lugares">Saltar al listado de lugares</a>
+
+<header class="barra">
+  <a class="barra__marca" href="#inicio">
+    <span class="barra__gyronny" aria-hidden="true"></span>
+    <span>Ceuta nos une</span>
+  </a>
+  <nav class="barra__nav" aria-label="Secciones">
+    <a href="#lugares">Lugares</a>
+    <a href="#proponer">Propón uno</a>
+    <a href="#muro">Muro de apoyo</a>
+  </nav>
+</header>
+
+<!-- ===================== PORTADA ===================== -->
+<section class="portada" id="inicio">
+  <div class="portada__gyronny" aria-hidden="true"></div>
+  <div class="portada__grano" aria-hidden="true"></div>
+
+  <div class="portada__contenido">
+    <p class="portada__antetitulo">
+      <span class="pulso" aria-hidden="true"></span>
+      Convocatoria ciudadana · <span data-config="event_label">2 de septiembre</span>
+    </p>
+
+    <h1 class="portada__titulo">
+      <span class="linea linea--1">Ceuta</span>
+      <span class="linea linea--2">nos</span>
+      <span class="linea linea--3">une</span>
+    </h1>
+
+    <p class="portada__lema" data-config="site_claim">Una misma hora, muchas plazas.</p>
+
+    <div class="cuenta" id="cuenta" aria-live="polite">
+      <div class="cuenta__bloque"><b id="c-dias">--</b><span>días</span></div>
+      <div class="cuenta__bloque"><b id="c-horas">--</b><span>horas</span></div>
+      <div class="cuenta__bloque"><b id="c-min">--</b><span>min</span></div>
+      <div class="cuenta__bloque"><b id="c-seg">--</b><span>seg</span></div>
+    </div>
+
+    <div class="portada__acciones">
+      <a class="boton boton--brasa" href="#lugares">Ver dónde es</a>
+      <a class="boton boton--linea" href="#muro">Dejar mi mensaje</a>
+    </div>
+
+    <dl class="portada__cifras">
+      <div><dt>Lugares confirmados</dt><dd id="cifra-lugares">—</dd></div>
+      <div><dt>Provincias</dt><dd id="cifra-provincias">—</dd></div>
+      <div><dt>Mensajes de apoyo</dt><dd id="cifra-mensajes">—</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ===================== LUGARES ===================== -->
+<section class="lugares" id="lugares">
+  <div class="seccion__cabecera">
+    <p class="etiqueta">01 — Dónde</p>
+    <h2 class="seccion__titulo">Un mapa de plazas</h2>
+    <p class="seccion__texto">
+      Cada punto es una concentración confirmada. Busca la tuya, mira la hora y comparte el enlace
+      con quien tengas cerca.
+    </p>
+  </div>
+
+  <div class="lugares__cuerpo">
+    <div class="lugares__mapa">
+      <div id="mapa" role="application" aria-label="Mapa con los lugares de concentración"></div>
+      <p class="mapa__pie">Arrastra para moverte · pulsa un punto para ver los detalles</p>
+    </div>
+
+    <div class="lugares__panel">
+      <div class="filtros">
+        <label class="buscador">
+          <span class="visualmente-oculto">Buscar por localidad, provincia o lugar</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" id="buscador" placeholder="Busca tu ciudad…" autocomplete="off">
+        </label>
+        <div class="chips" id="chips-provincia" role="group" aria-label="Filtrar por provincia"></div>
+      </div>
+
+      <p class="lugares__contador" id="lugares-contador" aria-live="polite"></p>
+      <ol class="tarjetas" id="lista-lugares"></ol>
+
+      <p class="aviso aviso--sutil">
+        Los lugares los envía la gente y se revisan uno a uno antes de publicarlos. Aun así,
+        confirma siempre la convocatoria con la organización de tu ciudad antes de desplazarte.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROPONER LUGAR ===================== -->
+<section class="proponer" id="proponer">
+  <div class="proponer__gyronny" aria-hidden="true"></div>
+
+  <div class="proponer__intro">
+    <p class="etiqueta etiqueta--claro">02 — Suma tu ciudad</p>
+    <h2 class="seccion__titulo seccion__titulo--claro">¿Falta tu plaza?</h2>
+    <p class="seccion__texto seccion__texto--claro">
+      Si conoces una concentración confirmada que no está en el mapa, mándanosla. Nos llega un
+      aviso al momento, la comprobamos y la publicamos.
+    </p>
+    <ul class="pasos">
+      <li><b>1</b> Rellenas el formulario</li>
+      <li><b>2</b> Recibimos el aviso y lo verificamos</li>
+      <li><b>3</b> Aparece en el mapa</li>
+    </ul>
+  </div>
+
+  <form class="formulario" id="form-lugar" novalidate>
+    <div class="campo campo--mitad">
+      <label for="l-city">Localidad <b aria-hidden="true">*</b></label>
+      <input id="l-city" name="city" required maxlength="80" autocomplete="address-level2" placeholder="Algeciras">
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-province">Provincia <b aria-hidden="true">*</b></label>
+      <input id="l-province" name="province" required maxlength="80" list="provincias" placeholder="Cádiz">
+      <datalist id="provincias"></datalist>
+    </div>
+
+    <div class="campo">
+      <label for="l-venue">Lugar <b aria-hidden="true">*</b></label>
+      <input id="l-venue" name="venue" required maxlength="140" placeholder="Plaza Alta">
+    </div>
+
+    <div class="campo">
+      <label for="l-address">Dirección <b aria-hidden="true">*</b></label>
+      <div class="campo__conboton">
+        <input id="l-address" name="address" required maxlength="240" autocomplete="street-address" placeholder="Plaza Alta, 11201 Algeciras">
+        <button type="button" class="boton boton--mini" id="btn-buscar-dir">Situar en el mapa</button>
+      </div>
+      <ul class="sugerencias" id="sugerencias" role="listbox" aria-label="Direcciones encontradas" hidden></ul>
+      <p class="campo__ayuda" id="ayuda-coords">Opcional, pero ayuda mucho: sitúa el punto exacto en el mapa.</p>
+      <div class="minimapa" id="minimapa" hidden></div>
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-date">Fecha <b aria-hidden="true">*</b></label>
+      <input id="l-date" name="event_date" type="date" required>
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-time">Hora <b aria-hidden="true">*</b></label>
+      <input id="l-time" name="event_time" type="time" required value="20:00">
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-organizer">Quién convoca</label>
+      <input id="l-organizer" name="organizer" maxlength="140" placeholder="Asociación, plataforma…">
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-source">Enlace que lo confirma</label>
+      <input id="l-source" name="source_url" type="url" maxlength="300" inputmode="url" placeholder="https://…">
+    </div>
+
+    <div class="campo">
+      <label for="l-notes">Detalles útiles</label>
+      <textarea id="l-notes" name="notes" rows="2" maxlength="600" placeholder="Recorrido, punto de encuentro exacto, accesibilidad…"></textarea>
+    </div>
+
+    <fieldset class="campo campo--grupo">
+      <legend>Tus datos, por si necesitamos confirmar algo</legend>
+      <div class="rejilla-3">
+        <div class="campo">
+          <label for="l-name">Nombre</label>
+          <input id="l-name" name="submitter_name" maxlength="120" autocomplete="name">
+        </div>
+        <div class="campo">
+          <label for="l-email">Correo <b aria-hidden="true">*</b></label>
+          <input id="l-email" name="submitter_email" type="email" required maxlength="160" autocomplete="email">
+        </div>
+        <div class="campo">
+          <label for="l-phone">Teléfono</label>
+          <input id="l-phone" name="submitter_phone" type="tel" maxlength="40" autocomplete="tel">
+        </div>
+      </div>
+      <p class="campo__ayuda">Tus datos de contacto no se publican: solo los vemos para verificar el lugar.</p>
+    </fieldset>
+
+    <div class="turnstile" id="turnstile-lugar"></div>
+
+    <div class="formulario__pie">
+      <button type="submit" class="boton boton--brasa" id="btn-lugar">Enviar el lugar</button>
+      <p class="estado" id="estado-lugar" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+</section>
+
+<!-- ===================== MURO DE APOYO ===================== -->
+<section class="muro" id="muro">
+  <div class="seccion__cabecera">
+    <p class="etiqueta">03 — Un lugar para decirlo</p>
+    <h2 class="seccion__titulo">Muro de apoyo</h2>
+    <p class="seccion__texto">
+      Una plaza virtual donde dejar un mensaje, una foto, un recuerdo. Se publica al momento y lo
+      lee todo el mundo.
+    </p>
+  </div>
+
+  <form class="postal-nueva" id="form-mensaje" novalidate>
+    <div class="postal-nueva__cuerpo">
+      <label class="visualmente-oculto" for="m-body">Tu mensaje</label>
+      <textarea id="m-body" name="body" rows="4" maxlength="800" required placeholder="Escribe tu mensaje de apoyo…"></textarea>
+      <p class="contador"><span id="m-restantes">800</span> caracteres</p>
+    </div>
+
+    <div class="postal-nueva__meta">
+      <div class="campo">
+        <label for="m-author">Firma <b aria-hidden="true">*</b></label>
+        <input id="m-author" name="author" required maxlength="60" placeholder="Tu nombre o apodo">
+      </div>
+      <div class="campo">
+        <label for="m-origin">Desde dónde</label>
+        <input id="m-origin" name="origin" maxlength="60" placeholder="Ceuta, Melilla, Madrid…">
+      </div>
+
+      <div class="campo">
+        <label for="m-photo">Una foto (opcional)</label>
+        <input id="m-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        <p class="campo__ayuda">Máximo 5 MB. Se reduce en tu propio móvil antes de subirla.</p>
+        <div class="previa" id="previa" hidden>
+          <img id="previa-img" alt="Vista previa de la foto elegida">
+          <button type="button" class="previa__quitar" id="previa-quitar">Quitar</button>
+        </div>
+      </div>
+
+      <!-- Campo trampa para bots: invisible y sin foco para las personas -->
+      <div class="trampa" aria-hidden="true">
+        <label for="website">No rellenar</label>
+        <input id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="turnstile" id="turnstile-mensaje"></div>
+
+      <button type="submit" class="boton boton--brasa" id="btn-mensaje">Publicar</button>
+      <p class="estado" id="estado-mensaje" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div class="mensajes" id="mensajes"></div>
+  <div class="muro__mas">
+    <button type="button" class="boton boton--linea" id="btn-mas" hidden>Ver más mensajes</button>
+  </div>
+</section>
+
+<footer class="pie">
+  <div class="pie__gyronny" aria-hidden="true"></div>
+  <p class="pie__marca">Ceuta nos une</p>
+  <p class="pie__texto">
+    Web ciudadana, sin ánimo de lucro y sin publicidad. Los lugares se revisan antes de publicarse;
+    los mensajes del muro son responsabilidad de quien los firma.
+    <br>
+    ¿Ves algo que no debería estar aquí? Escríbenos a
+    <a id="pie-contacto" href="#">el correo de contacto</a>.
+  </p>
+  <p class="pie__legal">
+    No guardamos tu dirección IP: solo una huella anónima para frenar el spam.
+    Mapa © colaboradores de OpenStreetMap · teselas © CARTO.
+    <a href="/admin">Administración</a>
+  </p>
+</footer>
+
+<script src="/vendor/leaflet.js"></script>
+<script src="/app.js" type="module"></script>
+</body>
+</html>

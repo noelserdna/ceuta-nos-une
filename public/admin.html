@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administración · Ceuta nos une</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=DM+Mono:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+
+<!-- ============ ACCESO ============ -->
+<section class="acceso" id="acceso">
+  <form class="acceso__caja" id="form-login">
+    <span class="acceso__gyronny" aria-hidden="true"></span>
+    <h1>Administración</h1>
+    <p class="acceso__texto">Panel de revisión de <b>Ceuta nos une</b>.</p>
+    <label for="password">Contraseña</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+    <button type="submit" class="btn btn--primario">Entrar</button>
+    <p class="estado" id="estado-login" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<!-- ============ PANEL ============ -->
+<div class="panel" id="panel" hidden>
+  <header class="cabecera">
+    <div class="cabecera__marca">
+      <span class="gyronny-mini" aria-hidden="true"></span>
+      <span>Ceuta nos une</span>
+      <span class="cabecera__sub">administración</span>
+    </div>
+    <nav class="pestanas" role="tablist">
+      <button role="tab" class="pestana" data-vista="lugares" aria-selected="true">
+        Lugares <span class="globo" id="globo-pendientes" hidden>0</span>
+      </button>
+      <button role="tab" class="pestana" data-vista="muro" aria-selected="false">
+        Muro <span class="globo globo--alerta" id="globo-reportados" hidden>0</span>
+      </button>
+      <button role="tab" class="pestana" data-vista="ajustes" aria-selected="false">Ajustes</button>
+    </nav>
+    <div class="cabecera__acciones">
+      <a class="btn btn--fantasma" href="/" target="_blank" rel="noopener">Ver la web</a>
+      <button class="btn btn--fantasma" id="btn-salir">Salir</button>
+    </div>
+  </header>
+
+  <!-- ---- LUGARES ---- -->
+  <section class="vista" id="vista-lugares">
+    <div class="barra-filtros">
+      <div class="chips" id="filtros-lugares"></div>
+      <p class="nota" id="nota-lugares"></p>
+    </div>
+    <div class="listado" id="listado-lugares"></div>
+  </section>
+
+  <!-- ---- MURO ---- -->
+  <section class="vista" id="vista-muro" hidden>
+    <div class="barra-filtros">
+      <div class="chips" id="filtros-muro"></div>
+      <p class="nota">Los mensajes se publican sin revisión previa: aquí puedes ocultarlos o borrarlos.</p>
+    </div>
+    <div class="rejilla-muro" id="listado-muro"></div>
+  </section>
+
+  <!-- ---- AJUSTES ---- -->
+  <section class="vista" id="vista-ajustes" hidden>
+    <div class="dos-columnas">
+      <div>
+        <h2>Ajustes de la web</h2>
+        <p class="nota">
+          Se guardan en la base de datos: puedes cambiarlos cuando quieras sin volver a desplegar.
+        </p>
+        <form id="form-ajustes" class="ajustes"></form>
+        <div class="acciones-pie">
+          <button class="btn btn--primario" id="btn-guardar-ajustes">Guardar ajustes</button>
+          <p class="estado" id="estado-ajustes" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div>
+        <h2>Avisos por correo</h2>
+        <p class="nota" id="nota-correo"></p>
+        <div class="listado listado--compacto" id="listado-avisos"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="/admin.js" type="module"></script>
+</body>
+</html>

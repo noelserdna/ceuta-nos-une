@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ceuta-nos-une",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-25",
+
+  // El Worker sirve la web estática y la API desde el mismo origen.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*", "/img/*", "/tiles/*"]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ceuta-nos-une",
+      "database_id": "d1e0ef80-cce4-4344-9fe1-316065f7774d",
+      "migrations_dir": "./migrations"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "ceuta-nos-une-fotos"
+    }
+  ],
+
+  // Anti-spam: los mensajes se publican sin moderacion, asi que el limite es la
+  // primera linea de defensa junto con Turnstile (opcional) y el panel de admin.
+  "ratelimits": [
+    { "name": "RL_MESSAGES", "namespace_id": "1001", "simple": { "limit": 4, "period": 60 } },
+    { "name": "RL_PLACES", "namespace_id": "1002", "simple": { "limit": 3, "period": 60 } },
+    { "name": "RL_GEOCODE", "namespace_id": "1003", "simple": { "limit": 20, "period": 60 } },
+    { "name": "RL_REPORTS", "namespace_id": "1004", "simple": { "limit": 10, "period": 60 } },
+    { "name": "RL_LOGIN", "namespace_id": "1005", "simple": { "limit": 5, "period": 60 } }
+  ],
+
+  "observability": { "enabled": true }
+}
