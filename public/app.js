@@ -673,10 +673,46 @@ async function enviarMensaje(ev) {
   }
 }
 
+
+/* ------------------------------------------------------------- difundir -- */
+
+function prepararCompartir() {
+  const boton = $("#btn-compartir");
+  const nota = $("#difunde-nota");
+  if (!boton) return;
+
+  const original = nota ? nota.textContent : "";
+  const texto =
+    (estado.config.site_title || "Ceuta nos une") + " · " +
+    (estado.config.event_label || "2 de septiembre") +
+    ", 20:00 h frente a cada ayuntamiento o Delegación del Gobierno.";
+
+  boton.addEventListener("click", async () => {
+    const url = location.origin + "/";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Ceuta nos une", text: texto, url });
+        return;
+      }
+      await navigator.clipboard.writeText(texto + " " + url);
+      if (nota) {
+        nota.textContent = "Enlace copiado. Pégalo donde quieras: saldrá el cartel con la fecha y la hora.";
+        nota.classList.add("difunde__nota--ok");
+        setTimeout(() => {
+          nota.textContent = original;
+          nota.classList.remove("difunde__nota--ok");
+        }, 5000);
+      }
+    } catch {
+      /* el usuario ha cancelado el menú de compartir: no hay nada que hacer */
+    }
+  });
+}
+
 /* ------------------------------------------------------------ animaciones -- */
 
 function prepararRevelados() {
-  const objetivos = $$(".seccion__cabecera, .lugares__cuerpo, .proponer__intro, .formulario, .postal-nueva");
+  const objetivos = $$(".seccion__cabecera, .lugares__cuerpo, .proponer__intro, .formulario, .postal-nueva, .difunde__cuerpo");
 
   // Sin IntersectionObserver no se oculta nada: el contenido es lo importante,
   // la animación es un adorno.
@@ -743,6 +779,7 @@ async function iniciar() {
   iniciarMapa();
 
   await cargarConfig();
+  prepararCompartir();
   await Promise.all([
     cargarLugares().catch((err) => {
       $("#lista-lugares").replaceChildren(

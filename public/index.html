@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Ceuta nos une">
 <!-- El cartel oficial compuesto a 1200x630: al pegar el enlace en WhatsApp o
      redes se ve el cartel con la fecha y la hora, sin abrir la web. -->
-<meta property="og:image" content="https://ceutanosune.es/img/og.jpg">
+<meta property="og:image" content="https://ceutanosune.es/media/og.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,7 +22,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Ceuta nos une · 2 de septiembre">
 <meta name="twitter:description" content="Concentración en toda España a las 20:00 h. Consulta dónde es tu plaza más cercana.">
-<meta name="twitter:image" content="https://ceutanosune.es/img/og.jpg">
+<meta name="twitter:image" content="https://ceutanosune.es/media/og.jpg">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -319,6 +319,49 @@
   <div class="mensajes" id="mensajes"></div>
   <div class="muro__mas">
     <button type="button" class="boton boton--linea" id="btn-mas" hidden>Ver más mensajes</button>
+  </div>
+</section>
+
+
+<!-- ===================== DIFUNDIR EL CARTEL ===================== -->
+<section class="difunde" id="difunde">
+  <div class="trama trama--oro" aria-hidden="true"></div>
+  <div class="difunde__gyronny" aria-hidden="true"></div>
+
+  <div class="difunde__cuerpo">
+    <figure class="difunde__cartel">
+      <img src="/media/cartel.webp" width="468" height="585" loading="lazy" decoding="async"
+           alt="Cartel oficial: Ceuta nos une. Concentración en toda España el 2 de septiembre a las 20:00 h, frente a cada ayuntamiento o Delegación del Gobierno.">
+    </figure>
+
+    <div class="difunde__texto">
+      <p class="etiqueta etiqueta--claro">04 — Corre la voz</p>
+      <h2 class="seccion__titulo seccion__titulo--claro">Pega el cartel donde puedas</h2>
+      <p class="seccion__texto seccion__texto--claro">
+        En el portal, en el bar, en el grupo del barrio. Cuanta más gente sepa dónde y a qué
+        hora, más plazas se llenan el día 2.
+      </p>
+
+      <div class="difunde__acciones">
+        <a class="boton boton--linea" href="/media/cartel.jpg" download="ceuta-nos-une-2-septiembre.jpg">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/>
+          </svg>
+          Descargar el cartel
+        </a>
+        <button type="button" class="boton boton--brasa" id="btn-compartir">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>
+          </svg>
+          Compartir el enlace
+        </button>
+      </div>
+      <p class="difunde__nota" id="difunde-nota">
+        Al compartir el enlace aparece el cartel con la fecha y la hora, así que se entiende de
+        un vistazo sin abrirlo. La imagen es para pantalla y móvil.
+      </p>
+    </div>
   </div>
 </section>
 

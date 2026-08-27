@@ -813,3 +813,75 @@ button, input, textarea, select { font: inherit; color: inherit; }
   }
   .revelar { opacity: 1; transform: none; }
 }
+
+/* -------------------------------------------------------------- difunde -- */
+/* Franja de cierre: el cartel oficial y la petición de difundirlo. Va después
+   del muro porque es la salida natural — quien ha leído hasta aquí es quien
+   más probablemente lo comparta. */
+
+.difunde {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: var(--tinta); color: var(--papel);
+  padding: clamp(3rem, 7vw, 5rem) clamp(1rem, 4vw, 3rem);
+}
+
+.difunde__gyronny {
+  position: absolute; z-index: -1; top: 50%; left: 88%; translate: -50% -50%;
+  width: min(100vw, 800px); aspect-ratio: 1;
+  color: rgba(252, 192, 24, 0.06);
+  mask-image: radial-gradient(circle, #000 32%, transparent 68%);
+  background-image: conic-gradient(
+    from 22.5deg,
+    currentColor 0deg 45deg, transparent 45deg 90deg,
+    currentColor 90deg 135deg, transparent 135deg 180deg,
+    currentColor 180deg 225deg, transparent 225deg 270deg,
+    currentColor 270deg 315deg, transparent 315deg 360deg
+  );
+}
+
+.difunde__cuerpo {
+  position: relative; z-index: 1;
+  max-width: var(--ancho); margin-inline: auto;
+  display: grid; gap: clamp(2rem, 5vw, 3.5rem);
+  grid-template-columns: 1fr; justify-items: center; text-align: center;
+}
+@media (min-width: 860px) {
+  .difunde__cuerpo {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center; justify-items: start; text-align: left;
+  }
+}
+
+/* El cartel, con la sombra dura en oro */
+.difunde__cartel { position: relative; margin: 0; max-width: 330px; }
+.difunde__cartel::before {
+  content: ""; position: absolute; inset: 12px -12px -12px 12px;
+  background: var(--oro);
+}
+.difunde__cartel img {
+  position: relative; width: 100%; height: auto;
+  border: var(--borde-panel) solid var(--oro);
+}
+
+/* El límite de medida es para la lectura, no para los botones ni la nota:
+   si no, los dos botones no caben en una línea y se apilan sin necesidad. */
+.difunde__texto { max-width: 62ch; }
+.difunde__texto .seccion__texto { max-width: 48ch; }
+.difunde__acciones {
+  display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 1.8rem;
+  justify-content: center;
+}
+@media (min-width: 860px) { .difunde__acciones { justify-content: flex-start; } }
+
+.difunde .boton { border-color: var(--papel); }
+.difunde .boton--linea { box-shadow: 5px 5px 0 var(--carmin-osc); }
+.difunde .boton--linea:hover { box-shadow: 3px 3px 0 var(--carmin-osc); }
+.difunde .boton--brasa { box-shadow: 5px 5px 0 var(--oro); }
+.difunde .boton--brasa:hover { box-shadow: 3px 3px 0 var(--oro); }
+
+.difunde__nota {
+  margin: 1.6rem 0 0; padding: 1rem 1.1rem;
+  border: 2px solid rgba(247, 227, 211, 0.3);
+  font-size: 0.92rem; line-height: 1.55; color: rgba(247, 227, 211, 0.72);
+}
+.difunde__nota--ok { border-color: var(--oro); color: var(--oro); }
