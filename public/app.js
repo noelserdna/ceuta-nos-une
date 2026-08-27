@@ -102,8 +102,10 @@ async function cargarConfig() {
 
   if (c.event_date) {
     const campoFecha = $("#l-date");
-    campoFecha.value = c.event_date;
-    campoFecha.min = new Date().toISOString().slice(0, 10);
+    if (campoFecha) {
+      campoFecha.value = c.event_date;
+      campoFecha.min = new Date().toISOString().slice(0, 10);
+    }
     arrancarCuentaAtras(c.event_date);
   }
 
@@ -151,6 +153,7 @@ function arrancarCuentaAtras(fechaISO) {
   if (Number.isNaN(objetivo.getTime())) return;
 
   const bloque = $("#cuenta");
+  if (!bloque) return;
   const pintar = () => {
     let resto = objetivo.getTime() - Date.now();
     if (resto <= 0) {
@@ -178,6 +181,7 @@ function arrancarCuentaAtras(fechaISO) {
 /* ---------------------------------------------------------------- lugares -- */
 
 function iniciarMapa() {
+  if (!$("#mapa") || typeof L === "undefined") return;
   mapa = L.map("mapa", { scrollWheelZoom: false, zoomControl: true }).setView([39.5, -3.5], 5);
   L.tileLayer(TESELAS, { attribution: ATRIBUCION, maxZoom: 19 }).addTo(mapa);
   capaMarcadores = L.layerGroup().addTo(mapa);
@@ -187,6 +191,7 @@ function iniciarMapa() {
 }
 
 async function cargarLugares() {
+  if (!$("#lista-lugares")) return;
   const datos = await pedir("/api/places");
   estado.lugares = datos.places || [];
   pintarChips();
@@ -362,14 +367,17 @@ function centrarEn(lugar, elemento) {
 
 function actualizarCifras() {
   const provincias = new Set(estado.lugares.map((l) => l.province));
-  $("#cifra-lugares").textContent = String(estado.lugares.length);
-  $("#cifra-provincias").textContent = String(provincias.size);
+  const lugares = $("#cifra-lugares");
+  const prov = $("#cifra-provincias");
+  if (lugares) lugares.textContent = String(estado.lugares.length);
+  if (prov) prov.textContent = String(provincias.size);
 }
 
 /* --------------------------------------------------- formulario de lugar -- */
 
 function rellenarProvincias() {
   const lista = $("#provincias");
+  if (!lista) return;
   PROVINCIAS.forEach((p) => {
     const opcion = document.createElement("option");
     opcion.value = p;
@@ -498,7 +506,7 @@ async function enviarLugar(ev) {
 /* -------------------------------------------------------------------- muro -- */
 
 async function cargarMensajes(masAntiguos = false) {
-  if (estado.cargandoMensajes) return;
+  if (!$("#mensajes") || estado.cargandoMensajes) return;
   estado.cargandoMensajes = true;
 
   const url = masAntiguos && estado.siguienteMensaje
@@ -513,7 +521,8 @@ async function cargarMensajes(masAntiguos = false) {
     datos.messages.forEach((m) => contenedor.append(postal(m)));
     estado.siguienteMensaje = datos.next;
     $("#btn-mas").hidden = !datos.next;
-    $("#cifra-mensajes").textContent = String(datos.total ?? datos.messages.length);
+    const cifra = $("#cifra-mensajes");
+    if (cifra) cifra.textContent = String(datos.total ?? datos.messages.length);
 
     if (!datos.messages.length && !masAntiguos) {
       contenedor.append(crear("p", "vacio", "Todavía no hay mensajes. Sé la primera persona en dejar uno."));
@@ -605,6 +614,7 @@ function prepararPrevia() {
   const entrada = $("#m-photo");
   const previa = $("#previa");
   const img = $("#previa-img");
+  if (!entrada || !previa || !img) return;
 
   entrada.addEventListener("change", async () => {
     const archivo = entrada.files?.[0];
@@ -658,7 +668,7 @@ async function enviarMensaje(ev) {
     $("#mensajes").prepend(nueva);
 
     const cifra = $("#cifra-mensajes");
-    cifra.textContent = String((Number(cifra.textContent) || 0) + 1);
+    if (cifra) cifra.textContent = String((Number(cifra.textContent) || 0) + 1);
 
     form.reset();
     estado.fotoElegida = null;
@@ -743,7 +753,7 @@ function prepararRevelados() {
 
 function conectarEventos() {
   let temporizador;
-  $("#buscador").addEventListener("input", (ev) => {
+  $("#buscador")?.addEventListener("input", (ev) => {
     clearTimeout(temporizador);
     temporizador = setTimeout(() => {
       estado.busqueda = ev.target.value;
@@ -751,14 +761,14 @@ function conectarEventos() {
     }, 180);
   });
 
-  $("#btn-buscar-dir").addEventListener("click", buscarDireccion);
-  $("#form-lugar").addEventListener("submit", enviarLugar);
-  $("#form-mensaje").addEventListener("submit", enviarMensaje);
-  $("#btn-mas").addEventListener("click", () => cargarMensajes(true));
+  $("#btn-buscar-dir")?.addEventListener("click", buscarDireccion);
+  $("#form-lugar")?.addEventListener("submit", enviarLugar);
+  $("#form-mensaje")?.addEventListener("submit", enviarMensaje);
+  $("#btn-mas")?.addEventListener("click", () => cargarMensajes(true));
 
   const cuerpo = $("#m-body");
   const restantes = $("#m-restantes");
-  cuerpo.addEventListener("input", () => {
+  cuerpo?.addEventListener("input", () => {
     const quedan = 800 - cuerpo.value.length;
     restantes.textContent = String(quedan);
     restantes.parentElement.classList.toggle("contador--limite", quedan < 60);
@@ -766,7 +776,8 @@ function conectarEventos() {
 
   document.addEventListener("click", (ev) => {
     if (!ev.target.closest("#sugerencias") && !ev.target.closest("#btn-buscar-dir")) {
-      $("#sugerencias").hidden = true;
+      const caja = $("#sugerencias");
+      if (caja) caja.hidden = true;
     }
   });
 }
