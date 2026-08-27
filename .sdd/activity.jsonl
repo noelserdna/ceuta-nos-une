@@ -40,3 +40,7 @@
 {"ts":"2026-08-27T21:42:09Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_id":"af720e04ea61a7bff","stage":"tech-designer"}
 {"ts":"2026-08-27T21:47:25Z","event":"stop","session":"5d2e2656","role":"-","cwd":".","stage":"tech-designer"}
 {"ts":"2026-08-27T21:47:28Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_id":"a6271e6f26bc8341b","stage":"tech-designer"}
+{"ts":"2026-08-27T21:50:24Z","event":"stop","session":"5d2e2656","role":"-","cwd":".","stage":"tech-designer"}
+{"ts":"2026-08-27T21:50:29Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_id":"a56290621dda6813b","stage":"tech-designer"}
+{"ts":"2026-08-27T21:52:35Z","event":"stop","session":"5d2e2656","role":"-","cwd":".","stage":"tech-designer"}
+{"ts":"2026-08-27T21:52:39Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_id":"a3d0b02463473445d","stage":"tech-designer"}

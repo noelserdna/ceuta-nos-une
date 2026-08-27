@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; }
+    a { color: #FCC018; } a:hover { color: #F02448; }
+    .trama-oro {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(252,192,24,.14) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+    .gyronny {
+      background-image: conic-gradient(from 22.5deg,
+        currentColor 0deg 45deg, transparent 45deg 90deg,
+        currentColor 90deg 135deg, transparent 135deg 180deg,
+        currentColor 180deg 225deg, transparent 225deg 270deg,
+        currentColor 270deg 315deg, transparent 315deg 360deg);
+    }
+  </style>
+</helmet>
+
+<!-- Franja propia de difusión, entre el muro y el pie -->
+<div style="width: 1440px; background: #35101B; position: relative; overflow: hidden; padding: 60px 64px;">
+  <div class="trama-oro"></div>
+  <div class="gyronny" style="position: absolute; top: 50%; left: 88%; translate: -50% -50%; width: 700px; aspect-ratio: 1; color: rgba(252,192,24,.06); mask-image: radial-gradient(circle, #000 32%, transparent 68%);"></div>
+
+  <div style="position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 56px; align-items: center; max-width: 1240px; margin-inline: auto;">
+
+    <!-- El cartel -->
+    <div style="position: relative;">
+      <div style="position: absolute; inset: 12px -12px -12px 12px; background: #FCC018;"></div>
+      <img src="cartel.jpg" alt="Cartel oficial de la convocatoria" style="position: relative; display: block; width: 330px; height: auto; border: 4px solid #FCC018;">
+    </div>
+
+    <!-- Llamada a difundir -->
+    <div>
+      <p style="margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #FCC018;">04 — Corre la voz</p>
+      <h2 style="margin: 0 0 14px; font-family: Anton, sans-serif; font-size: 64px; line-height: .94; color: #F7E3D3; text-transform: uppercase;">Pega el cartel<br>donde puedas</h2>
+      <p style="margin: 0 0 30px; font-size: 18px; line-height: 1.55; color: rgba(247,227,211,.8); max-width: 46ch;">
+        En el portal, en el bar, en el grupo del barrio. Cuanta más gente sepa dónde y a qué
+        hora, más plazas se llenan el día 2.
+      </p>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 13px; margin-bottom: 26px;">
+        <span style="display: inline-flex; align-items: center; gap: 9px; padding: 14px 26px; background: #FCC018; color: #35101B; font-family: Anton, sans-serif; font-size: 18px; letter-spacing: .04em; border: 3px solid #F7E3D3; box-shadow: 5px 5px 0 #C71B3A;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/>
+          </svg>
+          DESCARGAR EL CARTEL
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 9px; padding: 14px 26px; background: #C71B3A; color: #FDF1E6; font-family: Anton, sans-serif; font-size: 18px; letter-spacing: .04em; border: 3px solid #F7E3D3; box-shadow: 5px 5px 0 #FCC018;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>
+          </svg>
+          COMPARTIR EL ENLACE
+        </span>
+      </div>
+
+      <div style="border: 3px solid rgba(247,227,211,.3); padding: 16px 18px; max-width: 52ch;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; color: rgba(247,227,211,.72);">
+          Al compartir <b style="color: #FCC018;">ceutanosune.es</b> por WhatsApp aparece el cartel
+          y la hora, así que se entiende de un vistazo sin abrir el enlace.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,18 +1,25 @@
 {
+  "pages": [
+    { "id": "page-1", "name": "El cartel en la web" },
+    { "id": "page-2", "name": "Rediseño (ya aplicado)" }
+  ],
   "artboards": [
-    { "file": "Main.dc.html",     "x": 0,    "y": 0,    "w": 1440, "h": 1030, "title": "Portada" },
-    { "file": "Lugares.dc.html",  "x": 1560, "y": 0,    "w": 1440, "h": 1130, "title": "Mapa y lugares" },
-    { "file": "Proponer.dc.html", "x": 0,    "y": 1250, "w": 1440, "h": 1050, "title": "Propón un lugar" },
-    { "file": "Muro.dc.html",     "x": 1560, "y": 1250, "w": 1440, "h": 1480, "title": "Muro de apoyo" },
-    { "file": "Sistema.dc.html",  "x": 0,    "y": 2850, "w": 1440, "h": 880,  "title": "Del cartel a la web" }
+    { "file": "CartelA.dc.html",  "x": 0,    "y": 0,    "w": 1440, "h": 1000, "title": "Opción A · el cartel en la portada", "page": "page-1" },
+    { "file": "CartelB.dc.html",  "x": 1560, "y": 0,    "w": 1440, "h": 620,  "title": "Opción B · franja para difundirlo", "page": "page-1" },
+
+    { "file": "Main.dc.html",     "x": 0,    "y": 0,    "w": 1440, "h": 1030, "title": "Portada", "page": "page-2" },
+    { "file": "Lugares.dc.html",  "x": 1560, "y": 0,    "w": 1440, "h": 1130, "title": "Mapa y lugares", "page": "page-2" },
+    { "file": "Proponer.dc.html", "x": 0,    "y": 1250, "w": 1440, "h": 1050, "title": "Propón un lugar", "page": "page-2" },
+    { "file": "Muro.dc.html",     "x": 1560, "y": 1250, "w": 1440, "h": 1480, "title": "Muro de apoyo", "page": "page-2" },
+    { "file": "Sistema.dc.html",  "x": 0,    "y": 2850, "w": 1440, "h": 880,  "title": "Del cartel a la web", "page": "page-2" }
   ],
   "annotations": [
-    { "id": "nota-cartel", "x": 0, "y": -150, "w": 620,
-      "text": "Adaptación de la web al cartel oficial.\nLas tintas y la trama de semitono salen del cartel; los textos oficiales (\"CONCENTRACIÓN EN TODA ESPAÑA\", \"EN CADA COMUNIDAD / CIUDAD / PUEBLO\", la banda pacífica) pasan a la portada." },
-    { "id": "nota-lugar", "x": 1560, "y": -150, "w": 620,
-      "text": "El cartel dice dónde: \"20,00h frente a cada ayuntamiento o delegación de gobierno\".\nEso cambia el texto de la web y lo que pide el formulario." },
-    { "id": "nota-contraste", "x": 0, "y": 2700, "w": 620,
-      "text": "El carmín del cartel (#F02448) sobre el papel da 3,3:1 de contraste: no es legible según la norma. Se reserva para superficies grandes y elementos gráficos; el texto y los botones usan #C71B3A (4,6:1)." }
+    { "id": "nota-a", "x": 0, "y": -190, "w": 620, "page": "page-1",
+      "text": "OPCIÓN A — El cartel entra en la portada, en una tercera columna junto al bloque de fecha.\nSe ve nada más entrar y da autenticidad: la gente reconoce el que ha visto circular.\nA cambio, la portada pasa a tres columnas y en móvil se apila bastante." },
+    { "id": "nota-b", "x": 1560, "y": -190, "w": 620, "page": "page-1",
+      "text": "OPCIÓN B — Franja propia al final, con la difusión como objetivo explícito.\nEl cartel se ve grande y el mensaje es claro: descárgalo y pégalo.\nA cambio, no aparece en la primera pantalla: hay que bajar." },
+    { "id": "nota-og", "x": 780, "y": 700, "w": 620, "page": "page-1",
+      "text": "Al margen de cuál elijas, el cartel ya se usa como imagen de vista previa: al pegar ceutanosune.es en WhatsApp saldrá el cartel con la fecha y la hora. Eso funciona sin tocar la portada." }
   ],
-  "launch": { "view": "canvas" }
+  "launch": { "view": "canvas", "page": "page-1" }
 }
