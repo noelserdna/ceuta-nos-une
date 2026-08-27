@@ -3,10 +3,24 @@
 Web de la convocatoria del **2 de septiembre**: mapa y listado de lugares, formulario para
 proponer lugares nuevos y muro donde dejar mensajes de apoyo con foto.
 
-Todo corre sobre Cloudflare, en un único Worker.
+El frontend se sirve desde Vercel y el backend es un Worker de Cloudflare.
 
-- **En producción:** https://ceuta-nos-une.andresleontest.workers.dev
-- **Panel de revisión:** https://ceuta-nos-une.andresleontest.workers.dev/admin
+- **En producción:** https://ceutanosune.es (servida desde Vercel)
+- **Panel de revisión:** https://ceutanosune.es/admin
+- **Espejo de respaldo:** https://noelserdna.github.io/ceuta-nos-une/
+
+## Por qué la web no está en Cloudflare
+
+Cloudflare asignó a `ceutanosune.com` unas IPs (188.114.96.5/97.5) que los operadores
+españoles bloquean en cumplimiento de la sentencia de LaLiga: desde España se servía una
+página de bloqueo con el certificado suplantado. La asignación de IPs es aleatoria por zona
+y no se puede elegir, así que el frontend se movió a **Vercel**, que sí es accesible, y
+Cloudflare se quedó como backend (D1, R2, correo, rate limiting).
+
+Vercel hace de intermediario: `/api/*` pasa por una función edge (`vercel/api/[...ruta].js`)
+y `/img/*` y `/tiles/*` por rewrites, todo hacia el Worker. La función reenvía la IP real
+del visitante en `x-visitante-ip`, firmada con `PROXY_TOKEN`, para que el límite anti-spam
+del muro siga contando por persona y no por servidor de Vercel.
 
 ## Cómo se publica cada cosa
 
@@ -20,7 +34,8 @@ Todo corre sobre Cloudflare, en un único Worker.
 
 | Pieza | Para qué |
 |---|---|
-| Worker (`src/`) | Sirve la web y la API en el mismo origen |
+| Vercel (`vercel/`) | Sirve la web y hace de intermediario hacia el Worker |
+| Worker (`src/`) | La API, las fotos y las teselas |
 | D1 `ceuta-nos-une` | Lugares, mensajes, ajustes y registro de avisos por correo |
 | R2 `ceuta-nos-une-fotos` | Fotos del muro |
 | Rate limiting | Frena el spam: 4 mensajes, 3 lugares y 5 intentos de acceso por minuto e IP |
@@ -28,7 +43,8 @@ Todo corre sobre Cloudflare, en un único Worker.
 
 El mapa usa OpenStreetMap. Las teselas **no** van directas al servidor de OSM: pasan por
 `/tiles/*` en el Worker, que las cachea en el borde de Cloudflare. Así se aguanta un pico de
-visitas sin castigar a OSM ni depender de ninguna clave de terceros.
+visitas sin castigar a OSM ni depender de ninguna clave de terceros. (El espejo de GitHub
+Pages sí las pide directas, porque no puede contar con el Worker.)
 
 ## Trabajar en local
 
@@ -68,18 +84,16 @@ Se cargan con `npx wrangler secret put NOMBRE`:
 | `ADMIN_PASSWORD` | Sí | Entrar en `/admin` |
 | `SESSION_SECRET` | Sí | Firma la cookie de sesión del panel |
 | `IP_SALT` | Sí | Anonimiza las IP antes de guardarlas |
-| `RESEND_API_KEY` | No | Envía de verdad el aviso por correo. Sin esta clave el aviso queda registrado en D1 y visible en `/admin`, pero no sale ningún correo |
-| `RESEND_FROM` | No | Remitente, p. ej. `Ceuta nos une <avisos@tudominio.es>` |
+| `PROXY_TOKEN` | Sí | Compartido con Vercel: valida la IP real del visitante que llega por el proxy |
+| `RESEND_API_KEY` | No | Alternativa de correo, por si falla el envío nativo de Cloudflare |
 | `TURNSTILE_SECRET_KEY` + `TURNSTILE_SITE_KEY` | No | Activan el anti-bot de Cloudflare en los dos formularios. Si no están, el widget ni aparece |
 
-### Activar el correo de aviso
+### El correo de aviso
 
-1. Crea una cuenta en [resend.com](https://resend.com) (3.000 correos/mes gratis).
-2. `npx wrangler secret put RESEND_API_KEY` y pega la clave.
-3. Sin dominio propio verificado, Resend solo deja enviar desde `onboarding@resend.dev` y
-   **únicamente a la dirección con la que te registraste**: pon esa dirección en `notify_email`.
-   Con un dominio verificado en Resend puedes enviar a cualquier destinatario y cambiar
-   `RESEND_FROM`.
+Va por **Cloudflare Email Sending**, sin proveedores externos: el binding `send_email` envía
+desde `avisos@avisos.ceutanosune.com`, un subdominio propio para no tocar el SPF del dominio
+principal. El destinatario es el `notify_email` de la tabla `settings`, editable desde
+`/admin`. Cada aviso queda registrado en `notifications` se consiga enviar o no.
 
 ## Cambiar los datos de ejemplo por los reales
 

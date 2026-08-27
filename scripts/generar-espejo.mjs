@@ -2,25 +2,25 @@
 /**
  * Genera la copia de respaldo que se publica en GitHub Pages.
  *
- * Por qué existe: el dominio principal vive en Cloudflare y las IPs que le
- * tocaron están en la lista de bloqueo que aplican los operadores españoles por
- * la sentencia de LaLiga. GitHub Pages no pasa por Cloudflare, así que esta
- * copia sigue viéndose aunque la principal no.
+ * Por qué existe: es el último nivel de respaldo. El sitio principal está en
+ * Vercel (ceutanosune.es) y el backend en Cloudflare; si alguno de los dos
+ * quedara inaccesible desde España —como le pasó al dominio de Cloudflare con
+ * el bloqueo de IPs de la sentencia de LaLiga—, esta copia estática en GitHub
+ * Pages sigue en pie, porque no depende de ninguno de los dos.
  *
  * Es un sitio estático: lleva los lugares y las horas, que es lo que hace falta
  * para acudir. El muro y el formulario necesitan servidor y se quedan fuera; la
  * página enlaza a la web principal para eso.
  *
  * Uso:  node scripts/generar-espejo.mjs
- *       RESOLVE_IP=104.21.14.43 node scripts/generar-espejo.mjs   (para saltarse
- *       el bloqueo al generarlo desde España)
+ *       ORIGEN=https://otro.dominio node scripts/generar-espejo.mjs
  */
 
 import { execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync, copyFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-const ORIGEN = process.env.ORIGEN || "https://ceutanosune.com";
+const ORIGEN = process.env.ORIGEN || "https://ceutanosune.es";
 const SALIDA = "site";
 
 function descargar(ruta) {
