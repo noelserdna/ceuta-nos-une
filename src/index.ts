@@ -34,6 +34,9 @@ export interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
   PHOTOS: R2Bucket;
+  EMAIL?: SendEmail;
+  EMAIL_FROM?: string;
+  EMAIL_FROM_NAME?: string;
   RL_MESSAGES: RateLimit;
   RL_PLACES: RateLimit;
   RL_GEOCODE: RateLimit;
@@ -81,13 +84,46 @@ async function queueAndSendEmail(
   env: Env,
   opts: { placeId: number; to: string; subject: string; text: string; html: string },
 ): Promise<void> {
+  // Vía preferida: el envío nativo de Cloudflare (sin claves ni terceros).
+  // Resend queda como alternativa por si el dominio aún no está listo.
+  const via = env.EMAIL ? "cloudflare" : env.RESEND_API_KEY ? "resend" : null;
+
   const inserted = await env.DB.prepare(
     "INSERT INTO notifications (place_id, to_email, subject, body, status) VALUES (?, ?, ?, ?, ?) RETURNING id",
   )
-    .bind(opts.placeId, opts.to, opts.subject, opts.text, env.RESEND_API_KEY ? "pending" : "skipped")
+    .bind(opts.placeId, opts.to, opts.subject, opts.text, via ? "pending" : "skipped")
     .first<{ id: number }>();
 
-  if (!env.RESEND_API_KEY || !inserted) return;
+  if (!via || !inserted) return;
+
+  const marcarEnviado = () =>
+    env.DB.prepare("UPDATE notifications SET status = 'sent', sent_at = datetime('now') WHERE id = ?")
+      .bind(inserted.id)
+      .run();
+
+  const marcarFallo = (detalle: string) =>
+    env.DB.prepare("UPDATE notifications SET status = 'failed', error = ? WHERE id = ?")
+      .bind(detalle.slice(0, 400), inserted.id)
+      .run();
+
+  if (via === "cloudflare") {
+    try {
+      await env.EMAIL!.send({
+        to: opts.to,
+        from: {
+          email: env.EMAIL_FROM || "avisos@avisos.ceutanosune.com",
+          name: env.EMAIL_FROM_NAME || "Ceuta nos une",
+        },
+        subject: opts.subject,
+        text: opts.text,
+        html: opts.html,
+      });
+      await marcarEnviado();
+    } catch (err) {
+      await marcarFallo("Cloudflare Email: " + String(err));
+    }
+    return;
+  }
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -104,23 +140,10 @@ async function queueAndSendEmail(
         html: opts.html,
       }),
     });
-
-    if (res.ok) {
-      await env.DB.prepare(
-        "UPDATE notifications SET status = 'sent', sent_at = datetime('now') WHERE id = ?",
-      )
-        .bind(inserted.id)
-        .run();
-    } else {
-      const detail = (await res.text()).slice(0, 400);
-      await env.DB.prepare("UPDATE notifications SET status = 'failed', error = ? WHERE id = ?")
-        .bind("HTTP " + res.status + ": " + detail, inserted.id)
-        .run();
-    }
+    if (res.ok) await marcarEnviado();
+    else await marcarFallo("Resend HTTP " + res.status + ": " + (await res.text()));
   } catch (err) {
-    await env.DB.prepare("UPDATE notifications SET status = 'failed', error = ? WHERE id = ?")
-      .bind(String(err).slice(0, 400), inserted.id)
-      .run();
+    await marcarFallo("Resend: " + String(err));
   }
 }
 
@@ -741,7 +764,9 @@ async function adminGetSettings(env: Env): Promise<Response> {
   return json({
     ok: true,
     settings: results ?? [],
-    email_configured: Boolean(env.RESEND_API_KEY),
+    email_configured: Boolean(env.EMAIL || env.RESEND_API_KEY),
+    email_via: env.EMAIL ? "Cloudflare Email Sending" : env.RESEND_API_KEY ? "Resend" : null,
+    email_from: env.EMAIL ? env.EMAIL_FROM ?? "" : env.RESEND_FROM ?? "",
     turnstile_configured: Boolean(env.TURNSTILE_SECRET_KEY),
   });
 }

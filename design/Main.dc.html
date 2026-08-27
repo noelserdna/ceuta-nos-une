@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; }
+    a { color: #C71B3A; } a:hover { color: #F02448; }
+    /* Trama de semitono: es lo que da el aire de serigrafía del cartel */
+    .trama {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(53,16,27,.18) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+    .trama-roja {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(255,255,255,.22) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+    /* Relleno oro con contorno rojo, como el titular del cartel */
+    .titular {
+      font-family: Anton, "Arial Narrow", sans-serif;
+      color: #FCC018;
+      -webkit-text-stroke: 7px #F02448;
+      paint-order: stroke fill;
+      letter-spacing: .01em;
+    }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #F7E3D3; position: relative; overflow: hidden;">
+
+  <!-- Barra de navegación -->
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 64px; background: #35101B; position: relative; z-index: 2;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" fill="#F7E3D3"/>
+        <g fill="#35101B">
+          <path d="M16 16 0 0h16z"/><path d="M16 16 32 0v16z"/>
+          <path d="M16 16 32 32H16z"/><path d="M16 16 0 32V16z"/>
+        </g>
+      </svg>
+      <span style="font-family: Anton, sans-serif; font-size: 20px; color: #F7E3D3; letter-spacing: .02em;">CEUTA NOS UNE</span>
+    </div>
+    <div style="display: flex; gap: 36px; font-size: 13px; font-weight: 600; letter-spacing: .14em; color: #F7E3D3; text-transform: uppercase;">
+      <span>Lugares</span><span>Propón uno</span><span>Muro de apoyo</span>
+    </div>
+  </div>
+
+  <!-- Cuerpo de portada -->
+  <div style="position: relative; padding: 56px 64px 40px;">
+    <div class="trama"></div>
+
+    <div style="position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 56px; align-items: start;">
+
+      <!-- Columna izquierda: el titular del cartel -->
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+          <span style="width: 10px; height: 10px; background: #F02448; border-radius: 50%; display: block;"></span>
+          <span style="font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #C71B3A;">Convocatoria ciudadana</span>
+        </div>
+
+        <div style="transform: skewX(-5deg); transform-origin: left top; margin-bottom: 22px;">
+          <div class="titular" style="font-size: 128px; line-height: .84;">CEUTA</div>
+          <div class="titular" style="font-size: 128px; line-height: .84;">NOS UNE</div>
+        </div>
+
+        <div style="font-family: Anton, sans-serif; font-size: 44px; line-height: .96; color: #F02448; transform: skewX(-5deg); transform-origin: left top; margin-bottom: 14px;">
+          CONCENTRACIÓN<br>EN TODA ESPAÑA
+        </div>
+
+        <p style="margin: 0 0 22px; font-size: 19px; font-weight: 600; font-style: italic; color: #C71B3A;">
+          A favor del pueblo de Ceuta y por nuestra Unidad
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 2px; font-family: Anton, sans-serif; font-size: 22px; letter-spacing: .04em; color: #35101B; font-style: italic; margin-bottom: 34px;">
+          <span>EN CADA COMUNIDAD</span>
+          <span>EN CADA CIUDAD</span>
+          <span>EN CADA PUEBLO</span>
+        </div>
+
+        <div style="display: flex; gap: 14px;">
+          <span style="display: inline-flex; align-items: center; padding: 14px 30px; background: #C71B3A; color: #FDF1E6; font-family: Anton, sans-serif; font-size: 19px; letter-spacing: .04em; border: 3px solid #35101B; box-shadow: 5px 5px 0 #35101B;">VER DÓNDE ES</span>
+          <span style="display: inline-flex; align-items: center; padding: 14px 30px; background: #FCC018; color: #35101B; font-family: Anton, sans-serif; font-size: 19px; letter-spacing: .04em; border: 3px solid #35101B; box-shadow: 5px 5px 0 #35101B;">DEJAR MI MENSAJE</span>
+        </div>
+      </div>
+
+      <!-- Columna derecha: el bloque de fecha del cartel -->
+      <div style="border: 4px solid #35101B; background: #FDF1E6; padding: 30px 32px 26px; box-shadow: 9px 9px 0 #35101B; position: relative;">
+        <div class="trama"></div>
+        <div style="position: relative;">
+          <div style="font-family: Anton, sans-serif; font-size: 34px; line-height: .95; color: #35101B; letter-spacing: .01em;">
+            DÍA <span style="font-family: Archivo, sans-serif; font-weight: 500; font-size: 24px;">de</span> CEUTA
+          </div>
+
+          <div style="display: flex; align-items: baseline; gap: 14px; margin: 2px 0 -6px;">
+            <span style="font-family: Anton, sans-serif; font-size: 168px; line-height: .8; color: #35101B;">02</span>
+            <span style="font-family: Archivo, sans-serif; font-weight: 500; font-style: italic; font-size: 34px; color: #35101B;">de</span>
+          </div>
+          <div style="font-family: Anton, sans-serif; font-size: 62px; line-height: .9; color: #35101B; letter-spacing: -.01em;">SEPTIEMBRE</div>
+
+          <p style="margin: 18px 0 0; font-size: 16px; font-weight: 700; color: #35101B; line-height: 1.4;">
+            20:00 h · Frente a cada ayuntamiento<br>o Delegación del Gobierno
+          </p>
+
+          <!-- Cuenta atrás -->
+          <div style="display: flex; gap: 26px; margin-top: 22px; padding-top: 20px; border-top: 3px solid #35101B;">
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-family: Anton, sans-serif; font-size: 44px; line-height: 1; color: #F02448;">5</span>
+              <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #35101B; margin-top: 4px;">Días</span>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-family: Anton, sans-serif; font-size: 44px; line-height: 1; color: #F02448;">23</span>
+              <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #35101B; margin-top: 4px;">Horas</span>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-family: Anton, sans-serif; font-size: 44px; line-height: 1; color: #F02448;">08</span>
+              <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #35101B; margin-top: 4px;">Min</span>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-family: Anton, sans-serif; font-size: 44px; line-height: 1; color: #F02448;">54</span>
+              <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #35101B; margin-top: 4px;">Seg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cifras -->
+    <div style="position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 44px; padding-top: 26px; border-top: 3px solid #35101B;">
+      <div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F;">Lugares confirmados</div>
+        <div style="font-family: Anton, sans-serif; font-size: 54px; line-height: 1; color: #35101B;">47</div>
+      </div>
+      <div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F;">Provincias</div>
+        <div style="font-family: Anton, sans-serif; font-size: 54px; line-height: 1; color: #35101B;">28</div>
+      </div>
+      <div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F;">Mensajes de apoyo</div>
+        <div style="font-family: Anton, sans-serif; font-size: 54px; line-height: 1; color: #35101B;">312</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banda roja inferior, igual que la del cartel -->
+  <div style="position: relative; background: #C71B3A; padding: 16px 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+    <div class="trama-roja"></div>
+    <span style="position: relative; font-family: Anton, sans-serif; font-size: 21px; letter-spacing: .02em; color: #FDF1E6;">
+      ESTA MANIFESTACIÓN ES PACÍFICA Y PARA DEMOSTRAR A CEUTA QUE NO ESTÁ SOLA
+    </span>
+    <svg width="30" height="30" viewBox="0 0 32 32" style="position: relative; flex: none;" aria-hidden="true">
+      <rect width="32" height="32" fill="#FDF1E6"/>
+      <g fill="#35101B">
+        <path d="M16 16 0 0h16z"/><path d="M16 16 32 0v16z"/>
+        <path d="M16 16 32 32H16z"/><path d="M16 16 0 32V16z"/>
+      </g>
+    </svg>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

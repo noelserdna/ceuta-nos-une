@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; }
+    a { color: #FCC018; } a:hover { color: #F02448; }
+    .trama-oscura {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(252,192,24,.14) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #35101B; position: relative; overflow: hidden; padding: 60px 64px;">
+  <div class="trama-oscura"></div>
+
+  <div style="position: relative; display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 60px; align-items: start;">
+
+    <!-- Intro -->
+    <div>
+      <div style="font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #FCC018; margin-bottom: 12px;">02 — Suma tu ciudad</div>
+      <h2 style="margin: 0 0 16px; font-family: Anton, sans-serif; font-size: 64px; line-height: .92; color: #F7E3D3;">¿FALTA TU<br>PLAZA?</h2>
+      <p style="margin: 0 0 30px; font-size: 18px; line-height: 1.55; color: rgba(247,227,211,.78); max-width: 42ch;">
+        Si conoces una concentración confirmada que no está en el mapa, mándanosla. Nos llega un
+        aviso al momento, la comprobamos y la publicamos.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span style="width: 30px; height: 30px; flex: none; display: grid; place-items: center; background: #FCC018; color: #35101B; font-family: Anton, sans-serif; font-size: 16px;">1</span>
+          <span style="font-size: 16px; color: rgba(247,227,211,.86);">Rellenas el formulario</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span style="width: 30px; height: 30px; flex: none; display: grid; place-items: center; background: #FCC018; color: #35101B; font-family: Anton, sans-serif; font-size: 16px;">2</span>
+          <span style="font-size: 16px; color: rgba(247,227,211,.86);">Recibimos el aviso y lo verificamos</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span style="width: 30px; height: 30px; flex: none; display: grid; place-items: center; background: #FCC018; color: #35101B; font-family: Anton, sans-serif; font-size: 16px;">3</span>
+          <span style="font-size: 16px; color: rgba(247,227,211,.86);">Aparece en el mapa</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 34px; padding: 18px 20px; border: 3px solid #FCC018;">
+        <p style="margin: 0; font-size: 15px; line-height: 1.5; color: #FCC018;">
+          <b>20:00 h en toda España.</b> El punto de encuentro es el ayuntamiento de tu
+          localidad o la Delegación del Gobierno de tu provincia.
+        </p>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px;">
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Localidad *</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #A98A88;">Algeciras</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Provincia *</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #A98A88;">Cádiz</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px; grid-column: 1 / -1;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Lugar *</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #A98A88;">Ayuntamiento de Algeciras — Plaza Alta</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px; grid-column: 1 / -1;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Dirección *</span>
+        <div style="display: flex; gap: 10px;">
+          <div style="flex: 1; border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #A98A88;">Plaza Alta, 11201 Algeciras</div>
+          <span style="display: inline-flex; align-items: center; padding: 0 20px; background: #FCC018; color: #35101B; font-family: Anton, sans-serif; font-size: 14px; letter-spacing: .06em; border: 3px solid #FCC018; white-space: nowrap;">SITUAR EN EL MAPA</span>
+        </div>
+        <span style="font-size: 14px; color: rgba(247,227,211,.6);">Situar el punto en el mapa es opcional, pero nos ayuda mucho a colocarlo bien.</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Fecha *</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #35101B; font-weight: 600;">02/09/2026</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Hora *</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #35101B; font-weight: 600;">20:00</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Quién convoca</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #A98A88;">Asociación, plataforma…</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Enlace que lo confirma</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #A98A88;">https://…</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px; grid-column: 1 / -1;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Detalles útiles</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 13px 15px; font-size: 16px; color: #A98A88; height: 62px;">Recorrido, punto de encuentro exacto, accesibilidad…</div>
+      </div>
+
+      <!-- Datos de contacto -->
+      <div style="grid-column: 1 / -1; border: 3px solid rgba(247,227,211,.34); padding: 20px;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018; margin-bottom: 14px;">Tus datos, por si necesitamos confirmar algo</div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(247,227,211,.62);">Nombre</span>
+            <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 11px 14px; height: 20px;"></div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(247,227,211,.62);">Correo *</span>
+            <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 11px 14px; height: 20px;"></div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(247,227,211,.62);">Teléfono</span>
+            <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 11px 14px; height: 20px;"></div>
+          </div>
+        </div>
+        <p style="margin: 13px 0 0; font-size: 14px; color: rgba(247,227,211,.6);">
+          Tus datos de contacto no se publican: solo los vemos para verificar el lugar.
+        </p>
+      </div>
+
+      <div style="grid-column: 1 / -1; display: flex; align-items: center; gap: 20px;">
+        <span style="display: inline-flex; align-items: center; padding: 14px 30px; background: #C71B3A; color: #FDF1E6; font-family: Anton, sans-serif; font-size: 20px; letter-spacing: .04em; border: 3px solid #F7E3D3; box-shadow: 5px 5px 0 #FCC018;">ENVIAR EL LUGAR</span>
+        <span style="font-size: 15px; color: rgba(247,227,211,.6);">Los campos con * son obligatorios. Lo revisamos antes de publicarlo.</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

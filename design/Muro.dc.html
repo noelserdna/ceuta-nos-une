@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; }
+    a { color: #C71B3A; } a:hover { color: #F02448; }
+    .trama {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(53,16,27,.18) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+    .trama-foto {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle at center, rgba(53,16,27,.5) 1.6px, transparent 1.8px);
+      background-size: 5px 5px;
+    }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #F7E3D3; position: relative; overflow: hidden; padding: 60px 64px;">
+  <div class="trama"></div>
+
+  <!-- Cabecera -->
+  <div style="position: relative; margin-bottom: 34px;">
+    <div style="font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #C71B3A; margin-bottom: 10px;">03 — Un lugar para decirlo</div>
+    <h2 style="margin: 0 0 10px; font-family: Anton, sans-serif; font-size: 72px; line-height: .92; color: #35101B;">MURO DE APOYO</h2>
+    <p style="margin: 0; font-size: 18px; max-width: 60ch; color: #6A4048; line-height: 1.5;">
+      Una plaza virtual donde dejar un mensaje, una foto, un recuerdo. Se publica al momento
+      y lo lee todo el mundo.
+    </p>
+  </div>
+
+  <!-- Publicar -->
+  <div style="position: relative; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 34px; border: 4px solid #35101B; background: #35101B; padding: 28px; box-shadow: 10px 10px 0 rgba(53,16,27,.28); margin-bottom: 42px;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 18px; height: 128px; font-size: 19px; color: #A98A88;">Escribe tu mensaje de apoyo…</div>
+      <div style="text-align: right; font-size: 12px; font-weight: 600; letter-spacing: .1em; color: rgba(247,227,211,.6);">0/800 CARACTERES</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Firma *</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 12px 14px; font-size: 16px; color: #A98A88;">Tu nombre o apodo</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #FCC018;">Desde dónde</span>
+        <div style="border: 3px solid #F7E3D3; background: #FDF1E6; padding: 12px 14px; font-size: 16px; color: #A98A88;">Ceuta, Melilla, Madrid…</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="display: inline-flex; align-items: center; gap: 9px; padding: 11px 18px; border: 3px dashed rgba(247,227,211,.5); color: rgba(247,227,211,.78); font-size: 14px; font-weight: 600;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="11" r="2"/><path d="m3 17 5-4 4 3 3-2 6 5"/>
+          </svg>
+          Añadir una foto
+        </span>
+        <span style="display: inline-flex; align-items: center; padding: 14px 30px; background: #C71B3A; color: #FDF1E6; font-family: Anton, sans-serif; font-size: 19px; letter-spacing: .04em; border: 3px solid #F7E3D3; box-shadow: 5px 5px 0 #FCC018;">PUBLICAR</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejilla de mensajes -->
+  <div style="position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; align-items: start;">
+
+    <div style="display: flex; flex-direction: column; gap: 14px; border: 3px solid #35101B; background: #FDF1E6; padding: 18px; box-shadow: 7px 7px 0 rgba(53,16,27,.24); transform: rotate(-.5deg);">
+      <div style="position: relative; height: 172px; background: #FCC018; border: 3px solid #35101B; overflow: hidden;">
+        <div class="trama-foto"></div>
+        <svg viewBox="0 0 200 120" style="position: absolute; inset: 0; width: 100%; height: 100%;" aria-hidden="true">
+          <path d="M0 96 L38 62 L68 84 L112 40 L152 72 L200 44 L200 120 L0 120 Z" fill="#F02448" opacity=".55"/>
+          <circle cx="158" cy="30" r="15" fill="#F7E3D3" opacity=".75"/>
+        </svg>
+      </div>
+      <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #35101B;">
+        Desde Zaragoza, con mi familia. El 2 estaremos en la plaza a las ocho. Ceuta no está sola.
+      </p>
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 2px solid #E6D2C4;">
+        <div>
+          <div style="font-family: Anton, sans-serif; font-size: 19px; color: #35101B;">MARISA G.</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8A5A5F;">Zaragoza</div>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: #8A5A5F;">27 ago</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; border: 3px solid #35101B; background: #FDF1E6; padding: 18px; box-shadow: 7px 7px 0 rgba(53,16,27,.24);">
+      <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #35101B;">
+        Nací en el Príncipe y llevo veinte años fuera. Leer esta página desde Bilbao y ver
+        cuántas ciudades salen esa tarde me ha emocionado. Nos vemos en la calle.
+      </p>
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 2px solid #E6D2C4;">
+        <div>
+          <div style="font-family: Anton, sans-serif; font-size: 19px; color: #35101B;">ABDEL</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8A5A5F;">Bilbao</div>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: #8A5A5F;">27 ago</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; border: 3px solid #35101B; background: #FDF1E6; padding: 18px; box-shadow: 7px 7px 0 rgba(53,16,27,.24); transform: rotate(.55deg);">
+      <div style="position: relative; height: 132px; background: #F02448; border: 3px solid #35101B; overflow: hidden;">
+        <div class="trama-foto"></div>
+        <svg viewBox="0 0 200 100" style="position: absolute; inset: 0; width: 100%; height: 100%;" aria-hidden="true">
+          <rect x="24" y="34" width="152" height="46" fill="#FCC018" opacity=".82"/>
+          <rect x="24" y="34" width="152" height="46" fill="none" stroke="#35101B" stroke-width="4"/>
+        </svg>
+      </div>
+      <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #35101B;">
+        La pancarta ya está lista. Salimos de Algeciras en el barco de las seis.
+      </p>
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 2px solid #E6D2C4;">
+        <div>
+          <div style="font-family: Anton, sans-serif; font-size: 19px; color: #35101B;">PEÑA EL FARO</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8A5A5F;">Algeciras</div>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: #8A5A5F;">26 ago</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; border: 3px solid #35101B; background: #FDF1E6; padding: 18px; box-shadow: 7px 7px 0 rgba(53,16,27,.24);">
+      <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #35101B;">
+        En Melilla lo vivimos igual. Allí estaremos, delante del ayuntamiento, a las ocho.
+      </p>
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 2px solid #E6D2C4;">
+        <div>
+          <div style="font-family: Anton, sans-serif; font-size: 19px; color: #35101B;">LUCÍA</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8A5A5F;">Melilla</div>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: #8A5A5F;">26 ago</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; border: 3px solid #35101B; background: #FDF1E6; padding: 18px; box-shadow: 7px 7px 0 rgba(53,16,27,.24); transform: rotate(-.4deg);">
+      <div style="position: relative; height: 150px; background: #FCC018; border: 3px solid #35101B; overflow: hidden;">
+        <div class="trama-foto"></div>
+        <svg viewBox="0 0 200 110" style="position: absolute; inset: 0; width: 100%; height: 100%;" aria-hidden="true">
+          <path d="M100 18 L128 74 L72 74 Z" fill="#F02448" opacity=".7"/>
+          <rect x="0" y="74" width="200" height="36" fill="#F02448" opacity=".45"/>
+        </svg>
+      </div>
+      <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #35101B;">
+        Mi abuelo fue destinado allí en el 62 y siempre hablaba del Hacho. Va por él.
+      </p>
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 2px solid #E6D2C4;">
+        <div>
+          <div style="font-family: Anton, sans-serif; font-size: 19px; color: #35101B;">JAVI R.</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8A5A5F;">Valladolid</div>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: #8A5A5F;">26 ago</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; border: 3px solid #35101B; background: #FDF1E6; padding: 18px; box-shadow: 7px 7px 0 rgba(53,16,27,.24);">
+      <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #35101B;">
+        Compartido en el grupo del barrio. Éramos cuatro y ya somos treinta para el miércoles.
+      </p>
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 2px solid #E6D2C4;">
+        <div>
+          <div style="font-family: Anton, sans-serif; font-size: 19px; color: #35101B;">ROSA</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8A5A5F;">Sevilla</div>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: #8A5A5F;">25 ago</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="position: relative; text-align: center; margin-top: 34px;">
+    <span style="display: inline-flex; align-items: center; padding: 14px 30px; border: 3px solid #35101B; color: #35101B; font-family: Anton, sans-serif; font-size: 19px; letter-spacing: .04em; box-shadow: 5px 5px 0 #35101B;">VER MÁS MENSAJES</span>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

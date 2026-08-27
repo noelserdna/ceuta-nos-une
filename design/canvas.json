@@ -1,0 +1,18 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",     "x": 0,    "y": 0,    "w": 1440, "h": 1030, "title": "Portada" },
+    { "file": "Lugares.dc.html",  "x": 1560, "y": 0,    "w": 1440, "h": 1130, "title": "Mapa y lugares" },
+    { "file": "Proponer.dc.html", "x": 0,    "y": 1250, "w": 1440, "h": 1050, "title": "Propón un lugar" },
+    { "file": "Muro.dc.html",     "x": 1560, "y": 1250, "w": 1440, "h": 1480, "title": "Muro de apoyo" },
+    { "file": "Sistema.dc.html",  "x": 0,    "y": 2850, "w": 1440, "h": 880,  "title": "Del cartel a la web" }
+  ],
+  "annotations": [
+    { "id": "nota-cartel", "x": 0, "y": -150, "w": 620,
+      "text": "Adaptación de la web al cartel oficial.\nLas tintas y la trama de semitono salen del cartel; los textos oficiales (\"CONCENTRACIÓN EN TODA ESPAÑA\", \"EN CADA COMUNIDAD / CIUDAD / PUEBLO\", la banda pacífica) pasan a la portada." },
+    { "id": "nota-lugar", "x": 1560, "y": -150, "w": 620,
+      "text": "El cartel dice dónde: \"20,00h frente a cada ayuntamiento o delegación de gobierno\".\nEso cambia el texto de la web y lo que pide el formulario." },
+    { "id": "nota-contraste", "x": 0, "y": 2700, "w": 620,
+      "text": "El carmín del cartel (#F02448) sobre el papel da 3,3:1 de contraste: no es legible según la norma. Se reserva para superficies grandes y elementos gráficos; el texto y los botones usan #C71B3A (4,6:1)." }
+  ],
+  "launch": { "view": "canvas" }
+}

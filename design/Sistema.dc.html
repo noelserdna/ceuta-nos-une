@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; }
+    a { color: #C71B3A; } a:hover { color: #F02448; }
+    .trama {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(53,16,27,.18) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+    .titular {
+      font-family: Anton, "Arial Narrow", sans-serif;
+      color: #FCC018; -webkit-text-stroke: 3.5px #F02448; paint-order: stroke fill;
+    }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #F7E3D3; position: relative; overflow: hidden; padding: 52px 64px;">
+  <div class="trama"></div>
+
+  <div style="position: relative;">
+    <div style="font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #C71B3A; margin-bottom: 10px;">Del cartel a la web</div>
+    <h2 style="margin: 0 0 32px; font-family: Anton, sans-serif; font-size: 56px; line-height: .95; color: #35101B;">CINCO TINTAS, DOS LETRAS</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; align-items: start;">
+
+      <!-- Paleta -->
+      <div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin-bottom: 16px;">Tintas, tomadas del cartel</div>
+        <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px;">
+          <div>
+            <div style="height: 92px; background: #F7E3D3; border: 3px solid #35101B;"></div>
+            <div style="font-family: Anton, sans-serif; font-size: 15px; color: #35101B; margin-top: 8px;">PAPEL</div>
+            <div style="font-size: 12px; font-weight: 600; color: #8A5A5F;">#F7E3D3</div>
+          </div>
+          <div>
+            <div style="height: 92px; background: #F02448; border: 3px solid #35101B;"></div>
+            <div style="font-family: Anton, sans-serif; font-size: 15px; color: #35101B; margin-top: 8px;">CARMÍN</div>
+            <div style="font-size: 12px; font-weight: 600; color: #8A5A5F;">#F02448</div>
+          </div>
+          <div>
+            <div style="height: 92px; background: #C71B3A; border: 3px solid #35101B;"></div>
+            <div style="font-family: Anton, sans-serif; font-size: 15px; color: #35101B; margin-top: 8px;">CARMÍN OSC.</div>
+            <div style="font-size: 12px; font-weight: 600; color: #8A5A5F;">#C71B3A</div>
+          </div>
+          <div>
+            <div style="height: 92px; background: #FCC018; border: 3px solid #35101B;"></div>
+            <div style="font-family: Anton, sans-serif; font-size: 15px; color: #35101B; margin-top: 8px;">ORO</div>
+            <div style="font-size: 12px; font-weight: 600; color: #8A5A5F;">#FCC018</div>
+          </div>
+          <div>
+            <div style="height: 92px; background: #35101B; border: 3px solid #35101B;"></div>
+            <div style="font-family: Anton, sans-serif; font-size: 15px; color: #35101B; margin-top: 8px;">TINTA</div>
+            <div style="font-size: 12px; font-weight: 600; color: #8A5A5F;">#35101B</div>
+          </div>
+        </div>
+
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin: 30px 0 14px;">La trama de semitono</div>
+        <div style="display: flex; gap: 12px;">
+          <div style="position: relative; flex: 1; height: 76px; background: #F7E3D3; border: 3px solid #35101B; overflow: hidden;">
+            <div class="trama"></div>
+          </div>
+          <div style="position: relative; flex: 1; height: 76px; background: #FCC018; border: 3px solid #35101B; overflow: hidden;">
+            <div style="position: absolute; inset: 0; background-image: radial-gradient(circle at center, rgba(199,27,58,.5) 1.1px, transparent 1.3px); background-size: 5px 5px;"></div>
+          </div>
+          <div style="position: relative; flex: 1; height: 76px; background: #F02448; border: 3px solid #35101B; overflow: hidden;">
+            <div style="position: absolute; inset: 0; background-image: radial-gradient(circle at center, rgba(255,255,255,.22) 1.1px, transparent 1.3px); background-size: 5px 5px;"></div>
+          </div>
+        </div>
+        <p style="margin: 12px 0 0; font-size: 15px; color: #6A4048; line-height: 1.5;">
+          Un punto cada 5 px sobre los fondos planos: es lo que hace que la pantalla parezca
+          papel impreso. El carmín vivo del cartel solo va en superficies grandes; el texto
+          y los botones usan el oscuro, que sí es legible.
+        </p>
+      </div>
+
+      <!-- Tipografía -->
+      <div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin-bottom: 16px;">Letras</div>
+
+        <div style="border: 3px solid #35101B; background: #FDF1E6; padding: 22px; margin-bottom: 14px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;">
+            <span style="font-family: Anton, sans-serif; font-size: 22px; color: #35101B;">ANTON</span>
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8A5A5F;">Titulares</span>
+          </div>
+          <div class="titular" style="font-size: 62px; line-height: .9; transform: skewX(-5deg); transform-origin: left;">CEUTA</div>
+          <div style="font-family: Anton, sans-serif; font-size: 34px; line-height: 1.05; color: #F02448; margin-top: 6px;">CONCENTRACIÓN</div>
+          <div style="font-family: Anton, sans-serif; font-size: 34px; color: #35101B;">02 DE SEPTIEMBRE</div>
+        </div>
+
+        <div style="border: 3px solid #35101B; background: #FDF1E6; padding: 22px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;">
+            <span style="font-size: 22px; font-weight: 700; color: #35101B;">Archivo</span>
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8A5A5F;">Texto y datos</span>
+          </div>
+          <p style="margin: 0 0 8px; font-size: 17px; line-height: 1.55; color: #35101B;">
+            Cada punto es una concentración confirmada, a las 20:00 h frente al ayuntamiento
+            o la Delegación del Gobierno.
+          </p>
+          <p style="margin: 0; font-size: 15px; font-style: italic; color: #6A4048;">
+            A favor del pueblo de Ceuta y por nuestra Unidad
+          </p>
+        </div>
+
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin: 30px 0 14px;">Piezas</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <span style="display: inline-flex; align-items: center; padding: 14px 30px; background: #C71B3A; color: #FDF1E6; font-family: Anton, sans-serif; font-size: 19px; letter-spacing: .04em; border: 3px solid #35101B; box-shadow: 5px 5px 0 #35101B;">ACCIÓN PRINCIPAL</span>
+          <span style="display: inline-flex; align-items: center; padding: 14px 30px; background: #FCC018; color: #35101B; font-family: Anton, sans-serif; font-size: 19px; letter-spacing: .04em; border: 3px solid #35101B; box-shadow: 5px 5px 0 #35101B;">SECUNDARIA</span>
+          <span style="padding: 7px 16px; border: 2px solid #35101B; color: #35101B; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Filtro</span>
+          <span style="padding: 7px 16px; border: 2px solid #35101B; background: #35101B; color: #F7E3D3; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Activo</span>
+        </div>
+        <p style="margin: 14px 0 0; font-size: 15px; color: #6A4048; line-height: 1.5;">
+          Sin esquinas redondeadas y sin sombras difuminadas. Tres grosores de borde:
+          4 px en los paneles grandes, 3 px en tarjetas y campos, 2 px en los filtros.
+          La sombra siempre dura y desplazada, como una tinta mal registrada.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

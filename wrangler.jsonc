@@ -4,6 +4,15 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-08-25",
 
+  // Dominio propio. custom_domain crea y mantiene el registro DNS por nosotros.
+  // Se mantiene activa como respaldo mientras el dominio propaga.
+  "workers_dev": true,
+
+  "routes": [
+    { "pattern": "ceutanosune.com", "custom_domain": true },
+    { "pattern": "www.ceutanosune.com", "custom_domain": true }
+  ],
+
   // El Worker sirve la web estática y la API desde el mismo origen.
   "assets": {
     "directory": "./public",
@@ -21,6 +30,14 @@
       "migrations_dir": "./migrations"
     }
   ],
+
+  // Correo de aviso: envío nativo de Cloudflare, sin proveedores externos.
+  "send_email": [{ "name": "EMAIL" }],
+
+  "vars": {
+    "EMAIL_FROM": "avisos@avisos.ceutanosune.com",
+    "EMAIL_FROM_NAME": "Ceuta nos une"
+  },
 
   "r2_buckets": [
     {

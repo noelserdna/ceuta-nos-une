@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; }
+    a { color: #C71B3A; } a:hover { color: #F02448; }
+    .trama {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(53,16,27,.18) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #F7E3D3; position: relative; overflow: hidden; padding: 56px 64px 60px;">
+  <div class="trama"></div>
+
+  <!-- Cabecera de sección -->
+  <div style="position: relative; margin-bottom: 34px;">
+    <div style="font-size: 13px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #C71B3A; margin-bottom: 10px;">01 — Dónde</div>
+    <h2 style="margin: 0 0 10px; font-family: Anton, sans-serif; font-size: 72px; line-height: .92; color: #35101B; letter-spacing: -.005em;">UN MAPA DE PLAZAS</h2>
+    <p style="margin: 0; font-size: 18px; max-width: 62ch; color: #6A4048; line-height: 1.5;">
+      Cada punto es una concentración confirmada, a las 20:00 h frente al ayuntamiento o la
+      Delegación del Gobierno. Busca la tuya y comparte el enlace con quien tengas cerca.
+    </p>
+  </div>
+
+  <div style="position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 44px; align-items: start;">
+
+    <!-- Mapa -->
+    <div>
+      <div style="border: 4px solid #35101B; background: #FDF1E6; box-shadow: 9px 9px 0 #35101B; position: relative; overflow: hidden;">
+        <div class="trama"></div>
+        <svg viewBox="0 0 600 470" style="display: block; width: 100%; height: auto; position: relative;" aria-label="Mapa de la península con los lugares de concentración">
+          <!-- Península ibérica, simplificada al estilo del cartel -->
+          <path d="M95 150 L150 103 L252 92 L340 98 L432 116 L502 150 L520 200 L504 252 L468 302 L428 342 L358 372 L278 386 L198 380 L138 350 L104 300 L86 240 Z"
+                fill="#FCC018" stroke="#35101B" stroke-width="5" stroke-linejoin="round"/>
+          <!-- Baleares -->
+          <path d="M545 250 l16 -8 12 10 -10 12 -18 -4 z" fill="#FCC018" stroke="#35101B" stroke-width="4" stroke-linejoin="round"/>
+          <!-- Norte de África: el estrecho y Ceuta -->
+          <path d="M120 442 L250 424 L360 430 L470 448 L520 462 L520 470 L110 470 Z"
+                fill="#FCC018" stroke="#35101B" stroke-width="5" stroke-linejoin="round"/>
+
+          <!-- Puntos de concentración -->
+          <g fill="#F02448" stroke="#35101B" stroke-width="4">
+            <circle cx="300" cy="238" r="11"/><circle cx="452" cy="163" r="11"/>
+            <circle cx="406" cy="256" r="11"/><circle cx="203" cy="330" r="11"/>
+            <circle cx="256" cy="352" r="11"/><circle cx="386" cy="172" r="11"/>
+            <circle cx="128" cy="122" r="11"/><circle cx="296" cy="126" r="11"/>
+            <circle cx="168" cy="238" r="11"/><circle cx="330" cy="330" r="11"/>
+          </g>
+          <!-- Ceuta, destacada -->
+          <circle cx="243" cy="432" r="15" fill="#F02448" stroke="#35101B" stroke-width="5"/>
+          <text x="243" y="466" text-anchor="middle" font-family="Anton, sans-serif" font-size="21" fill="#35101B">CEUTA</text>
+        </svg>
+      </div>
+      <p style="margin: 14px 0 0; font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #8A5A5F;">
+        Arrastra para moverte · pulsa un punto para ver los detalles
+      </p>
+    </div>
+
+    <!-- Panel de búsqueda y listado -->
+    <div>
+      <!-- Buscador -->
+      <div style="display: flex; align-items: center; gap: 12px; border: 3px solid #35101B; background: #FDF1E6; padding: 13px 16px; margin-bottom: 16px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A5A5F" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+        <span style="font-family: Anton, sans-serif; font-size: 20px; color: #A98A88; letter-spacing: .01em;">BUSCA TU CIUDAD…</span>
+      </div>
+
+      <!-- Filtros por provincia -->
+      <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px;">
+        <span style="padding: 7px 13px; border: 2px solid #35101B; background: #35101B; color: #F7E3D3; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Todas</span>
+        <span style="padding: 7px 13px; border: 2px solid #35101B; color: #35101B; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Barcelona</span>
+        <span style="padding: 7px 13px; border: 2px solid #35101B; color: #35101B; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Cádiz</span>
+        <span style="padding: 7px 13px; border: 2px solid #35101B; color: #35101B; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Ceuta</span>
+        <span style="padding: 7px 13px; border: 2px solid #35101B; color: #35101B; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Madrid</span>
+        <span style="padding: 7px 13px; border: 2px solid #35101B; color: #35101B; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;">Málaga</span>
+        </div>
+
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin-bottom: 12px;">47 lugares</div>
+
+      <!-- Tarjetas de lugar -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+
+        <div style="display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 20px; border: 3px solid #35101B; border-left-width: 12px; background: #FDF1E6; padding: 16px 18px; box-shadow: 6px 6px 0 rgba(53,16,27,.22);">
+          <div style="font-family: Anton, sans-serif; font-size: 34px; line-height: .95; color: #F02448; grid-row: span 2;">20:00</div>
+          <div>
+            <div style="font-family: Anton, sans-serif; font-size: 27px; line-height: 1; color: #35101B;">CEUTA</div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin-top: 3px;">Ceuta</div>
+          </div>
+          <div style="grid-column: 2;">
+            <p style="margin: 8px 0 0; font-size: 16px; font-weight: 700; color: #35101B;">Plaza de África</p>
+            <p style="margin: 2px 0 0; font-size: 15px; color: #6A4048;">Frente al Ayuntamiento · Plaza de África, 51001</p>
+            <div style="display: flex; gap: 18px; margin-top: 11px;">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #C71B3A; border-bottom: 2px solid #C71B3A; padding-bottom: 1px;">Cómo llegar</span>
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #35101B; border-bottom: 2px solid #35101B; padding-bottom: 1px;">Compartir</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 20px; border: 3px solid #35101B; border-left-width: 12px; background: #FDF1E6; padding: 16px 18px; box-shadow: 6px 6px 0 rgba(53,16,27,.22);">
+          <div style="font-family: Anton, sans-serif; font-size: 34px; line-height: .95; color: #F02448; grid-row: span 2;">20:00</div>
+          <div>
+            <div style="font-family: Anton, sans-serif; font-size: 27px; line-height: 1; color: #35101B;">MADRID</div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin-top: 3px;">Madrid</div>
+          </div>
+          <div style="grid-column: 2;">
+            <p style="margin: 8px 0 0; font-size: 16px; font-weight: 700; color: #35101B;">Delegación del Gobierno</p>
+            <p style="margin: 2px 0 0; font-size: 15px; color: #6A4048;">C/ García de Paredes, 65 · 28010</p>
+            <div style="display: flex; gap: 18px; margin-top: 11px;">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #C71B3A; border-bottom: 2px solid #C71B3A; padding-bottom: 1px;">Cómo llegar</span>
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #35101B; border-bottom: 2px solid #35101B; padding-bottom: 1px;">Compartir</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 20px; border: 3px solid #35101B; border-left-width: 12px; background: #FDF1E6; padding: 16px 18px; box-shadow: 6px 6px 0 rgba(53,16,27,.22);">
+          <div style="font-family: Anton, sans-serif; font-size: 34px; line-height: .95; color: #F02448; grid-row: span 2;">20:00</div>
+          <div>
+            <div style="font-family: Anton, sans-serif; font-size: 27px; line-height: 1; color: #35101B;">ALGECIRAS</div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8A5A5F; margin-top: 3px;">Cádiz</div>
+          </div>
+          <div style="grid-column: 2;">
+            <p style="margin: 8px 0 0; font-size: 16px; font-weight: 700; color: #35101B;">Plaza Alta</p>
+            <p style="margin: 2px 0 0; font-size: 15px; color: #6A4048;">Frente al Ayuntamiento · 11201</p>
+            <div style="display: flex; gap: 18px; margin-top: 11px;">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #C71B3A; border-bottom: 2px solid #C71B3A; padding-bottom: 1px;">Cómo llegar</span>
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #35101B; border-bottom: 2px solid #35101B; padding-bottom: 1px;">Compartir</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <p style="margin: 22px 0 0; padding-left: 16px; border-left: 5px solid #FCC018; font-size: 15px; font-style: italic; color: #6A4048; line-height: 1.5;">
+        Los lugares los envía la gente y se revisan uno a uno antes de publicarlos. Aun así,
+        confirma siempre la convocatoria con la organización de tu ciudad antes de desplazarte.
+      </p>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

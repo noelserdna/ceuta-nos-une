@@ -460,8 +460,10 @@ async function cargarAjustes() {
     });
 
     $("#nota-correo").textContent = datos.email_configured
-      ? "El envío de correo está activo. Aquí ves los últimos avisos."
-      : "No hay proveedor de correo configurado (falta RESEND_API_KEY), así que los avisos NO se envían: quedan registrados aquí y las propuestas siguen llegando a la pestaña Lugares.";
+      ? "Los avisos se envían por " + datos.email_via +
+        (datos.email_from ? " desde " + datos.email_from : "") +
+        ". El destinatario es el que pongas en notify_email."
+      : "No hay envío de correo configurado, así que los avisos NO salen: quedan registrados aquí y las propuestas siguen llegando a la pestaña Lugares.";
 
     await cargarAvisos();
   } catch (err) {
