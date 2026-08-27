@@ -1,0 +1,56 @@
+name: Espejo de respaldo
+
+# Publica en GitHub Pages una copia estática con el mapa y los lugares.
+# Existe porque las IPs que Cloudflare asignó al dominio están en la lista de
+# bloqueo que aplican los operadores españoles: si la web principal no se ve,
+# esta sí. Los runners de GitHub no pasan por ese bloqueo.
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"   # cada 3 horas
+  workflow_dispatch:          # y a mano cuando haga falta
+  push:
+    branches: [main]
+    paths:
+      - "scripts/generar-espejo.mjs"
+      - "public/styles.css"
+      - ".github/workflows/espejo.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: espejo
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generar el espejo
+        run: node scripts/generar-espejo.mjs
+
+      - name: Comprobar que salió con contenido
+        run: |
+          test -f site/index.html
+          grep -q '"places"' site/index.html
+          echo "Lugares incluidos: $(grep -o '"event_time"' site/index.html | wc -l)"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
