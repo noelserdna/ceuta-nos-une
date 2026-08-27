@@ -138,7 +138,10 @@ button, input, textarea, select { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; gap: 0.6rem;
   font-family: var(--display); font-size: 1.2rem;
   letter-spacing: 0.03em; text-decoration: none; text-transform: uppercase;
+  color: var(--papel);          /* si no, hereda el carmín de `a` y no contrasta */
+  padding: 0.55rem 0;           /* área de pulsación cómoda en el móvil */
 }
+.barra__marca:hover { color: var(--oro); }
 
 .barra__gyronny {
   width: 1.4rem; height: 1.4rem; flex: none;
@@ -149,8 +152,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .barra__nav { display: flex; gap: clamp(0.9rem, 2.5vw, 2.2rem); }
 
 .barra__nav a {
+  display: inline-flex; align-items: center; min-height: 44px;
   font-size: 0.76rem; text-decoration: none; color: var(--papel);
-  padding-bottom: 3px; border-bottom: 2px solid transparent;
+  border-bottom: 2px solid transparent;
   transition: border-color var(--transicion), color var(--transicion);
 }
 .barra__nav a:hover { border-bottom-color: var(--oro); color: var(--oro); }
@@ -159,8 +163,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
   .barra { padding-inline: 1rem; gap: 0.6rem; }
   .barra__marca { font-size: 1rem; white-space: nowrap; }
   .barra__gyronny { width: 1.2rem; height: 1.2rem; }
-  .barra__nav { gap: 0.9rem; }
-  .barra__nav a { font-size: 0.66rem; letter-spacing: 0.08em; white-space: nowrap; }
+  .barra__nav { gap: 0.8rem; min-width: 0; }
+  .barra__nav a { font-size: 0.64rem; letter-spacing: 0.06em; white-space: nowrap; }
   .barra__nav a:nth-child(2) { display: none; }
 }
 
@@ -226,7 +230,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .portada__titulo .linea {
   display: block;
   color: var(--oro);
-  -webkit-text-stroke: 0.055em var(--carmin);
+  -webkit-text-stroke: 0.062em var(--carmin);
   paint-order: stroke fill;
   animation: subir 850ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
@@ -469,7 +473,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
 .chip {
-  font-size: 0.7rem; padding: 0.4rem 0.8rem;
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-size: 0.7rem; padding: 0.4rem 0.9rem;
   border: 2px solid var(--tinta); background: none; color: var(--tinta);
   cursor: pointer; transition: all var(--transicion);
 }
@@ -517,9 +522,10 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .tarjeta__acciones { display: flex; flex-wrap: wrap; gap: 1.1rem; margin-top: 0.8rem; }
 .tarjeta__enlace {
+  display: inline-flex; align-items: center; min-height: 32px;
   font-size: 0.7rem; color: var(--carmin-osc); text-decoration: none;
-  border: 0; background: none; padding: 0 0 2px; cursor: pointer;
-  border-bottom: 2px solid currentColor;
+  border: 0; background: none; padding: 0.35rem 0; cursor: pointer;
+  box-shadow: inset 0 -2px 0 currentColor;
 }
 .tarjeta__enlace:hover { color: var(--tinta); }
 
@@ -590,7 +596,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .campo { display: grid; gap: 0.45rem; min-width: 0; }
 
 .campo label, .campo legend { font-size: 0.68rem; color: var(--oro); }
-.campo label b { color: var(--carmin); }
+.campo label b { color: var(--oro); }   /* el carmín sobre la tinta no llegaba a 4,5:1 */
 
 .campo input, .campo textarea, .campo select {
   background: var(--papel-claro);
@@ -753,10 +759,13 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .postal__fecha { font-size: 0.66rem; color: var(--gris-claro); }
 
 .postal__reportar {
-  background: none; border: 0; cursor: pointer; padding: 0;
+  display: inline-flex; align-items: center; min-height: 28px;
+  background: none; border: 0; cursor: pointer; padding: 0.3rem 0.1rem;
   font-size: 0.62rem; color: var(--gris-claro); opacity: 0;
   transition: opacity var(--transicion), color var(--transicion);
 }
+/* Con el teclado no hay hover: el botón debe poder alcanzarse igualmente */
+.postal:focus-within .postal__reportar { opacity: 1; }
 .postal:hover .postal__reportar, .postal__reportar:focus-visible { opacity: 1; }
 .postal__reportar:hover { color: var(--carmin-osc); }
 
