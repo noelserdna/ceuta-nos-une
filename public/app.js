@@ -88,7 +88,10 @@ async function cargarConfig() {
     if (valor) el.textContent = valor;
   });
 
-  if (c.site_title) document.title = c.site_title + " · " + (c.event_label || "");
+  // Solo en la portada: las demás páginas traen su propio título
+  if (c.site_title && document.querySelector(".portada")) {
+    document.title = c.site_title + " · " + (c.event_label || "");
+  }
 
   // Solo se ofrece un correo si de verdad hay uno configurado: un enlace a una
   // dirección que no existe es peor que no ofrecer ninguna.
@@ -244,15 +247,16 @@ function pintarLugares() {
       : lugares.length + (lugares.length === 1 ? " lugar" : " lugares");
 
   if (!lugares.length) {
-    lista.append(
-      crear(
-        "li",
-        "vacio",
-        estado.lugares.length
-          ? "Prueba con otra búsqueda, o propón tu ciudad más abajo."
-          : "Todavía no hay lugares publicados. Si conoces uno confirmado, mándanoslo.",
-      ),
+    const vacio = crear("li", "vacio");
+    vacio.append(
+      crear("p", null, estado.lugares.length
+        ? "Ningún lugar coincide con esa búsqueda."
+        : "Todavía no hay lugares publicados."),
     );
+    const enlace = crear("a", "boton boton--brasa", "Propón tu plaza");
+    enlace.href = "/propon";
+    vacio.append(enlace);
+    lista.append(vacio);
     return;
   }
 
@@ -783,6 +787,12 @@ function conectarEventos() {
 }
 
 async function iniciar() {
+  // Enlaces antiguos: /#proponer llevaba al formulario, que ahora vive en /propon
+  if (location.hash === "#proponer" && !$("#form-lugar")) {
+    location.replace("/propon");
+    return;
+  }
+
   rellenarProvincias();
   prepararPrevia();
   conectarEventos();

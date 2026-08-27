@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propón tu plaza · Ceuta nos une</title>
+<meta name="description" content="Añade al mapa una concentración del 2 de septiembre. Si además vas a convocarla tú, aquí tienes cómo comunicarla a la Delegación del Gobierno.">
+<meta name="theme-color" content="#F7E3D3">
+<meta property="og:title" content="Propón tu plaza · Ceuta nos une">
+<meta property="og:description" content="¿Falta tu ciudad en el mapa del 2 de septiembre? Añádela aquí. Y si vas a convocarla tú, cómo comunicarla en regla.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://ceutanosune.es/propon">
+<meta property="og:site_name" content="Ceuta nos une">
+<meta property="og:image" content="https://ceutanosune.es/media/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+<link rel="stylesheet" href="/vendor/leaflet.css">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="saltar" href="#formulario">Saltar al formulario</a>
+
+<header class="barra">
+  <a class="barra__marca" href="/">
+    <span class="barra__gyronny" aria-hidden="true"></span>
+    <span>Ceuta nos une</span>
+  </a>
+  <nav class="barra__nav" aria-label="Secciones">
+    <a href="/#lugares">Lugares</a>
+    <a href="/#muro">Muro de apoyo</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ===================== CABECERA ===================== -->
+<section class="propon-cab">
+  <div class="trama" aria-hidden="true"></div>
+  <div class="propon-cab__cuerpo">
+    <p class="etiqueta"><a href="/" class="volver">← Volver al mapa</a></p>
+    <h1 class="seccion__titulo">¿Falta tu plaza?</h1>
+    <p class="seccion__texto">
+      Si en tu ciudad hay una concentración el <span data-config="event_label">2 de septiembre</span>
+      y no está en el mapa, mándanosla. La comprobamos y la publicamos.
+    </p>
+
+    <!-- Dos caminos distintos, con obligaciones distintas -->
+    <div class="bifurca">
+      <a class="bifurca__via" href="#formulario">
+        <span class="bifurca__marca">A</span>
+        <span class="bifurca__titulo">Ya está convocada</span>
+        <span class="bifurca__texto">
+          Lo organiza otra gente y tú solo lo has visto. No tienes que hacer ningún trámite:
+          rellena el formulario y listo.
+        </span>
+        <span class="bifurca__accion">Ir al formulario →</span>
+      </a>
+
+      <a class="bifurca__via bifurca__via--legal" href="#convocar">
+        <span class="bifurca__marca">B</span>
+        <span class="bifurca__titulo">La convoco yo</span>
+        <span class="bifurca__texto">
+          Vas a ser tú quien la organice. Antes de nada, hay que comunicarla a la Delegación
+          o Subdelegación del Gobierno.
+        </span>
+        <span class="bifurca__accion">Cómo se comunica →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CÓMO CONVOCAR ===================== -->
+<section class="convocar" id="convocar">
+  <div class="trama trama--oro" aria-hidden="true"></div>
+  <div class="convocar__cuerpo">
+    <p class="etiqueta etiqueta--claro">Si la convocas tú</p>
+    <h2 class="seccion__titulo seccion__titulo--claro">Comunicarla es un trámite, no un permiso</h2>
+    <p class="seccion__texto seccion__texto--claro">
+      La ley no pide autorización para manifestarse: pide que se avise. Se hace por internet
+      o en una ventanilla, lo puede firmar una sola persona y es gratis.
+    </p>
+
+    <div class="convocar__pasos">
+      <article class="paso">
+        <h3 class="paso__titulo">Hazlo por la vía urgente</h3>
+        <p>
+          Lo normal es avisar con 10 a 30 días. Como queda menos, se presenta como
+          <b>comunicación urgente</b>, que se admite hasta <b>24 horas antes</b>. Solo hay que
+          explicar por qué es urgente.
+        </p>
+        <p class="paso__nota">Cuanto antes la presentes, mejor: la Administración dispone de 72 horas para responder.</p>
+      </article>
+
+      <article class="paso">
+        <h3 class="paso__titulo">Por internet</h3>
+        <p>
+          En la sede del Ministerio de Política Territorial, procedimiento
+          <b>«Comunicación de reunión»</b>. Necesitas Cl@ve o certificado digital.
+        </p>
+        <p>
+          <a href="https://mptmd.sede.gob.es/pagina?id=Comunicaci%C3%B3n-de-reuni%C3%B3n" target="_blank" rel="noopener noreferrer">
+            Ir al trámite en la sede electrónica ↗
+          </a>
+        </p>
+      </article>
+
+      <article class="paso">
+        <h3 class="paso__titulo">O en ventanilla, sin certificado</h3>
+        <p>
+          Si no tienes Cl@ve ni certificado, puedes presentarlo en persona: como particular
+          no estás obligado a hacerlo por internet. Vale cualquier registro de la
+          Administración.
+        </p>
+        <p class="paso__nota">
+          En Ceuta: Delegación del Gobierno, calle Beatriz de Silva, 4. En verano abre de
+          lunes a viernes, de 8:00 a 15:00. Allí mismo dan de alta en Cl@ve.
+        </p>
+      </article>
+
+      <article class="paso">
+        <h3 class="paso__titulo">Qué te van a pedir</h3>
+        <ul class="paso__lista">
+          <li><b>Quién convoca:</b> nombre, DNI, teléfono y domicilio. Basta una persona.</li>
+          <li><b>Dónde y cuándo:</b> lugar, día, hora y duración prevista.</li>
+          <li><b>Tipo:</b> concentración si es en un sitio fijo; manifestación si hay recorrido.</li>
+          <li><b>Objeto:</b> el motivo de la convocatoria.</li>
+          <li><b>Razón de la urgencia</b> y las <b>medidas de seguridad</b> previstas.</li>
+        </ul>
+        <p class="paso__nota">Al enviarlo se genera un justificante con fecha y hora. Guárdalo.</p>
+      </article>
+    </div>
+
+    <div class="convocar__avisos">
+      <p>
+        <b>Quien firma, responde.</b> El organizador responde del buen orden y, de forma
+        subsidiaria, de los daños que puedan causarse.
+      </p>
+      <p>
+        <b>Si no se comunica</b>, es una infracción leve: multa de 100 a 600 € que recae
+        <b>solo en quien convoca</b>, nunca en quien acude. No convierte la concentración en
+        ilegal ni es motivo para disolverla.
+      </p>
+      <p>
+        <b>Si vais a ser menos de 20 personas</b>, la ley de reunión no se aplica y no hace
+        falta comunicar nada.
+      </p>
+      <p class="convocar__fuente">
+        Resumen de la Ley Orgánica 9/1983 (artículos 3, 4, 8 y 9) y de la Ley Orgánica 4/2015
+        (artículos 37 y 39). Es información, no asesoramiento jurídico: ante la duda, pregunta
+        en la Delegación del Gobierno de tu provincia.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FORMULARIO ===================== -->
+<section class="proponer" id="formulario">
+  <div class="proponer__gyronny" aria-hidden="true"></div>
+  <div class="trama trama--oro" aria-hidden="true"></div>
+
+  <div class="proponer__intro">
+    <p class="etiqueta etiqueta--claro">Añádela al mapa</p>
+    <h2 class="seccion__titulo seccion__titulo--claro">Datos de la concentración</h2>
+    <p class="seccion__texto seccion__texto--claro">
+      Nos llega un aviso al momento, la comprobamos y la publicamos.
+    </p>
+    <ul class="pasos">
+      <li><b>1</b> Rellenas el formulario</li>
+      <li><b>2</b> Recibimos el aviso y lo verificamos</li>
+      <li><b>3</b> Aparece en el mapa</li>
+    </ul>
+    <div class="proponer__nota">
+      <p><b>20:00 h en toda España.</b> El punto de encuentro es el ayuntamiento de tu
+      localidad o la Delegación del Gobierno de tu provincia.</p>
+    </div>
+  </div>
+
+  <form class="formulario" id="form-lugar" novalidate>
+    <div class="campo campo--mitad">
+      <label for="l-city">Localidad <b aria-hidden="true">*</b></label>
+      <input id="l-city" name="city" required maxlength="80" autocomplete="address-level2" placeholder="Algeciras">
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-province">Provincia <b aria-hidden="true">*</b></label>
+      <input id="l-province" name="province" required maxlength="80" list="provincias" placeholder="Cádiz">
+      <datalist id="provincias"></datalist>
+    </div>
+
+    <div class="campo">
+      <label for="l-venue">Lugar <b aria-hidden="true">*</b></label>
+      <input id="l-venue" name="venue" required maxlength="140" placeholder="Ayuntamiento — Plaza Alta">
+    </div>
+
+    <div class="campo">
+      <label for="l-address">Dirección <b aria-hidden="true">*</b></label>
+      <div class="campo__conboton">
+        <input id="l-address" name="address" required maxlength="240" autocomplete="street-address" placeholder="Plaza Alta, 11201 Algeciras">
+        <button type="button" class="boton boton--mini" id="btn-buscar-dir">Situar en el mapa</button>
+      </div>
+      <ul class="sugerencias" id="sugerencias" role="listbox" aria-label="Direcciones encontradas" hidden></ul>
+      <p class="campo__ayuda" id="ayuda-coords">Situar el punto en el mapa es opcional, pero nos ayuda mucho a colocarlo bien.</p>
+      <div class="minimapa" id="minimapa" hidden></div>
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-date">Fecha <b aria-hidden="true">*</b></label>
+      <input id="l-date" name="event_date" type="date" required>
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-time">Hora <b aria-hidden="true">*</b></label>
+      <input id="l-time" name="event_time" type="time" required value="20:00">
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-organizer">Quién convoca</label>
+      <input id="l-organizer" name="organizer" maxlength="140" placeholder="Asociación, plataforma…">
+    </div>
+
+    <div class="campo campo--mitad">
+      <label for="l-source">Enlace que lo confirma</label>
+      <input id="l-source" name="source_url" type="url" maxlength="300" inputmode="url" placeholder="https://…">
+    </div>
+
+    <div class="campo">
+      <label for="l-notes">Detalles útiles</label>
+      <textarea id="l-notes" name="notes" rows="2" maxlength="600" placeholder="Recorrido, punto de encuentro exacto, accesibilidad…"></textarea>
+    </div>
+
+    <fieldset class="campo campo--grupo">
+      <legend>Tus datos, por si necesitamos confirmar algo</legend>
+      <div class="rejilla-3">
+        <div class="campo">
+          <label for="l-name">Nombre</label>
+          <input id="l-name" name="submitter_name" maxlength="120" autocomplete="name">
+        </div>
+        <div class="campo">
+          <label for="l-email">Correo <b aria-hidden="true">*</b></label>
+          <input id="l-email" name="submitter_email" type="email" required maxlength="160" autocomplete="email">
+        </div>
+        <div class="campo">
+          <label for="l-phone">Teléfono</label>
+          <input id="l-phone" name="submitter_phone" type="tel" maxlength="40" autocomplete="tel">
+        </div>
+      </div>
+      <p class="campo__ayuda">Tus datos de contacto no se publican: solo los vemos para verificar el lugar.</p>
+    </fieldset>
+
+    <div class="turnstile" id="turnstile-lugar"></div>
+
+    <!-- Recordatorio en el punto de compromiso, donde nadie se lo salta -->
+    <p class="recordatorio">
+      Si eres tú quien convoca, recuerda <a href="#convocar">comunicarlo a la Delegación
+      del Gobierno</a> antes del acto.
+    </p>
+
+    <div class="formulario__pie">
+      <button type="submit" class="boton boton--brasa" id="btn-lugar">Enviar el lugar</button>
+      <p class="estado" id="estado-lugar" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+</section>
+
+</main>
+
+<footer class="pie">
+  <div class="pie__gyronny" aria-hidden="true"></div>
+  <p class="pie__marca"><a href="/" style="text-decoration: none;">Ceuta nos une</a></p>
+  <p class="pie__texto">
+    Web ciudadana, sin ánimo de lucro y sin publicidad. Los lugares se revisan antes de publicarse.
+    <br>
+    <a href="/">Volver al mapa de plazas</a>
+  </p>
+  <p class="pie__legal">
+    No guardamos tu dirección IP: solo una huella anónima para frenar el spam.
+    <a href="/admin">Administración</a>
+  </p>
+</footer>
+
+<script src="/vendor/leaflet.js"></script>
+<script src="/app.js" type="module"></script>
+</body>
+</html>

@@ -41,7 +41,7 @@
   </a>
   <nav class="barra__nav" aria-label="Secciones">
     <a href="#lugares">Lugares</a>
-    <a href="#proponer">Propón uno</a>
+    <a href="/propon">Propón uno</a>
     <a href="#muro">Muro de apoyo</a>
   </nav>
 </header>
@@ -161,110 +161,6 @@
   </div>
 </section>
 
-<!-- ===================== PROPONER LUGAR ===================== -->
-<section class="proponer" id="proponer">
-  <div class="proponer__gyronny" aria-hidden="true"></div>
-  <div class="trama trama--oro" aria-hidden="true"></div>
-
-  <div class="proponer__intro">
-    <p class="etiqueta etiqueta--claro">02 — Suma tu ciudad</p>
-    <h2 class="seccion__titulo seccion__titulo--claro">¿Falta tu plaza?</h2>
-    <p class="seccion__texto seccion__texto--claro">
-      Si conoces una concentración confirmada que no está en el mapa, mándanosla. Nos llega un
-      aviso al momento, la comprobamos y la publicamos.
-    </p>
-    <ul class="pasos">
-      <li><b>1</b> Rellenas el formulario</li>
-      <li><b>2</b> Recibimos el aviso y lo verificamos</li>
-      <li><b>3</b> Aparece en el mapa</li>
-    </ul>
-    <div class="proponer__nota">
-      <p><b>20:00 h en toda España.</b> El punto de encuentro es el ayuntamiento de tu
-      localidad o la Delegación del Gobierno de tu provincia.</p>
-    </div>
-  </div>
-
-  <form class="formulario" id="form-lugar" novalidate>
-    <div class="campo campo--mitad">
-      <label for="l-city">Localidad <b aria-hidden="true">*</b></label>
-      <input id="l-city" name="city" required maxlength="80" autocomplete="address-level2" placeholder="Algeciras">
-    </div>
-
-    <div class="campo campo--mitad">
-      <label for="l-province">Provincia <b aria-hidden="true">*</b></label>
-      <input id="l-province" name="province" required maxlength="80" list="provincias" placeholder="Cádiz">
-      <datalist id="provincias"></datalist>
-    </div>
-
-    <div class="campo">
-      <label for="l-venue">Lugar <b aria-hidden="true">*</b></label>
-      <input id="l-venue" name="venue" required maxlength="140" placeholder="Ayuntamiento — Plaza Alta">
-    </div>
-
-    <div class="campo">
-      <label for="l-address">Dirección <b aria-hidden="true">*</b></label>
-      <div class="campo__conboton">
-        <input id="l-address" name="address" required maxlength="240" autocomplete="street-address" placeholder="Plaza Alta, 11201 Algeciras">
-        <button type="button" class="boton boton--mini" id="btn-buscar-dir">Situar en el mapa</button>
-      </div>
-      <ul class="sugerencias" id="sugerencias" role="listbox" aria-label="Direcciones encontradas" hidden></ul>
-      <p class="campo__ayuda" id="ayuda-coords">Situar el punto en el mapa es opcional, pero nos ayuda mucho a colocarlo bien.</p>
-      <div class="minimapa" id="minimapa" hidden></div>
-    </div>
-
-    <div class="campo campo--mitad">
-      <label for="l-date">Fecha <b aria-hidden="true">*</b></label>
-      <input id="l-date" name="event_date" type="date" required>
-    </div>
-
-    <div class="campo campo--mitad">
-      <label for="l-time">Hora <b aria-hidden="true">*</b></label>
-      <input id="l-time" name="event_time" type="time" required value="20:00">
-    </div>
-
-    <div class="campo campo--mitad">
-      <label for="l-organizer">Quién convoca</label>
-      <input id="l-organizer" name="organizer" maxlength="140" placeholder="Asociación, plataforma…">
-    </div>
-
-    <div class="campo campo--mitad">
-      <label for="l-source">Enlace que lo confirma</label>
-      <input id="l-source" name="source_url" type="url" maxlength="300" inputmode="url" placeholder="https://…">
-    </div>
-
-    <div class="campo">
-      <label for="l-notes">Detalles útiles</label>
-      <textarea id="l-notes" name="notes" rows="2" maxlength="600" placeholder="Recorrido, punto de encuentro exacto, accesibilidad…"></textarea>
-    </div>
-
-    <fieldset class="campo campo--grupo">
-      <legend>Tus datos, por si necesitamos confirmar algo</legend>
-      <div class="rejilla-3">
-        <div class="campo">
-          <label for="l-name">Nombre</label>
-          <input id="l-name" name="submitter_name" maxlength="120" autocomplete="name">
-        </div>
-        <div class="campo">
-          <label for="l-email">Correo <b aria-hidden="true">*</b></label>
-          <input id="l-email" name="submitter_email" type="email" required maxlength="160" autocomplete="email">
-        </div>
-        <div class="campo">
-          <label for="l-phone">Teléfono</label>
-          <input id="l-phone" name="submitter_phone" type="tel" maxlength="40" autocomplete="tel">
-        </div>
-      </div>
-      <p class="campo__ayuda">Tus datos de contacto no se publican: solo los vemos para verificar el lugar.</p>
-    </fieldset>
-
-    <div class="turnstile" id="turnstile-lugar"></div>
-
-    <div class="formulario__pie">
-      <button type="submit" class="boton boton--brasa" id="btn-lugar">Enviar el lugar</button>
-      <p class="estado" id="estado-lugar" role="status" aria-live="polite"></p>
-    </div>
-  </form>
-</section>
-
 <!-- ===================== MURO DE APOYO ===================== -->
 <section class="muro" id="muro">
   <div class="trama" aria-hidden="true"></div>
@@ -324,6 +220,22 @@
   </div>
 </section>
 
+
+<!-- ===================== LLAMADA A PROPONER ===================== -->
+<section class="llamada" id="proponer">
+  <div class="trama" aria-hidden="true"></div>
+  <div class="llamada__cuerpo">
+    <div>
+      <p class="etiqueta">¿Falta tu ciudad?</p>
+      <h2 class="seccion__titulo">Suma tu plaza al mapa</h2>
+      <p class="seccion__texto">
+        Si sabes de una concentración que no está aquí, mándanosla y la publicamos. Y si vas a
+        convocarla tú, te contamos cómo comunicarla en regla.
+      </p>
+    </div>
+    <a class="boton boton--brasa" href="/propon">Propón tu plaza</a>
+  </div>
+</section>
 
 <!-- ===================== DIFUNDIR EL CARTEL ===================== -->
 <section class="difunde" id="difunde">

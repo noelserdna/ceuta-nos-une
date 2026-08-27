@@ -894,3 +894,123 @@ button, input, textarea, select { font: inherit; color: inherit; }
   font-size: 0.92rem; line-height: 1.55; color: rgba(247, 227, 211, 0.72);
 }
 .difunde__nota--ok { border-color: var(--oro); color: var(--oro); }
+
+/* ================================================== página /propon ======== */
+
+.propon-cab {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: var(--papel);
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 3rem) clamp(2rem, 5vw, 3rem);
+}
+.propon-cab__cuerpo { position: relative; z-index: 1; max-width: var(--ancho); margin-inline: auto; }
+.volver { text-decoration: none; }
+
+/* Dos caminos con obligaciones distintas: quien solo apunta una convocatoria
+   ajena no tiene ningún trámite; quien convoca, sí. Mezclarlos en un único
+   formulario dejaba a la segunda persona sin enterarse. */
+.bifurca {
+  display: grid; gap: 1.1rem; grid-template-columns: 1fr;
+  margin-top: clamp(1.8rem, 4vw, 2.6rem);
+}
+@media (min-width: 760px) { .bifurca { grid-template-columns: 1fr 1fr; } }
+
+.bifurca__via {
+  display: grid; gap: 0.5rem; align-content: start;
+  padding: 1.4rem 1.5rem;
+  background: var(--papel-claro); color: var(--tinta); text-decoration: none;
+  border: var(--borde-pieza) solid var(--tinta);
+  box-shadow: var(--sombra-suave);
+  transition: transform var(--transicion), box-shadow var(--transicion);
+}
+.bifurca__via:hover {
+  transform: translate(2px, 2px); box-shadow: 3px 3px 0 rgba(53, 16, 27, 0.22);
+  color: var(--tinta);
+}
+.bifurca__via--legal { background: var(--tinta); color: var(--papel); }
+.bifurca__via--legal:hover { color: var(--papel); }
+
+.bifurca__marca {
+  font-family: var(--display); font-size: 1rem; width: 2rem; height: 2rem;
+  display: grid; place-items: center; background: var(--oro); color: var(--tinta);
+}
+.bifurca__titulo {
+  font-family: var(--display); font-size: clamp(1.4rem, 3vw, 1.9rem);
+  text-transform: uppercase; line-height: 1.05;
+}
+.bifurca__texto { font-size: 0.98rem; line-height: 1.55; opacity: 0.86; }
+.bifurca__accion {
+  font-weight: 700; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--carmin-osc); margin-top: 0.4rem;
+}
+.bifurca__via--legal .bifurca__accion { color: var(--oro); }
+
+/* Bloque del trámite */
+.convocar {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: var(--tinta); color: var(--papel);
+  padding: clamp(3rem, 7vw, 4.5rem) clamp(1rem, 4vw, 3rem);
+}
+.convocar__cuerpo { position: relative; z-index: 1; max-width: var(--ancho); margin-inline: auto; }
+
+.convocar__pasos {
+  display: grid; gap: 1.2rem; margin-top: clamp(1.8rem, 4vw, 2.5rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px)  { .convocar__pasos { grid-template-columns: 1fr 1fr; } }
+
+.paso {
+  border: var(--borde-pieza) solid rgba(247, 227, 211, 0.3);
+  padding: 1.3rem 1.4rem;
+}
+.paso__titulo {
+  font-family: var(--display); font-size: 1.3rem; text-transform: uppercase;
+  color: var(--oro); margin-bottom: 0.7rem;
+}
+.paso p { margin: 0 0 0.7rem; font-size: 0.98rem; line-height: 1.6; color: rgba(247,227,211,.86); }
+.paso p:last-child { margin-bottom: 0; }
+.paso a { color: var(--oro); font-weight: 700; }
+.paso__nota { font-size: 0.9rem !important; color: rgba(247,227,211,.62) !important; font-style: italic; }
+.paso__lista { margin: 0; padding-left: 1.1rem; font-size: 0.96rem; line-height: 1.7; color: rgba(247,227,211,.86); }
+.paso__lista b { color: var(--papel); }
+
+.convocar__avisos {
+  margin-top: 1.6rem; padding: 1.3rem 1.4rem;
+  border-left: 5px solid var(--oro); background: rgba(247, 227, 211, 0.05);
+}
+.convocar__avisos p { margin: 0 0 0.8rem; font-size: 0.96rem; line-height: 1.6; color: rgba(247,227,211,.86); }
+.convocar__avisos p:last-child { margin-bottom: 0; }
+.convocar__avisos b { color: var(--oro); }
+.convocar__fuente { font-size: 0.86rem !important; color: rgba(247,227,211,.58) !important; }
+
+/* Recordatorio justo antes de enviar */
+.recordatorio {
+  grid-column: 1 / -1; margin: 0;
+  padding: 0.9rem 1.1rem;
+  border: 2px dashed rgba(252, 192, 24, 0.5);
+  font-size: 0.94rem; line-height: 1.55; color: var(--oro);
+}
+.recordatorio a { color: var(--oro); }
+
+/* En /propon el formulario ocupa toda la página, no media */
+.propon-cab + .convocar + .proponer { padding-top: clamp(3rem, 7vw, 5rem); }
+
+/* Llamada a proponer, en la portada */
+.llamada {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: var(--papel-claro);
+  border-top: var(--borde-pieza) solid var(--tinta);
+  border-bottom: var(--borde-pieza) solid var(--tinta);
+  padding: clamp(2.2rem, 5vw, 3.2rem) clamp(1rem, 4vw, 3rem);
+}
+.llamada__cuerpo {
+  position: relative; z-index: 1;
+  max-width: var(--ancho); margin-inline: auto;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 1.5rem;
+}
+.llamada .seccion__titulo { font-size: clamp(1.9rem, 5vw, 3rem); }
+.llamada .seccion__texto { max-width: 52ch; }
+.vacio .boton { margin-top: 1rem; }
+.vacio p { margin: 0; }
+/* En las páginas donde la marca del pie es un enlace, conserva su color */
+.pie__marca a { color: inherit; text-decoration: none; }
