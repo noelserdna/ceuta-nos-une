@@ -59,11 +59,11 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${escapar(config.site_title)} · Lugares del ${escapar(config.event_label)}</title>
 <meta name="description" content="Copia de respaldo con el listado y el mapa de los lugares de concentración del ${escapar(config.event_label)}.">
-<meta name="theme-color" content="#0B1220">
+<meta name="theme-color" content="#F7E3D3">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=DM+Mono:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -71,19 +71,20 @@ const html = `<!doctype html>
   .cinta {
     background: var(--oro); color: var(--tinta);
     padding: 0.7rem clamp(1rem, 4vw, 3rem);
-    font-family: var(--mono); font-size: 0.82rem; line-height: 1.5;
+    font-family: var(--texto); font-weight: 700; letter-spacing: 0.08em; font-size: 0.78rem; line-height: 1.5;
     text-align: center;
   }
   .cinta a { color: var(--tinta); font-weight: 700; }
+  .cinta { border-bottom: 3px solid var(--tinta); }
   .espejo-cabecera {
-    background: var(--tinta); color: var(--crema);
+    background: var(--tinta); color: var(--papel-claro);
     padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 3rem);
     position: relative; overflow: hidden; isolation: isolate;
   }
   .espejo-cabecera__gyronny {
     position: absolute; z-index: -1; top: 50%; left: 82%; translate: -50% -50%;
     width: min(120vw, 1000px); aspect-ratio: 1;
-    color: rgba(251, 248, 241, 0.055);
+    color: rgba(252, 192, 24, 0.06);
     mask-image: radial-gradient(circle, #000 32%, transparent 68%);
     background-image: conic-gradient(from 22.5deg,
       currentColor 0deg 45deg, transparent 45deg 90deg,
@@ -92,10 +93,12 @@ const html = `<!doctype html>
       currentColor 270deg 315deg, transparent 315deg 360deg);
   }
   .espejo-cabecera h1 {
-    font-size: clamp(2.6rem, 9vw, 5.5rem); font-stretch: 88%;
-    letter-spacing: -0.04em; text-transform: lowercase; margin-bottom: 0.6rem;
+    font-size: clamp(2.6rem, 9vw, 5.5rem); line-height: 0.9;
+    letter-spacing: 0.01em; text-transform: uppercase; margin-bottom: 0.7rem;
+    color: var(--oro); -webkit-text-stroke: 0.045em var(--carmin);
+    paint-order: stroke fill; transform: skewX(-5deg); transform-origin: left;
   }
-  .espejo-cabecera p { color: rgba(251, 248, 241, 0.78); max-width: 52ch; margin: 0; }
+  .espejo-cabecera p { color: rgba(247, 227, 211, 0.8); max-width: 52ch; margin: 0; }
   .espejo-cuerpo {
     max-width: var(--ancho); margin-inline: auto;
     padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 4vw, 3rem) clamp(3rem, 7vw, 5rem);
@@ -105,8 +108,14 @@ const html = `<!doctype html>
     .espejo-cuerpo { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: start; }
     .espejo-mapa { position: sticky; top: 1.5rem; }
   }
+  /* En la web principal la cuenta atrás va sobre papel; aquí va sobre tinta,
+     así que hay que devolverle el contraste a mano. */
+  .espejo-cabecera .cuenta { border-top-color: rgba(247, 227, 211, 0.3); }
+  .espejo-cabecera .cuenta__bloque b { color: var(--oro); }
+  .espejo-cabecera .cuenta__bloque span { color: rgba(247, 227, 211, 0.72); }
+  .espejo-cabecera .etiqueta { max-width: 34ch; }
   .sello {
-    font-family: var(--mono); font-size: 0.72rem; color: var(--gris-claro);
+    font-family: var(--texto); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.7rem; color: var(--gris-claro);
     text-align: center; padding-bottom: 2rem;
   }
 </style>

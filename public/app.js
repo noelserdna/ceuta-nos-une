@@ -673,6 +673,11 @@ async function enviarMensaje(ev) {
 
 function prepararRevelados() {
   const objetivos = $$(".seccion__cabecera, .lugares__cuerpo, .proponer__intro, .formulario, .postal-nueva");
+
+  // Sin IntersectionObserver no se oculta nada: el contenido es lo importante,
+  // la animación es un adorno.
+  if (!("IntersectionObserver" in window)) return;
+
   objetivos.forEach((el) => el.classList.add("revelar"));
 
   const observador = new IntersectionObserver(
@@ -687,6 +692,11 @@ function prepararRevelados() {
     { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
   );
   objetivos.forEach((el) => observador.observe(el));
+
+  // Red de seguridad: si algo impide que el observador dispare (una extensión,
+  // un error, una captura de pantalla larga), a los 5 s se muestra todo igual.
+  // Más vale perder la animación que dejar media web invisible.
+  setTimeout(() => objetivos.forEach((el) => el.classList.add("visible")), 5000);
 }
 
 /* ----------------------------------------------------------------- inicio -- */

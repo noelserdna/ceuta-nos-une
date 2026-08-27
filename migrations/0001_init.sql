@@ -16,7 +16,7 @@ INSERT INTO settings (key, value, label) VALUES
   ('event_date',     '2026-09-02',           'Fecha del acto (AAAA-MM-DD)'),
   ('event_label',    '2 de septiembre',      'Fecha en texto para la portada'),
   ('site_title',     'Ceuta nos une',        'Titulo del sitio'),
-  ('site_claim',     'Una misma hora, muchas plazas.', 'Lema bajo el titulo'),
+  ('site_claim',     'A favor del pueblo de Ceuta y por nuestra Unidad', 'Lema bajo el titulo'),
   ('places_open',    '1',                    'Admitir propuestas de lugares (1 si / 0 no)'),
   ('messages_open',  '1',                    'Admitir mensajes de apoyo (1 si / 0 no)'),
   ('contact_email',  'info@ceutanosune.org', 'Correo de contacto publico');

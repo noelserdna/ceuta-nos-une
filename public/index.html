@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ceuta nos une · 2 de septiembre</title>
-<meta name="description" content="Mapa y listado de los lugares donde se concentra la ciudadanía el 2 de septiembre. Propón un lugar confirmado y deja tu mensaje de apoyo a Ceuta.">
-<meta name="theme-color" content="#0B1220">
+<meta name="description" content="Concentración en toda España el 2 de septiembre, a las 20:00 h frente a cada ayuntamiento o Delegación del Gobierno. Mapa de lugares, propuestas y muro de apoyo.">
+<meta name="theme-color" content="#F7E3D3">
 <meta property="og:title" content="Ceuta nos une · 2 de septiembre">
-<meta property="og:description" content="Una misma hora, muchas plazas. Consulta dónde, propón un lugar y deja tu mensaje de apoyo.">
+<meta property="og:description" content="Concentración en toda España. En cada comunidad, en cada ciudad, en cada pueblo. Consulta dónde, propón un lugar y deja tu mensaje de apoyo.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=DM+Mono:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
 <link rel="stylesheet" href="/vendor/leaflet.css">
 <link rel="stylesheet" href="/styles.css">
 </head>
@@ -36,32 +36,55 @@
 <!-- ===================== PORTADA ===================== -->
 <section class="portada" id="inicio">
   <div class="portada__gyronny" aria-hidden="true"></div>
-  <div class="portada__grano" aria-hidden="true"></div>
+  <div class="trama" aria-hidden="true"></div>
 
   <div class="portada__contenido">
-    <p class="portada__antetitulo">
-      <span class="pulso" aria-hidden="true"></span>
-      Convocatoria ciudadana · <span data-config="event_label">2 de septiembre</span>
-    </p>
 
-    <h1 class="portada__titulo">
-      <span class="linea linea--1">Ceuta</span>
-      <span class="linea linea--2">nos</span>
-      <span class="linea linea--3">une</span>
-    </h1>
+    <div>
+      <p class="portada__antetitulo">
+        <span class="pulso" aria-hidden="true"></span>
+        Convocatoria ciudadana · <span data-config="event_label">2 de septiembre</span>
+      </p>
 
-    <p class="portada__lema" data-config="site_claim">Una misma hora, muchas plazas.</p>
+      <h1 class="portada__titulo">
+        <span class="linea linea--1">Ceuta</span>
+        <span class="linea linea--2">nos une</span>
+      </h1>
 
-    <div class="cuenta" id="cuenta" aria-live="polite">
-      <div class="cuenta__bloque"><b id="c-dias">--</b><span>días</span></div>
-      <div class="cuenta__bloque"><b id="c-horas">--</b><span>horas</span></div>
-      <div class="cuenta__bloque"><b id="c-min">--</b><span>min</span></div>
-      <div class="cuenta__bloque"><b id="c-seg">--</b><span>seg</span></div>
+      <p class="portada__reclamo">Concentración<br>en toda España</p>
+
+      <p class="portada__lema" data-config="site_claim">
+        A favor del pueblo de Ceuta y por nuestra Unidad
+      </p>
+
+      <ul class="portada__cada">
+        <li>En cada comunidad</li>
+        <li>En cada ciudad</li>
+        <li>En cada pueblo</li>
+      </ul>
+
+      <div class="portada__acciones">
+        <a class="boton boton--brasa" href="#lugares">Ver dónde es</a>
+        <a class="boton boton--linea" href="#muro">Dejar mi mensaje</a>
+      </div>
     </div>
 
-    <div class="portada__acciones">
-      <a class="boton boton--brasa" href="#lugares">Ver dónde es</a>
-      <a class="boton boton--linea" href="#muro">Dejar mi mensaje</a>
+    <!-- Bloque de fecha, como en el cartel -->
+    <div class="fecha">
+      <div class="trama" aria-hidden="true"></div>
+      <p class="fecha__dia">Día <em>de</em> Ceuta</p>
+      <p class="fecha__numero"><b>02</b> <span>de</span></p>
+      <p class="fecha__mes">Septiembre</p>
+      <p class="fecha__donde">
+        20:00 h · Frente a cada ayuntamiento<br>o Delegación del Gobierno
+      </p>
+
+      <div class="cuenta" id="cuenta" aria-live="polite">
+        <div class="cuenta__bloque"><b id="c-dias">--</b><span>días</span></div>
+        <div class="cuenta__bloque"><b id="c-horas">--</b><span>horas</span></div>
+        <div class="cuenta__bloque"><b id="c-min">--</b><span>min</span></div>
+        <div class="cuenta__bloque"><b id="c-seg">--</b><span>seg</span></div>
+      </div>
     </div>
 
     <dl class="portada__cifras">
@@ -72,14 +95,27 @@
   </div>
 </section>
 
+<!-- Banda del cartel -->
+<div class="banda">
+  <div class="trama trama--clara" aria-hidden="true"></div>
+  <p>Esta manifestación es pacífica y para demostrar a Ceuta que no está sola</p>
+  <svg class="banda__escudo" viewBox="0 0 32 32" aria-hidden="true">
+    <rect width="32" height="32" fill="#FDF1E6"/>
+    <g fill="#35101B">
+      <path d="M16 16 0 0h16z"/><path d="M16 16 32 0v16z"/>
+      <path d="M16 16 32 32H16z"/><path d="M16 16 0 32V16z"/>
+    </g>
+  </svg>
+</div>
+
 <!-- ===================== LUGARES ===================== -->
 <section class="lugares" id="lugares">
   <div class="seccion__cabecera">
     <p class="etiqueta">01 — Dónde</p>
     <h2 class="seccion__titulo">Un mapa de plazas</h2>
     <p class="seccion__texto">
-      Cada punto es una concentración confirmada. Busca la tuya, mira la hora y comparte el enlace
-      con quien tengas cerca.
+      Cada punto es una concentración confirmada, a las 20:00 h frente al ayuntamiento
+      o la Delegación del Gobierno. Busca la tuya y comparte el enlace con quien tengas cerca.
     </p>
   </div>
 
@@ -113,6 +149,7 @@
 <!-- ===================== PROPONER LUGAR ===================== -->
 <section class="proponer" id="proponer">
   <div class="proponer__gyronny" aria-hidden="true"></div>
+  <div class="trama trama--oro" aria-hidden="true"></div>
 
   <div class="proponer__intro">
     <p class="etiqueta etiqueta--claro">02 — Suma tu ciudad</p>
@@ -126,6 +163,10 @@
       <li><b>2</b> Recibimos el aviso y lo verificamos</li>
       <li><b>3</b> Aparece en el mapa</li>
     </ul>
+    <div class="proponer__nota">
+      <p><b>20:00 h en toda España.</b> El punto de encuentro es el ayuntamiento de tu
+      localidad o la Delegación del Gobierno de tu provincia.</p>
+    </div>
   </div>
 
   <form class="formulario" id="form-lugar" novalidate>
@@ -142,7 +183,7 @@
 
     <div class="campo">
       <label for="l-venue">Lugar <b aria-hidden="true">*</b></label>
-      <input id="l-venue" name="venue" required maxlength="140" placeholder="Plaza Alta">
+      <input id="l-venue" name="venue" required maxlength="140" placeholder="Ayuntamiento — Plaza Alta">
     </div>
 
     <div class="campo">
@@ -152,7 +193,7 @@
         <button type="button" class="boton boton--mini" id="btn-buscar-dir">Situar en el mapa</button>
       </div>
       <ul class="sugerencias" id="sugerencias" role="listbox" aria-label="Direcciones encontradas" hidden></ul>
-      <p class="campo__ayuda" id="ayuda-coords">Opcional, pero ayuda mucho: sitúa el punto exacto en el mapa.</p>
+      <p class="campo__ayuda" id="ayuda-coords">Situar el punto en el mapa es opcional, pero nos ayuda mucho a colocarlo bien.</p>
       <div class="minimapa" id="minimapa" hidden></div>
     </div>
 
@@ -211,12 +252,14 @@
 
 <!-- ===================== MURO DE APOYO ===================== -->
 <section class="muro" id="muro">
+  <div class="trama" aria-hidden="true"></div>
+
   <div class="seccion__cabecera">
     <p class="etiqueta">03 — Un lugar para decirlo</p>
     <h2 class="seccion__titulo">Muro de apoyo</h2>
     <p class="seccion__texto">
-      Una plaza virtual donde dejar un mensaje, una foto, un recuerdo. Se publica al momento y lo
-      lee todo el mundo.
+      Una plaza virtual donde dejar un mensaje, una foto, un recuerdo. Se publica al momento
+      y lo lee todo el mundo.
     </p>
   </div>
 
@@ -278,7 +321,7 @@
   </p>
   <p class="pie__legal">
     No guardamos tu dirección IP: solo una huella anónima para frenar el spam.
-    Mapa © colaboradores de OpenStreetMap · teselas © CARTO.
+    Mapa © colaboradores de OpenStreetMap.
     <a href="/admin">Administración</a>
   </p>
 </footer>

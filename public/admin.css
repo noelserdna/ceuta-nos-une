@@ -2,20 +2,22 @@
    y funcional. Pensado para usarse también desde el móvil. */
 
 :root {
-  --tinta:      #0B1220;
-  --tinta-2:    #131E33;
-  --tinta-3:    #1E2B45;
-  --linea:      rgba(251, 248, 241, 0.16);
-  --crema:      #FBF8F1;
-  --brasa:      #DF4F26;
-  --brasa-viva: #FF7345;
+  /* Mismas tintas que la web pública, tomadas del cartel */
+  --tinta:      #35101B;
+  --tinta-2:    #4A1A26;
+  --tinta-3:    #5E2432;
+  --linea:      rgba(247, 227, 211, 0.2);
+  --crema:      #FDF1E6;
+  --brasa:      #C71B3A;
+  --brasa-viva: #F02448;
   --mar:        #17847A;
-  --oro:        #DFA338;
-  --gris:       #9A9184;
+  --oro:        #FCC018;
+  --gris:       #C9A99E;
 
-  --display: "Bricolage Grotesque", system-ui, sans-serif;
-  --mono:    "DM Mono", ui-monospace, Menlo, monospace;
-  --radio:   3px;
+  --display: Anton, "Arial Narrow", sans-serif;
+  --texto:   Archivo, "Helvetica Neue", sans-serif;
+  --mono:    Archivo, "Helvetica Neue", sans-serif;
+  --radio:   0px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -30,13 +32,13 @@ body {
   margin: 0;
   background: var(--tinta);
   color: var(--crema);
-  font-family: var(--display);
+  font-family: var(--texto);
   font-size: 15px;
   line-height: 1.55;
   -webkit-text-size-adjust: 100%;
 }
 
-h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.02em; }
+h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 400; letter-spacing: 0.01em; text-transform: uppercase; }
 h2 { font-size: 1.3rem; margin-bottom: 0.3rem; }
 
 button, input, textarea, select { font: inherit; color: inherit; }
@@ -82,7 +84,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .acceso__texto { margin: 0 0 0.8rem; color: var(--gris); font-size: 0.9rem; }
 
 .acceso label, .campo-label {
-  font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
+  font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--gris);
 }
 
@@ -104,7 +106,8 @@ textarea { resize: vertical; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-  font-family: var(--display); font-weight: 600; font-size: 0.85rem;
+  font-family: var(--texto); font-weight: 700; font-size: 0.82rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
   padding: 0.5rem 0.9rem; border: 1px solid transparent; border-radius: var(--radio);
   cursor: pointer; background: none; text-decoration: none; white-space: nowrap;
   transition: background-color 200ms, border-color 200ms, color 200ms;
@@ -140,7 +143,7 @@ textarea { resize: vertical; }
 
 .cabecera__marca { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; }
 .cabecera__sub {
-  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+  font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--gris);
 }
 .cabecera__acciones { display: flex; gap: 0.5rem; margin-left: auto; }
@@ -149,7 +152,7 @@ textarea { resize: vertical; }
 
 .pestana {
   display: inline-flex; align-items: center; gap: 0.45rem;
-  font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em;
+  font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0.45rem 0.85rem; border: 1px solid transparent; border-radius: 100px;
   background: none; cursor: pointer; color: var(--gris);
@@ -179,7 +182,7 @@ textarea { resize: vertical; }
 .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 
 .chip {
-  font-family: var(--mono); font-size: 0.72rem;
+  font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.72rem;
   padding: 0.35rem 0.75rem; border-radius: 100px;
   border: 1px solid var(--linea); background: none; color: var(--gris); cursor: pointer;
   transition: all 200ms;
@@ -212,11 +215,11 @@ textarea { resize: vertical; }
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.9rem;
   margin-bottom: 0.8rem;
 }
-.ficha__titulo { font-size: 1.15rem; font-weight: 700; }
-.ficha__meta { font-family: var(--mono); font-size: 0.72rem; color: var(--gris); }
+.ficha__titulo { font-family: var(--display); font-size: 1.4rem; text-transform: uppercase; }
+.ficha__meta { font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.72rem; color: var(--gris); }
 
 .marca {
-  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
+  font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.1em;
   text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 100px;
   border: 1px solid currentColor;
 }
@@ -232,7 +235,7 @@ textarea { resize: vertical; }
 .ficha__campo { display: grid; gap: 0.25rem; }
 
 .ficha__contacto {
-  font-family: var(--mono); font-size: 0.75rem; color: var(--gris);
+  font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; color: var(--gris);
   padding: 0.6rem 0.8rem; margin-bottom: 0.9rem;
   background: rgba(251, 248, 241, 0.04); border-radius: var(--radio);
   overflow-wrap: anywhere;
@@ -260,8 +263,8 @@ textarea { resize: vertical; }
 .msg__foto { width: 100%; height: 170px; object-fit: cover; background: var(--tinta-3); }
 .msg__cuerpo { padding: 0.9rem 1rem; flex: 1; }
 .msg__texto { margin: 0 0 0.7rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.92rem; }
-.msg__firma { font-weight: 700; }
-.msg__meta { font-family: var(--mono); font-size: 0.68rem; color: var(--gris); }
+.msg__firma { font-family: var(--display); font-size: 1.1rem; text-transform: uppercase; }
+.msg__meta { font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.68rem; color: var(--gris); }
 .msg__acciones {
   display: flex; gap: 0.4rem; padding: 0.7rem 1rem;
   border-top: 1px solid var(--linea); background: rgba(0, 0, 0, 0.15);
@@ -288,7 +291,7 @@ textarea { resize: vertical; }
   font-size: 0.85rem;
 }
 .aviso-fila__asunto { flex: 1; min-width: 180px; overflow-wrap: anywhere; }
-.aviso-fila__error { width: 100%; color: var(--brasa-viva); font-family: var(--mono); font-size: 0.72rem; }
+.aviso-fila__error { width: 100%; color: var(--brasa-viva); font-family: var(--texto); font-weight: 700; text-transform: uppercase; font-size: 0.72rem; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
