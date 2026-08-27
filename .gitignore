@@ -7,3 +7,5 @@ worker-configuration.d.ts
 .playwright-mcp/
 *.png
 site/
+
+.vercel

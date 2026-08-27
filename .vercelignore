@@ -1,0 +1,11 @@
+# El despliegue de Vercel solo necesita public/ y api/
+src/
+migrations/
+scripts/
+site/
+.wrangler/
+.sdd/
+design/
+wrangler.jsonc
+worker-configuration.d.ts
+tsconfig.json

@@ -90,10 +90,14 @@ async function cargarConfig() {
 
   if (c.site_title) document.title = c.site_title + " · " + (c.event_label || "");
 
-  if (c.contact_email) {
-    const enlace = $("#pie-contacto");
+  // Solo se ofrece un correo si de verdad hay uno configurado: un enlace a una
+  // dirección que no existe es peor que no ofrecer ninguna.
+  const contacto = $("#pie-contacto");
+  if (c.contact_email && contacto) {
+    contacto.append(document.createTextNode(", o escríbenos a "));
+    const enlace = crear("a", null, c.contact_email);
     enlace.href = "mailto:" + c.contact_email;
-    enlace.textContent = c.contact_email;
+    contacto.append(enlace);
   }
 
   if (c.event_date) {
