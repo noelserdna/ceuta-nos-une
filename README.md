@@ -88,12 +88,19 @@ Se cargan con `npx wrangler secret put NOMBRE`:
 | `RESEND_API_KEY` | No | Alternativa de correo, por si falla el envío nativo de Cloudflare |
 | `TURNSTILE_SECRET_KEY` + `TURNSTILE_SITE_KEY` | No | Activan el anti-bot de Cloudflare en los dos formularios. Si no están, el widget ni aparece |
 
-### El correo de aviso
+### El correo
 
-Va por **Cloudflare Email Sending**, sin proveedores externos: el binding `send_email` envía
-desde `avisos@avisos.ceutanosune.com`, un subdominio propio para no tocar el SPF del dominio
-principal. El destinatario es el `notify_email` de la tabla `settings`, editable desde
-`/admin`. Cada aviso queda registrado en `notifications` se consiga enviar o no.
+Todo por **Cloudflare**, sin proveedores externos, y funciona pese al bloqueo web porque el
+correo viaja por MX, no por las IPs bloqueadas.
+
+- **Salida**: el binding `send_email` envía desde `avisos@avisos.ceutanosune.com`, un
+  subdominio propio para no tocar el SPF del dominio principal.
+- **Entrada**: Email Routing en `ceutanosune.com` recibe en `info@ceutanosune.com` y lo
+  reenvía a la cuenta personal. Es el correo de contacto que sale en el pie de la web y el
+  destinatario de los avisos de lugares.
+
+Cada aviso queda registrado en `notifications` se consiga enviar o no, así que ninguna
+propuesta se pierde por un fallo del correo.
 
 ## Cambiar los datos de ejemplo por los reales
 
