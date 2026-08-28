@@ -430,8 +430,11 @@ function tarjetaLugar(lugar) {
 }
 
 async function compartirLugar(lugar, boton) {
+  /* El enlace lleva la ciudad, así que quien lo reciba abre la web directamente en
+     esa tarjeta en vez de tener que buscarla entre 172. */
+  const enlace = location.origin + "/?q=" + encodeURIComponent(lugar.city) + "#lugares";
   const texto =
-    lugar.city + " · " + lugar.venue + " · " + lugar.event_time + " h — " + location.origin + "/#lugares";
+    lugar.city + " · " + lugar.venue + " · " + lugar.event_time + " h — " + enlace;
   try {
     if (navigator.share) {
       await navigator.share({ title: "Ceuta nos une · " + lugar.city, text: texto });
@@ -1150,6 +1153,16 @@ async function iniciar() {
   if (location.hash === "#proponer" && !$("#form-lugar")) {
     location.replace("/propon");
     return;
+  }
+
+  /* Enlaces del tipo ceutanosune.es/?q=talavera: quien llega por WhatsApp aterriza
+     en su tarjeta, ya filtrada, sin buscar nada. Es lo que se comparte desde cada
+     lugar, y no crea direcciones nuevas que mantener. */
+  const buscadaEnLaUrl = new URLSearchParams(location.search).get("q");
+  if (buscadaEnLaUrl) {
+    estado.busqueda = buscadaEnLaUrl.slice(0, 80);
+    const caja = $("#buscador");
+    if (caja) caja.value = estado.busqueda;
   }
 
   rellenarProvincias();
