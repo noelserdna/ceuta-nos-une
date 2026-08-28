@@ -9,6 +9,11 @@ const TESELAS = "/tiles/{z}/{x}/{y}.png";
 const ATRIBUCION =
   '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
+/* El listado enseña las tarjetas de 24 en 24: con 89 concentraciones, pintarlas
+   todas hace una lista larguísima que en el móvil no se acaba nunca. Los puntos
+   del mapa no se paginan: ahí salen todos siempre. */
+const POR_PAGINA = 24;
+
 const PROVINCIAS = [
   "A Coruña", "Álava", "Albacete", "Alicante", "Almería", "Asturias", "Ávila", "Badajoz",
   "Baleares", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón", "Ceuta",
@@ -29,6 +34,7 @@ const estado = {
   cargandoMensajes: false,
   fotoElegida: null,
   turnoFoto: 0,
+  visibles: POR_PAGINA,
 };
 
 let mapa = null;
@@ -200,7 +206,22 @@ function iniciarMapa() {
   if (!$("#mapa") || typeof L === "undefined") return;
   mapa = L.map("mapa", { scrollWheelZoom: false, zoomControl: true }).setView([39.5, -3.5], 5);
   L.tileLayer(TESELAS, { attribution: ATRIBUCION, maxZoom: 19 }).addTo(mapa);
-  capaMarcadores = L.layerGroup().addTo(mapa);
+  capaMarcadores = (typeof L.markerClusterGroup === "function")
+    ? L.markerClusterGroup({
+        maxClusterRadius: 45,
+        showCoverageOnHover: false,   // el polígono azul de serie no pega con el cartel
+        spiderfyOnMaxZoom: true,
+        chunkedLoading: true,
+        iconCreateFunction: (grupo) => {
+          const n = grupo.getChildCount();
+          const talla = n < 10 ? "grupo--peq" : n < 40 ? "grupo--med" : "grupo--gra";
+          const caja = document.createElement("div");
+          caja.className = "grupo " + talla;
+          caja.textContent = String(n);
+          return L.divIcon({ html: caja.outerHTML, className: "", iconSize: [40, 40] });
+        },
+      }).addTo(mapa)
+    : L.layerGroup().addTo(mapa);   // si el agrupador no cargara, puntos sueltos
   // Con la rueda solo se hace zoom tras pulsar el mapa: así no secuestra el scroll.
   mapa.on("click", () => mapa.scrollWheelZoom.enable());
   mapa.on("mouseout", () => mapa.scrollWheelZoom.disable());
@@ -209,7 +230,11 @@ function iniciarMapa() {
 async function cargarLugares() {
   if (!$("#lista-lugares")) return;
   const datos = await pedir("/api/places");
-  estado.lugares = datos.places || [];
+  /* Orden alfabético de verdad: la base de datos ordena con COLLATE NOCASE, que
+     en español manda los acentos al final, así que Écija salía después de Utrera. */
+  estado.lugares = (datos.places || []).sort(
+    (a, b) => a.city.localeCompare(b.city, "es") || a.venue.localeCompare(b.venue, "es"),
+  );
   pintarChips();
   pintarLugares();
   actualizarCifras();
@@ -237,6 +262,7 @@ function pintarChips() {
     b.setAttribute("aria-pressed", String(estado.provincia === valor));
     b.addEventListener("click", () => {
       estado.provincia = estado.provincia === valor ? "" : valor;
+      estado.visibles = POR_PAGINA;
       pintarChips();
       pintarLugares();
     });
@@ -247,17 +273,21 @@ function pintarChips() {
   provincias.forEach((p) => contenedor.append(hacerChip(p, p)));
 }
 
-function pintarLugares() {
+function pintarLugares(ajustarMapa = true) {
   const lista = $("#lista-lugares");
   const lugares = lugaresFiltrados();
   lista.replaceChildren();
   capaMarcadores?.clearLayers();
   estado.marcadores.clear();
 
+  const aPintar = lugares.slice(0, estado.visibles);
+
   $("#lugares-contador").textContent =
     lugares.length === 0
       ? "Ningún lugar coincide con la búsqueda"
-      : lugares.length + (lugares.length === 1 ? " lugar" : " lugares");
+      : aPintar.length < lugares.length
+        ? aPintar.length + " de " + lugares.length + " lugares"
+        : lugares.length + (lugares.length === 1 ? " lugar" : " lugares");
 
   if (!lugares.length) {
     const vacio = crear("li", "vacio");
@@ -270,14 +300,16 @@ function pintarLugares() {
     enlace.href = "/propon";
     vacio.append(enlace);
     lista.append(vacio);
+    actualizarBotonMas(0, 0);
     return;
   }
 
   const limites = [];
 
-  lugares.forEach((lugar) => {
-    lista.append(tarjetaLugar(lugar));
+  aPintar.forEach((lugar) => lista.append(tarjetaLugar(lugar)));
+  actualizarBotonMas(aPintar.length, lugares.length);
 
+  lugares.forEach((lugar) => {
     if (lugar.lat != null && lugar.lon != null) {
       const marcador = L.marker([lugar.lat, lugar.lon], {
         icon: L.divIcon({ className: "", html: '<div class="pin"></div>', iconSize: [24, 24] }),
@@ -290,8 +322,22 @@ function pintarLugares() {
     }
   });
 
-  if (limites.length) {
+  if (limites.length && ajustarMapa) {
     mapa.fitBounds(limites, { padding: [40, 40], maxZoom: limites.length === 1 ? 13 : 9 });
+  }
+}
+
+/* El botón dice cuántos lugares quedan por ver, no un "ver más" a secas: con 89
+   concentraciones conviene saber si queda uno o cincuenta. */
+function actualizarBotonMas(pintados, total) {
+  const boton = $("#btn-mas-lugares");
+  if (!boton) return;
+  const quedan = total - pintados;
+  boton.hidden = quedan <= 0;
+  if (quedan > 0) {
+    boton.textContent = quedan === 1
+      ? "Ver el lugar que queda"
+      : "Ver " + Math.min(quedan, POR_PAGINA) + " más de los " + quedan + " que quedan";
   }
 }
 
@@ -377,8 +423,20 @@ function centrarEn(lugar, elemento) {
 
   const marcador = estado.marcadores.get(lugar.id);
   if (!marcador) return;
-  mapa.setView(marcador.getLatLng(), Math.max(mapa.getZoom(), 12), { animate: true });
-  marcador.openPopup();
+
+  const mostrar = () => {
+    mapa.setView(marcador.getLatLng(), Math.max(mapa.getZoom(), 12), { animate: true });
+    marcador.openPopup();
+  };
+
+  /* Si los puntos están agrupados, este puede estar escondido dentro de un grupo:
+     hay que abrirlo antes, o el globo no aparece por ningún lado. */
+  if (typeof capaMarcadores?.zoomToShowLayer === "function") {
+    capaMarcadores.zoomToShowLayer(marcador, mostrar);
+  } else {
+    mostrar();
+  }
+
   if (window.innerWidth < 900) $("#mapa").scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
@@ -836,6 +894,7 @@ function conectarEventos() {
     clearTimeout(temporizador);
     temporizador = setTimeout(() => {
       estado.busqueda = ev.target.value;
+      estado.visibles = POR_PAGINA;
       pintarLugares();
     }, 180);
   });
@@ -844,6 +903,14 @@ function conectarEventos() {
   $("#form-lugar")?.addEventListener("submit", enviarLugar);
   $("#form-mensaje")?.addEventListener("submit", enviarMensaje);
   $("#btn-mas")?.addEventListener("click", () => cargarMensajes(true));
+
+  $("#btn-mas-lugares")?.addEventListener("click", () => {
+    const antes = $$("#lista-lugares .tarjeta").length;
+    estado.visibles += POR_PAGINA;
+    pintarLugares(false);          // sin recolocar el mapa: solo crece la lista
+    // El foco va a la primera tarjeta nueva, para no perder el sitio con el teclado.
+    $$("#lista-lugares .tarjeta")[antes]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 
   const cuerpo = $("#m-body");
   const restantes = $("#m-restantes");
