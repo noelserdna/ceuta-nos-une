@@ -1361,3 +1361,49 @@ a.chip--hueco:focus-visible {
   color: var(--papel-claro);
   font-weight: 700;
 }
+
+/* -------------------------------------------- grupos de puntos del mapa ---- */
+/* Con 89 concentraciones, Andalucía era una mancha de círculos superpuestos que
+   no se podían ni distinguir ni pulsar. Los puntos cercanos se juntan en uno con
+   la cuenta y se separan al acercarse. Los estilos son propios: los de serie del
+   agrupador son azules con degradado y no pintan nada aquí. */
+
+.grupo {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--oro);
+  border: 3px solid var(--tinta);
+  box-shadow: 0 0 0 3px rgba(247, 227, 211, 0.75);
+  color: var(--tinta);
+  font-family: var(--display);
+  font-size: 0.95rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  transition: transform 180ms ease;
+}
+
+.grupo--med { font-size: 1.05rem; }
+.grupo--gra { font-size: 1.15rem; background: var(--carmin); color: var(--papel-claro); }
+
+.leaflet-marker-icon:hover .grupo,
+.leaflet-marker-icon:focus-visible .grupo { transform: scale(1.12); }
+
+/* Animación del agrupador al abrirse y cerrarse (viene de la propia librería). */
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-in;
+}
+.leaflet-cluster-spider-leg {
+  transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
+}
+
+/* ------------------------------------------- ver más lugares del listado --- */
+
+.mas-lugares { display: flex; justify-content: center; margin: 1.6rem 0 0.4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .grupo { transition: none; }
+  .leaflet-cluster-anim .leaflet-marker-icon,
+  .leaflet-cluster-anim .leaflet-marker-shadow { transition: none; }
+}
