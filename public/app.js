@@ -364,6 +364,12 @@ function tarjetaLugar(lugar) {
   const cuerpo = crear("div", "tarjeta__cuerpo");
   cuerpo.append(crear("p", "tarjeta__lugar", lugar.venue));
   cuerpo.append(crear("p", "tarjeta__dir", lugar.address));
+
+  /* Quién convoca. El formulario lo pedía y la base lo guardaba, pero la tarjeta
+     nunca lo enseñaba: el dato se perdía. Importa cuando hay dos concentraciones
+     en la misma ciudad y hay que saber cuál es cuál. */
+  if (lugar.organizer) cuerpo.append(crear("p", "tarjeta__convoca", "Convoca: " + lugar.organizer));
+
   if (lugar.notes) cuerpo.append(crear("p", "tarjeta__notas", lugar.notes));
 
   const acciones = crear("div", "tarjeta__acciones");
