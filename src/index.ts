@@ -763,6 +763,55 @@ ${secciones}
  *
  * Lo que de verdad hace que un modelo pueda responder es /lugares, no esto.
  */
+/**
+ * El listado en CSV, generado desde la base igual que /lugares y /llms.txt.
+ *
+ * Existe para que una hoja de cálculo pueda traerse los datos con IMPORTDATA y
+ * se actualicen solos, y para que quien lo pida —prensa, un ayuntamiento— se lo
+ * lleve entero sin tener que copiar de la web. Es el mismo dato que ve todo el
+ * mundo, así que no lleva nada que no esté ya publicado.
+ */
+async function lugaresCsv(env: Env): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    `SELECT city, province, venue, address, event_date, event_time, lat, lon,
+            organizer, notes
+       FROM places
+      WHERE status = 'approved'
+      ORDER BY province COLLATE NOCASE, city COLLATE NOCASE`,
+  ).all<Record<string, string | number | null>>();
+
+  // Comillas dobles al estilo RFC 4180: se duplican dentro del campo.
+  const campo = (v: string | number | null): string => {
+    const s = v === null || v === undefined ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+
+  const cabecera = [
+    "Municipio", "Provincia", "Lugar", "Dirección", "Fecha", "Hora",
+    "Ojo", "Latitud", "Longitud", "Convoca", "Notas",
+  ];
+
+  const filas = (results ?? []).map((l) =>
+    [
+      l.city, l.province, l.venue, l.address, l.event_date, l.event_time,
+      l.event_time === "20:00" ? "" : "NO son las 20:00",
+      l.lat, l.lon, l.organizer, l.notes,
+    ].map(campo).join(","),
+  );
+
+  // El BOM es lo que hace que Excel abra los acentos bien en Windows.
+  const csv = "\uFEFF" + [cabecera.join(","), ...filas].join("\r\n") + "\r\n";
+
+  return new Response(csv, {
+    headers: {
+      "content-type": "text/csv; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+      "content-disposition": 'inline; filename="ceuta-nos-une-lugares.csv"',
+    },
+  });
+}
+
 async function llmsTxt(env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT city, province, event_time FROM places WHERE status = 'approved'`,
@@ -1236,6 +1285,7 @@ export default {
       }
 
       if (path === "/lugares" && method === "GET") return await paginaLugares(env);
+      if (path === "/lugares.csv" && method === "GET") return await lugaresCsv(env);
       if (path === "/llms.txt" && method === "GET") return await llmsTxt(env);
 
       if (path.startsWith("/api/")) return fail("Ruta no encontrada.", 404);
