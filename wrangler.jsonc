@@ -53,7 +53,8 @@
     { "name": "RL_PLACES", "namespace_id": "1002", "simple": { "limit": 3, "period": 60 } },
     { "name": "RL_GEOCODE", "namespace_id": "1003", "simple": { "limit": 20, "period": 60 } },
     { "name": "RL_REPORTS", "namespace_id": "1004", "simple": { "limit": 10, "period": 60 } },
-    { "name": "RL_LOGIN", "namespace_id": "1005", "simple": { "limit": 5, "period": 60 } }
+    { "name": "RL_LOGIN", "namespace_id": "1005", "simple": { "limit": 5, "period": 60 } },
+    { "name": "RL_LIKES", "namespace_id": "1006", "simple": { "limit": 40, "period": 60 } }
   ],
 
   "observability": { "enabled": true }
