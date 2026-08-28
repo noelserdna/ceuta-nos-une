@@ -1418,3 +1418,15 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
   border-top: 2px solid var(--papel-linea);
   font-size: 0.9rem; color: var(--gris);
 }
+
+/* La invitación a colaborar del pie. Va en el mismo tono discreto que el aviso
+   legal: quien viene a mirar dónde es su concentración no necesita verla, y a
+   quien busca cómo ayudar le basta con que esté. */
+.pie__codigo {
+  max-width: 62ch;
+  margin: 0 auto 1.5rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: rgba(247, 227, 211, 0.78);
+}
+.pie__codigo a { color: var(--oro); }
