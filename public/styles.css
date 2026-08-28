@@ -143,6 +143,10 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .barra__marca:hover { color: var(--oro); }
 
+/* El logo oficial. Va con alto fijo y ancho automático: es una pieza cerrada y
+   no se deforma ni se le aplica el skew que sí llevaba el nombre compuesto. */
+.barra__logo { display: block; height: 2.4rem; width: auto; }
+
 .barra__gyronny {
   width: 1.4rem; height: 1.4rem; flex: none;
   color: var(--papel); background-color: var(--tinta);
@@ -161,8 +165,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 @media (max-width: 620px) {
   .barra { padding-inline: 1rem; gap: 0.6rem; }
-  .barra__marca { font-size: 1rem; white-space: nowrap; }
-  .barra__gyronny { width: 1.2rem; height: 1.2rem; }
+  .barra__marca { font-size: 1rem; white-space: nowrap; gap: 0.45rem; }
+  .barra__gyronny { width: 1.1rem; height: 1.1rem; }
+  .barra__logo { height: 1.85rem; }
   .barra__nav { gap: 0.8rem; min-width: 0; }
   .barra__nav a { font-size: 0.64rem; letter-spacing: 0.06em; white-space: nowrap; }
   .barra__nav a:nth-child(2) { display: none; }
@@ -218,24 +223,20 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 
 /* El titular del cartel: relleno oro con contorno carmín, ligeramente inclinado */
+/* Antes esto era "CEUTA NOS UNE" compuesto en Anton, en oro con contorno carmín:
+   una imitación del logo hecha con CSS. Ahora es el logo de verdad. */
 .portada__titulo {
-  font-size: clamp(3.6rem, 13vw, 8.5rem);
-  line-height: 0.86;
-  margin: 0 0 1rem;
-  text-transform: uppercase;
-  transform: skewX(-5deg);
-  transform-origin: left top;
+  margin: 0 0 1.1rem;
 }
 
-.portada__titulo .linea {
+.portada__logo {
   display: block;
-  color: var(--oro);
-  -webkit-text-stroke: 0.062em var(--carmin);
-  paint-order: stroke fill;
+  width: 100%;
+  max-width: 32rem;
+  height: auto;
   animation: subir 850ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: 60ms;
 }
-.portada__titulo .linea--1 { animation-delay: 60ms; }
-.portada__titulo .linea--2 { animation-delay: 200ms; }
 
 @keyframes subir {
   from { opacity: 0; transform: translateY(0.5em); }
@@ -420,8 +421,13 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .mapa__pie { font-size: 0.7rem; color: var(--gris-claro); margin: 0.9rem 0 0; }
 
 /* Marcador: un punto carmín con borde de tinta, como los del cartel */
+/* El punto se ve de 18 px, pero su área de pulsación es de 24: es lo que pide
+   la WCAG 2.5.8 y lo que hace falta para acertarle con el dedo, ahora que hay
+   89 concentraciones y en Andalucía se amontonan. El margen centra el punto
+   dentro del icono de Leaflet, así que a la vista nada cambia. */
 .pin {
   width: 18px; height: 18px; border-radius: 50%;
+  margin: 3px;
   background: var(--carmin); border: 3px solid var(--tinta);
   transition: transform 180ms ease;
 }
@@ -793,13 +799,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
   mask-image: radial-gradient(circle, #000 35%, transparent 70%);
 }
 
-.pie__marca {
-  font-family: var(--display); font-size: clamp(2rem, 6vw, 3.6rem);
-  color: var(--oro); -webkit-text-stroke: 0.035em var(--carmin);
-  paint-order: stroke fill;
-  letter-spacing: 0.02em; margin: 0 0 1rem; text-transform: uppercase;
-  transform: skewX(-5deg);
-}
+.pie__marca { margin: 0 0 1.2rem; }
+
+.pie__marca img { display: block; width: min(16rem, 62%); height: auto; margin-inline: auto; }
 .pie__texto { max-width: 62ch; margin: 0 auto 1.5rem; font-size: 0.95rem; }
 .pie__texto a, .pie__legal a { color: var(--oro); }
 .pie__legal { font-size: 0.66rem; color: rgba(247, 227, 211, 0.55); margin: 0; }
@@ -1013,7 +1015,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .vacio .boton { margin-top: 1rem; }
 .vacio p { margin: 0; }
 /* En las páginas donde la marca del pie es un enlace, conserva su color */
-.pie__marca a { color: inherit; text-decoration: none; }
+.pie__marca a { display: block; color: inherit; text-decoration: none; }
 
 /* En pantalla táctil no hay hover: sin esto, el botón para avisar de un
    contenido inadecuado queda invisible para la mayoría de visitantes, y es el
