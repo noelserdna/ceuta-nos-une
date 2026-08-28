@@ -930,6 +930,77 @@ const CARGAS_AUTOMATICAS = 5;
 let cargasSeguidas = 0;
 let vigilanteMuro = null;
 
+/* ------------------------------------------------ la más cercana a mí ------ */
+
+/* Distancia en km entre dos puntos sobre la esfera. Sobra de precisión para
+   decidir a qué plaza le pilla más cerca a alguien. */
+function distanciaKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad;
+  const dLon = (lon2 - lon1) * rad;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function prepararCercania() {
+  const boton = $("#btn-cerca");
+  const salida = $("#cerca-estado");
+  if (!boton || !("geolocation" in navigator)) return;
+
+  /* Solo se enseña si el navegador puede: si no, mejor no prometer nada.
+     Hace falta conexión segura, así que en local por IP no aparecerá. */
+  if (!window.isSecureContext) return;
+  boton.hidden = false;
+
+  boton.addEventListener("click", () => {
+    boton.disabled = true;
+    $("#btn-cerca-texto").textContent = "Buscando…";
+    mostrarEstado(salida, "Buscando dónde estás. Tu ubicación no sale de este móvil.");
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        boton.disabled = false;
+        $("#btn-cerca-texto").textContent = "¿Cuál me pilla más cerca?";
+
+        const conCoordenadas = estado.lugares.filter((l) => l.lat != null && l.lon != null);
+        if (!conCoordenadas.length) {
+          mostrarEstado(salida, "Todavía no hay lugares con punto en el mapa.", "mal");
+          return;
+        }
+
+        const cerca = conCoordenadas
+          .map((l) => ({ l, km: distanciaKm(pos.coords.latitude, pos.coords.longitude, l.lat, l.lon) }))
+          .sort((a, b) => a.km - b.km)[0];
+
+        const km = cerca.km < 1 ? "menos de 1 km" : Math.round(cerca.km) + " km";
+        mostrarEstado(salida,
+          "La más cercana es " + cerca.l.city + " (" + cerca.l.province + "), a " + km +
+          ". Te la he marcado en el mapa.", "ok");
+
+        /* Reutiliza el mismo camino que pulsar la tarjeta: filtra por su
+           provincia, la resalta y lleva el mapa hasta ella. */
+        const tarjeta = $('.tarjeta[data-id="' + cerca.l.id + '"]');
+        centrarEn(cerca.l, tarjeta);
+      },
+      (err) => {
+        boton.disabled = false;
+        $("#btn-cerca-texto").textContent = "¿Cuál me pilla más cerca?";
+        const motivo =
+          err.code === err.PERMISSION_DENIED
+            ? "No has dado permiso para saber dónde estás. Puedes buscar tu ciudad ahí arriba."
+            : err.code === err.TIMEOUT
+              ? "Se ha tardado demasiado en localizarte. Prueba otra vez o busca tu ciudad."
+              : "No se ha podido saber dónde estás. Busca tu ciudad ahí arriba.";
+        mostrarEstado(salida, motivo, "mal");
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
+    );
+  });
+}
+
 function prepararScrollDelMuro() {
   const boton = $("#btn-mas");
   if (!boton || typeof IntersectionObserver !== "function") return;
@@ -1090,6 +1161,7 @@ async function iniciar() {
   await cargarConfig();
   prepararCompartir();
   prepararScrollDelMuro();
+  prepararCercania();
   await Promise.all([
     cargarLugares().catch((err) => {
       $("#lista-lugares").replaceChildren(

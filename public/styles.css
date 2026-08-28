@@ -518,6 +518,39 @@ button, input, textarea, select { font: inherit; color: inherit; }
   background: var(--papel-claro);
   padding: 0.7rem 0.9rem;
 }
+
+/* Buscar la concentración más cercana. Pensado para el móvil, que es donde la
+   posición es fina y donde nadie quiere escribir el nombre de su pueblo, pero se
+   ofrece en cualquier pantalla: funciona igual. */
+.cerca {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 46px; margin-top: 0.7rem; padding: 0.6rem 1rem;
+  background: var(--tinta); color: var(--papel);
+  border: var(--borde-pieza) solid var(--tinta);
+  box-shadow: 4px 4px 0 var(--oro);
+  font-family: var(--display); font-size: 0.95rem; letter-spacing: 0.04em;
+  text-transform: uppercase; cursor: pointer;
+  transition: transform var(--transicion), box-shadow var(--transicion);
+}
+
+.cerca svg { width: 18px; height: 18px; flex: none; color: var(--oro); }
+
+.cerca:hover, .cerca:focus-visible { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--oro); }
+.cerca:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--oro); }
+.cerca[disabled] { opacity: 0.7; cursor: progress; }
+
+/* Por id y no por clase: mostrarEstado() reescribe className entero, así que una
+   clase propia se perdería en cuanto se pinte el primer mensaje. */
+#cerca-estado {
+  margin: 0.6rem 0 0; font-size: 0.9rem; line-height: 1.5; min-height: 1.2em;
+  color: var(--gris);
+}
+#cerca-estado.estado--ok  { color: var(--carmin-osc); font-weight: 700; }
+#cerca-estado.estado--mal { color: var(--carmin-osc); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cerca, .cerca:hover, .cerca:focus-visible, .cerca:active { transition: none; transform: none; }
+}
 .buscador svg {
   width: 19px; height: 19px; flex: none; fill: none;
   stroke: var(--gris-claro); stroke-width: 2.4; stroke-linecap: round;
