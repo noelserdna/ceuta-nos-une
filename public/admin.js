@@ -302,7 +302,7 @@ function pintarFiltrosMuro() {
   contenedor.replaceChildren();
   [
     ["all", "Todos"],
-    ["reported", "Con avisos"],
+    ["reported", "Con denuncias"],
     ["hidden", "Ocultos"],
   ].forEach(([valor, texto]) => {
     const b = crear("button", "chip", texto);
@@ -364,8 +364,8 @@ function fichaMensaje(mensaje) {
       [
         mensaje.origin || "sin origen",
         fechaCorta(mensaje.created_at),
-        mensaje.reports > 0 ? mensaje.reports + " aviso(s)" : null,
-        mensaje.hidden ? "OCULTO" : null,
+        mensaje.reports > 0 ? mensaje.reports + " denuncia(s)" : null,
+        mensaje.hidden ? (mensaje.reports >= 10 ? "OCULTO POR LAS DENUNCIAS" : "OCULTO A MANO") : null,
       ]
         .filter(Boolean)
         .join(" · "),
@@ -392,7 +392,7 @@ function fichaMensaje(mensaje) {
   acciones.append(alternar);
 
   if (mensaje.reports > 0) {
-    const limpiar = crear("button", "btn btn--fantasma", "Descartar avisos");
+    const limpiar = crear("button", "btn btn--fantasma", "Descartar denuncias");
     limpiar.addEventListener("click", async () => {
       limpiar.disabled = true;
       try {
