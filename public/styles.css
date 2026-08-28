@@ -698,7 +698,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
   padding: clamp(1.3rem, 3vw, 1.9rem);
   background: var(--tinta); color: var(--papel);
   border: var(--borde-panel) solid var(--tinta);
-  box-shadow: var(--sombra-dura);
+  /* En oro y no en tinta: el formulario ya es oscuro, así que una sombra oscura
+     no lo despegaba del papel. Es el recurso del cartel. */
+  box-shadow: 9px 9px 0 var(--oro);
   display: grid; gap: 1.4rem; grid-template-columns: 1fr;
 }
 @media (min-width: 860px) {
@@ -855,42 +857,6 @@ button, input, textarea, select { font: inherit; color: inherit; }
   transform: translateY(-2px);
 }
 
-/* Las mismas redes, dentro de la franja del cartel. Ahí el fondo ya es tinta,
-   así que solo cambia el encuadre: un bloque separado por una línea. */
-
-.difunde__redes {
-  margin-top: 1.6rem;
-  padding-top: 1.4rem;
-  border-top: 2px solid rgba(252, 192, 24, 0.3);
-}
-
-.difunde__redes .redes__lista { justify-content: flex-start; }
-
-.difunde__redes-titulo {
-  margin: 0 0 0.85rem;
-  font-family: var(--display);
-  font-size: 1.05rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--oro);
-}
-
-.difunde__redes-nota {
-  margin: 0.9rem 0 0;
-  max-width: 52ch;
-  font-size: 0.92rem;
-  line-height: 1.55;
-  color: rgba(247, 227, 211, 0.78);
-}
-
-.difunde__redes-nota b { color: var(--oro); }
-
-@media (max-width: 620px) {
-  .difunde__redes .redes__lista { justify-content: center; }
-  .difunde__redes-titulo, .difunde__redes-nota { text-align: center; }
-  .difunde__redes-nota { margin-inline: auto; }
-}
-
 .redes__cuenta {
   margin: 0.85rem 0 0;
   font-size: 0.9rem;
@@ -930,6 +896,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
   position: relative; isolation: isolate; overflow: hidden;
   background: var(--tinta); color: var(--papel);
   padding: clamp(3rem, 7vw, 5rem) clamp(1rem, 4vw, 3rem);
+  /* La franja del cartel y el pie son los dos oscuros y se fundían en una sola
+     mancha. Los marcos en oro la recortan como pieza propia, que es como el
+     cartel separa sus bloques. */
+  border-top: var(--borde-panel) solid var(--oro);
+  border-bottom: var(--borde-panel) solid var(--oro);
 }
 
 .difunde__gyronny {
