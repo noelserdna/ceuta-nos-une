@@ -19,7 +19,7 @@
     "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*", "/img/*", "/tiles/*", "/lugares"]
+    "run_worker_first": ["/api/*", "/img/*", "/tiles/*", "/lugares", "/llms.txt"]
   },
 
   "d1_databases": [
