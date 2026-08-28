@@ -184,18 +184,6 @@ function fichaLugar(lugar) {
 
   ficha.append(campo("Detalles", lugar.notes ?? "", { nombre: "notes", multilinea: true, rows: 2 }));
 
-  const contacto = crear("div", "ficha__contacto");
-  contacto.append(document.createTextNode("Contacto: " + (lugar.submitter_name || "sin nombre") + " · "));
-  if (lugar.submitter_email) {
-    const correo = crear("a", null, lugar.submitter_email);
-    correo.href = "mailto:" + lugar.submitter_email;
-    contacto.append(correo);
-  } else {
-    contacto.append(document.createTextNode("sin correo"));
-  }
-  if (lugar.submitter_phone) contacto.append(document.createTextNode(" · tel. " + lugar.submitter_phone));
-  ficha.append(contacto);
-
   const acciones = crear("div", "ficha__acciones");
   const salida = crear("p", "estado");
 

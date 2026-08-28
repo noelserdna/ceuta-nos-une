@@ -132,3 +132,6 @@
 {"ts":"2026-08-27T22:52:52Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_id":"a6f2e1ba171a23153","stage":"tech-designer"}
 {"ts":"2026-08-27T22:53:12Z","event":"stop","session":"5d2e2656","role":"-","cwd":".","stage":"tech-designer"}
 {"ts":"2026-08-27T22:53:47Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_type":"general-purpose","agent_id":"a7566d19ff8248052","stage":"tech-designer"}
+{"ts":"2026-08-27T22:58:51Z","event":"stop","session":"5d2e2656","role":"-","cwd":".","stage":"tech-designer"}
+{"ts":"2026-08-27T22:58:55Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_id":"ab8b19bb1891e9f7e","stage":"tech-designer"}
+{"ts":"2026-08-27T23:15:10Z","event":"subagent-stop","session":"5d2e2656","role":"-","cwd":".","agent_id":"aade877a17e065bb2","stage":"tech-designer"}

@@ -119,7 +119,12 @@ Los reales se pueden meter por el formulario público (y aprobarlos), o directam
   mensajes se publican sin revisar. Está comprobado con etiquetas `<script>` reales.
 - **Las imágenes se comprueban por sus bytes**, no por el `content-type` que declara el
   navegador, y se sirven con `Content-Security-Policy: sandbox` para que nada se ejecute.
+- **No se pide ningún dato personal.** El formulario de proponer lugares no recoge nombre,
+  correo ni teléfono; el muro solo pide una firma, que puede ser un apodo. La contrapartida
+  asumida a conciencia: un lugar dudoso no se puede verificar preguntando a quien lo envió.
 - **No se guarda ninguna IP en claro**, solo un hash con sal, para poder frenar abusos.
+- **A las fotos se les quita el EXIF** al recodificarlas en el navegador, que es donde viajan
+  las coordenadas GPS de dónde se hicieron.
 - **Las fotos se reducen en el propio móvil** antes de subirlas (máx. 1600 px), lo que ahorra
   datos a quien publica.
 - **El aviso por correo se registra siempre en D1**, se consiga enviar o no: ninguna propuesta

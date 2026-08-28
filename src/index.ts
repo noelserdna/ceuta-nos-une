@@ -9,7 +9,6 @@
 import {
   cleanCoord,
   cleanDate,
-  cleanEmail,
   cleanLine,
   cleanText,
   cleanTime,
@@ -276,9 +275,6 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
     notes: cleanText(payload.notes, 600),
     organizer: cleanLine(payload.organizer, 140),
     source_url: cleanUrl(payload.source_url),
-    submitter_name: cleanLine(payload.submitter_name, 120),
-    submitter_email: cleanEmail(payload.submitter_email),
-    submitter_phone: cleanLine(payload.submitter_phone, 40),
   };
 
   const missing: string[] = [];
@@ -289,21 +285,19 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
   if (!place.event_time) missing.push("hora");
   if (!place.event_date) missing.push("fecha");
   if (missing.length) return fail("Faltan datos obligatorios: " + missing.join(", ") + ".");
-  if (!place.submitter_email) return fail("Necesitamos un correo de contacto válido para poder verificar el lugar.");
 
   const ipHash = await hashIp(ipVisitante(request, env), env.IP_SALT ?? "sin-sal");
 
   const row = await env.DB.prepare(
     `INSERT INTO places (city, province, venue, address, event_date, event_time, lat, lon,
-                         notes, organizer, source_url, submitter_name, submitter_email,
-                         submitter_phone, ip_hash, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+                         notes, organizer, source_url, ip_hash, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
      RETURNING id`,
   )
     .bind(
       place.city, place.province, place.venue, place.address, place.event_date, place.event_time,
       place.lat, place.lon, place.notes || null, place.organizer || null, place.source_url || null,
-      place.submitter_name || null, place.submitter_email, place.submitter_phone || null, ipHash,
+      ipHash,
     )
     .first<{ id: number }>();
 
@@ -324,8 +318,7 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
       "Enlace:     " + (place.source_url || "-"),
       "Notas:      " + (place.notes || "-"),
       "",
-      "Lo envia:   " + (place.submitter_name || "-") + " <" + place.submitter_email + ">" +
-        (place.submitter_phone ? " tel. " + place.submitter_phone : ""),
+      "Se envia de forma anonima: la web no pide datos de contacto.",
       "",
       "Aprobar o rechazar en: " + origin + "/admin",
     ];
@@ -341,7 +334,6 @@ async function createPlace(request: Request, env: Env, ctx: ExecutionContext): P
         ["Convoca", place.organizer || "-"],
         ["Enlace", place.source_url || "-"],
         ["Notas", place.notes || "-"],
-        ["Contacto", (place.submitter_name || "-") + " &lt;" + place.submitter_email + "&gt; " + (place.submitter_phone || "")],
       ]
         .map(([k, v]) => "<tr><td><b>" + escapeHtml(k) + "</b></td><td>" + escapeHtml(v) + "</td></tr>")
         .join("") +

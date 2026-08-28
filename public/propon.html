@@ -235,26 +235,12 @@
       <textarea id="l-notes" name="notes" rows="2" maxlength="600" placeholder="Recorrido, punto de encuentro exacto, accesibilidad…"></textarea>
     </div>
 
-    <fieldset class="campo campo--grupo">
-      <legend>Tus datos, por si necesitamos confirmar algo</legend>
-      <div class="rejilla-3">
-        <div class="campo">
-          <label for="l-name">Nombre</label>
-          <input id="l-name" name="submitter_name" maxlength="120" autocomplete="name">
-        </div>
-        <div class="campo">
-          <label for="l-email">Correo <b aria-hidden="true">*</b></label>
-          <input id="l-email" name="submitter_email" type="email" required maxlength="160" autocomplete="email">
-        </div>
-        <div class="campo">
-          <label for="l-phone">Teléfono</label>
-          <input id="l-phone" name="submitter_phone" type="tel" maxlength="40" autocomplete="tel">
-        </div>
-      </div>
-      <p class="campo__ayuda">Tus datos de contacto no se publican: solo los vemos para verificar el lugar.</p>
-    </fieldset>
-
     <div class="turnstile" id="turnstile-lugar"></div>
+
+    <p class="antes">
+      No te pedimos ningún dato personal: ni nombre, ni correo, ni teléfono. Solo los datos
+      de la concentración, que son públicos por su propia naturaleza.
+    </p>
 
     <!-- Recordatorio en el punto de compromiso, donde nadie se lo salta -->
     <p class="recordatorio">
@@ -280,7 +266,7 @@
     <a href="/">Volver al mapa de plazas</a>
   </p>
   <p class="pie__legal">
-    No guardamos tu dirección IP: solo una huella anónima para frenar el spam.
+    No pedimos ningún dato personal y no guardamos tu dirección IP: solo una huella anónima para frenar el spam.
     <a href="/admin">Administración</a>
   </p>
 </footer>
