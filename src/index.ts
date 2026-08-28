@@ -738,6 +738,11 @@ ${secciones}
   de publicarlos. Aun así, confirma siempre la convocatoria con la organización de tu ciudad
   antes de desplazarte. Página actualizada al momento desde
   <a href="/api/places">los datos públicos</a>.</p>
+
+  <p class="listado-plano__pie">¿Ves aquí un lugar mal puesto o una hora que no cuadra?
+  Se puede avisar en
+  <a href="https://github.com/noelserdna/ceuta-nos-une/issues/new">GitHub</a>, donde está
+  el código de esta web. No hace falta saber programar para contar que un dato está mal.</p>
 </main>
 
 <script type="application/ld+json">${jsonld}</script>
