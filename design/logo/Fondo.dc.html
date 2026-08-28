@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; background: #F7E3D3; }
+    a { color: #FCC018; } a:hover { color: #F02448; }
+    .etiqueta {
+      font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+      color: #6A4048; margin: 0 0 10px;
+    }
+    .nota { font-size: 14px; line-height: 1.55; color: #35101B; margin: 12px 0 0; max-width: 66ch; }
+    .aviso {
+      border-left: 4px solid #C71B3A; background: rgba(199,27,58,.08);
+      padding: 16px 18px; margin-bottom: 30px;
+    }
+    .codigo {
+      font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.7;
+      background: #FDF1E6; border: 2px solid #E6D2C4; padding: 14px 16px; overflow-x: auto;
+      white-space: pre; color: #35101B;
+    }
+    .muestra { height: 190px; position: relative; overflow: hidden; border: 3px solid #35101B; }
+  </style>
+</helmet>
+
+<div style="padding: 40px 44px;">
+
+  <p class="etiqueta">El fondo · lo que ha llegado no se puede usar todavía</p>
+
+  <div class="aviso">
+    <p style="margin: 0 0 10px; font-size: 15px; line-height: 1.55; color: #35101B;">
+      <b>«fondo ceuta nos une.svg» pesa 320 bytes y no dibuja nada.</b> No es un fondo vectorial:
+      es un envoltorio que apunta a una imagen que no venía en el envío.
+    </p>
+    <div class="codigo">&lt;svg viewBox="0 0 1457.34 1106.99"&gt;
+  &lt;image width="2831" height="3727"
+         xlink:href="<b style="color:#C71B3A;">Untitled_Artwork 7.png</b>"/&gt;   ← falta este fichero
+&lt;/svg&gt;</div>
+    <p style="margin: 12px 0 0; font-size: 14px; line-height: 1.55; color: #35101B;">
+      Mándame ese PNG (2831 × 3727) y lo integro: lo recorto, lo comprimo a WebP y lo pongo de
+      fondo. Tal como está, el navegador solo mostraría un hueco.
+    </p>
+  </div>
+
+  <p class="etiqueta">Mientras tanto, lo que la web ya tiene</p>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px;">
+
+    <div>
+      <div class="muestra" style="background: #35101B;">
+        <div style="position: absolute; inset: 0;
+                    background-image: radial-gradient(circle at center, rgba(252,192,24,.14) 1.1px, transparent 1.3px);
+                    background-size: 5px 5px;"></div>
+        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+          <img src="logo.svg" alt="" style="width: 58%; height: auto;">
+        </div>
+      </div>
+      <p class="nota">La trama de semitono que ya usa la portada: puntos de oro sobre tinta,
+        heredada del cartel. Es la textura del proyecto y no pesa nada, porque es CSS.</p>
+    </div>
+
+    <div>
+      <div class="muestra" style="background: #F7E3D3;">
+        <div style="position: absolute; inset: 0;
+                    background-image: radial-gradient(circle at center, rgba(53,16,27,.10) 1.1px, transparent 1.3px);
+                    background-size: 5px 5px;"></div>
+        <div style="position: absolute; top: 50%; left: 82%; translate: -50% -50%;
+                    width: 240px; aspect-ratio: 1; color: rgba(240,36,72,.10);
+                    background-image: conic-gradient(from 22.5deg,
+                      currentColor 0deg 45deg, transparent 45deg 90deg, currentColor 90deg 135deg, transparent 135deg 180deg,
+                      currentColor 180deg 225deg, transparent 225deg 270deg, currentColor 270deg 315deg, transparent 315deg 360deg);
+                    mask-image: radial-gradient(circle, #000 32%, transparent 68%);"></div>
+        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+          <img src="logo.svg" alt="" style="width: 58%; height: auto;">
+        </div>
+      </div>
+      <p class="nota">La misma trama sobre papel, con el escudo de Ceuta ampliado y desvaído
+        detrás. Da profundidad sin una sola imagen, y en el móvil no cuesta datos.</p>
+    </div>
+
+  </div>
+
+  <p class="nota" style="margin-top: 26px; max-width: 74ch;">
+    Sea cual sea el fondo, hay una regla que no se puede saltar: detrás del texto tiene que
+    quedar contraste suficiente para leerlo. La web va por 100 en accesibilidad y un fondo
+    ilustrado a toda página es la forma más fácil de perderlo. Si el PNG es muy detallado, lo
+    normal será usarlo en franjas concretas, no debajo del contenido.
+  </p>
+
+</div>
+</x-dc>
+</body>
+</html>

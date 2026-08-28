@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",     "x": 0,    "y": 0,    "w": 1180, "h": 1080, "title": "Cabecera" },
+    { "file": "Portada.dc.html",  "x": 1300, "y": 0,    "w": 1180, "h": 800,  "title": "Portada" },
+    { "file": "Pie.dc.html",      "x": 0,    "y": 1200, "w": 1180, "h": 820,  "title": "Pie e icono" },
+    { "file": "Fondo.dc.html",    "x": 1300, "y": 920,  "w": 1180, "h": 900,  "title": "El fondo" }
+  ],
+  "annotations": [
+    { "id": "nota-fondo", "x": 1300, "y": -150, "w": 400,
+      "text": "El logo entra sin problema.\nEl fondo no: falta el PNG al que apunta el SVG." }
+  ],
+  "launch": { "view": "canvas" }
+}
