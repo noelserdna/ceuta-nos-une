@@ -857,6 +857,69 @@ button, input, textarea, select { font: inherit; color: inherit; }
   transform: translateY(-2px);
 }
 
+/* En la barra de arriba. Sobre tinta el oro sí funciona, que es donde estaba
+   pensado. Se esconden en el móvil: el logo, los enlaces y cuatro iconos piden
+   474 px y en 390 no caben. Ahí toman el relevo los de la portada. */
+
+.redes--barra { margin: 0; flex: none; }
+
+.redes--barra .redes__lista { gap: 0.4rem; }
+
+.redes--barra .redes__lista a {
+  width: 34px; height: 34px;
+  color: var(--oro);
+  border: 2px solid rgba(252, 192, 24, 0.45);
+}
+
+.redes--barra .redes__lista svg { width: 15px; height: 15px; }
+
+.redes--barra .redes__lista a:hover,
+.redes--barra .redes__lista a:focus-visible {
+  background: var(--oro); border-color: var(--oro); color: var(--tinta);
+}
+
+/* Cada una en su sitio: arriba en pantalla ancha, en la portada en el móvil. */
+@media (max-width: 900px) { .redes--barra { display: none; } }
+@media (min-width: 901px) { .redes--mini { display: none; } }
+
+/* La versión pequeña de la portada. Va en carmín y no en oro: el oro está pensado
+   para el fondo de tinta del pie, y sobre el papel claro no se veía. */
+
+.redes--mini { margin: 1.6rem 0 0; }
+
+.redes--mini .redes__titulo {
+  margin-bottom: 0.6rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  color: var(--gris);
+}
+
+.redes--mini .redes__lista { gap: 0.55rem; justify-content: flex-start; }
+
+.redes--mini .redes__lista a {
+  width: 38px; height: 38px;
+  color: var(--papel-claro);
+  background: var(--carmin-osc);
+  border-color: var(--carmin-osc);
+}
+
+.redes--mini .redes__lista svg { width: 17px; height: 17px; }
+
+.redes--mini .redes__lista a:hover,
+.redes--mini .redes__lista a:focus-visible {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--oro);
+}
+
+.redes__nota {
+  margin: 0.5rem auto 0;
+  max-width: 44ch;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: rgba(247, 227, 211, 0.6);
+}
+
 .redes__cuenta {
   margin: 0.85rem 0 0;
   font-size: 0.9rem;
