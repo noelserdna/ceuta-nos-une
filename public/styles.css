@@ -519,11 +519,20 @@ button, input, textarea, select { font: inherit; color: inherit; }
   padding: 0.7rem 0.9rem;
 }
 
-/* Buscar la concentración más cercana. Pensado para el móvil, que es donde la
-   posición es fina y donde nadie quiere escribir el nombre de su pueblo, pero se
-   ofrece en cualquier pantalla: funciona igual. */
+/* Buscar la concentración más cercana. Solo en móviles y tabletas: ahí la
+   posición viene del GPS y es de calle, mientras que en un ordenador se deduce
+   de la conexión y puede errar por kilómetros, que para esto no sirve de nada.
+   Se distingue por el tipo de puntero y no por el ancho de la pantalla: un móvil
+   girado sigue siendo un móvil, y una ventana estrecha en un portátil no lo es. */
+.cerca, #cerca-estado { display: none; }
+
+@media (pointer: coarse) {
+  #cerca-estado { display: block; }
+  .cerca { display: inline-flex; }
+}
+
 .cerca {
-  display: inline-flex; align-items: center; gap: 0.5rem;
+  align-items: center; gap: 0.5rem;
   min-height: 46px; margin-top: 0.7rem; padding: 0.6rem 1rem;
   background: var(--tinta); color: var(--papel);
   border: var(--borde-pieza) solid var(--tinta);
