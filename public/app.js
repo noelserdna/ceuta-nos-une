@@ -419,8 +419,27 @@ async function compartirLugar(lugar, boton) {
 }
 
 function centrarEn(lugar, elemento) {
+  /* Al elegir una tarjeta se filtra también por su provincia: el mapa y el
+     listado pasan a hablar de lo mismo, y el chip encendido deja a la vista que
+     hay un filtro puesto y que para volver a verlo todo hay que pulsar "Todas". */
+  if (estado.provincia !== lugar.province) {
+    estado.provincia = lugar.province;
+    pintarChips();
+
+    /* El listado va por tandas, así que hay que asegurarse de que la que se
+       acaba de pulsar entra en las que se pintan: si no, desaparecería. */
+    const posicion = lugaresFiltrados().findIndex((l) => l.id === lugar.id);
+    estado.visibles = Math.max(POR_PAGINA, (Math.floor(posicion / POR_PAGINA) + 1) * POR_PAGINA);
+
+    // Sin recolocar el mapa: se centra abajo en el lugar concreto, no en la provincia.
+    pintarLugares(false);
+
+    // Repintar rehace las tarjetas, así que la que llegó por parámetro ya no existe.
+    elemento = $('.tarjeta[data-id="' + lugar.id + '"]') || elemento;
+  }
+
   $$(".tarjeta--activa").forEach((el) => el.classList.remove("tarjeta--activa"));
-  elemento.classList.add("tarjeta--activa");
+  elemento?.classList.add("tarjeta--activa");
 
   const marcador = estado.marcadores.get(lugar.id);
   if (!marcador) return;
