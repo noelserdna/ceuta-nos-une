@@ -6,6 +6,16 @@
 <title>Ceuta nos une · 2 de septiembre</title>
 <meta name="description" content="Concentración en toda España el 2 de septiembre, a las 20:00 h frente a cada ayuntamiento o Delegación del Gobierno. Mapa de lugares, propuestas y muro de apoyo.">
 <meta name="theme-color" content="#F7E3D3">
+
+<!-- WebMCP — origin trial de Chrome (149 a 156). Hace falta un token POR ORIGEN, pero
+     los dos se pueden poner aquí: Chrome usa el que corresponde al dominio e ignora el
+     resto, así no hay que tocar ni vercel.json ni public/_headers, que son ficheros
+     distintos en cada host. Se piden en https://developer.chrome.com/origintrials
+     marcando "Match subdomains". Descomenta cuando los tengas: un token inválido no
+     rompe nada, pero deja un aviso en la consola.
+<meta http-equiv="origin-trial" content="TOKEN_DE_ceutanosune_es">
+<meta http-equiv="origin-trial" content="TOKEN_DE_ceutanosune_com">
+-->
 <meta property="og:title" content="Ceuta nos une · 2 de septiembre">
 <meta property="og:description" content="Concentración en toda España. En cada comunidad, en cada ciudad, en cada pueblo. Consulta dónde, propón un lugar y deja tu mensaje de apoyo.">
 <meta property="og:type" content="website">
@@ -174,10 +184,20 @@
     </p>
   </div>
 
-  <form class="postal-nueva" id="form-mensaje" novalidate>
+  <!-- Herramienta declarativa de WebMCP. SIN toolautosubmit a propósito: el agente
+       rellena el mensaje y la firma, pero el botón de publicar lo pulsa la persona.
+       El muro sale al momento y sin revisión, así que un agente publicando solo
+       sería un agente diciendo cosas en nombre de alguien en un sitio del que ya no
+       se pueden retirar. Además, el propio muro es contenido sin moderar en esta
+       misma página: si alguien escribe ahí una orden para el agente, lo peor que
+       puede pasar es un formulario relleno que una persona ve y no envía. -->
+  <form class="postal-nueva" id="form-mensaje" novalidate
+        toolname="escribir_mensaje_apoyo"
+        tooldescription="Escribe en el muro de apoyo el mensaje que la persona te dicte, con la firma que ella elija, y lo deja redactado A LA VISTA SIN publicarlo: publicar lo pulsa ella. El muro sale al momento, sin revisión previa, firmado con su nombre en una página pública que lee cualquiera. No redactes mensajes en nombre de nadie que no te lo haya pedido, no escribas varios seguidos y no inventes una firma.">
     <div class="postal-nueva__cuerpo">
       <label class="visualmente-oculto" for="m-body">Tu mensaje</label>
       <textarea id="m-body" name="body" rows="4" maxlength="800" required
+                toolparamdescription="El mensaje de apoyo, con las palabras de la persona. Máximo 800 caracteres. Si te lo dicta, no lo mejores: déjalo como lo diría ella."
                 placeholder="Escribe tu mensaje de apoyo…"></textarea>
       <p class="contador"><span id="m-restantes"></span></p>
     </div>
@@ -186,6 +206,7 @@
       <div class="campo">
         <label for="m-author">¿Cómo quieres firmar?</label>
         <input id="m-author" name="author" required maxlength="60" autocomplete="name"
+               toolparamdescription="Cómo quiere firmar. No hace falta el nombre real, vale un apodo. Pregúntaselo, no lo deduzcas."
                pattern=".*\S.*" placeholder="Tu nombre o un apodo">
         <p class="campo__ayuda">No hace falta tu nombre real: vale cualquier apodo.</p>
       </div>
@@ -198,6 +219,7 @@
         <div class="campo">
           <label for="m-origin">Desde dónde escribes</label>
           <input id="m-origin" name="origin" maxlength="60" autocomplete="address-level2"
+                 toolparamdescription="Desde dónde escribe: Ceuta, Melilla, Madrid… Opcional, déjalo vacío si no lo ha dicho."
                  placeholder="Ceuta, Melilla, Madrid…">
         </div>
 
@@ -221,10 +243,14 @@
         </div>
       </details>
 
-      <!-- Campo trampa para bots: invisible y sin foco para las personas -->
+      <!-- Campo trampa para bots: invisible y sin foco para las personas.
+           Sin atributo name a propósito: la API declarativa de WebMCP mete en el
+           esquema todo campo que tenga name, y un agente lo rellenaría creyendo
+           que toca. El servidor lo tomaría por un bot y devolvería un ok falso.
+           app.js lo lee por id, así que la trampa sigue funcionando igual. -->
       <div class="trampa" aria-hidden="true">
         <label for="website">No rellenar</label>
-        <input id="website" name="website" tabindex="-1" autocomplete="off">
+        <input id="website" tabindex="-1" autocomplete="off">
       </div>
 
       <div class="turnstile" id="turnstile-mensaje"></div>
@@ -328,5 +354,6 @@
 
 <script src="/vendor/leaflet.js"></script>
 <script src="/app.js" type="module"></script>
+<script src="/webmcp.js" type="module"></script>
 </body>
 </html>

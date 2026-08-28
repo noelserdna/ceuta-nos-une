@@ -6,6 +6,16 @@
 <title>Propón tu plaza · Ceuta nos une</title>
 <meta name="description" content="Añade al mapa una concentración del 2 de septiembre. Si además vas a convocarla tú, aquí tienes cómo comunicarla a la Delegación del Gobierno.">
 <meta name="theme-color" content="#F7E3D3">
+
+<!-- WebMCP — origin trial de Chrome (149 a 156). Hace falta un token POR ORIGEN, pero
+     los dos se pueden poner aquí: Chrome usa el que corresponde al dominio e ignora el
+     resto, así no hay que tocar ni vercel.json ni public/_headers, que son ficheros
+     distintos en cada host. Se piden en https://developer.chrome.com/origintrials
+     marcando "Match subdomains". Descomenta cuando los tengas: un token inválido no
+     rompe nada, pero deja un aviso en la consola.
+<meta http-equiv="origin-trial" content="TOKEN_DE_ceutanosune_es">
+<meta http-equiv="origin-trial" content="TOKEN_DE_ceutanosune_com">
+-->
 <meta property="og:title" content="Propón tu plaza · Ceuta nos une">
 <meta property="og:description" content="¿Falta tu ciudad en el mapa del 2 de septiembre? Añádela aquí. Y si vas a convocarla tú, cómo comunicarla en regla.">
 <meta property="og:type" content="website">
@@ -182,57 +192,81 @@
     </div>
   </div>
 
-  <form class="formulario" id="form-lugar" novalidate>
+  <!-- Herramienta declarativa de WebMCP. SIN toolautosubmit: el agente rellena y
+       la persona envía. Cada propuesta se la lee un voluntario, una por una, antes
+       de publicarla; lo escaso aquí no son las filas de la base de datos, es su
+       tiempo. -->
+  <form class="formulario" id="form-lugar" novalidate
+        toolname="proponer_concentracion"
+        tooldescription="Rellena el formulario para añadir al mapa una concentración que falta. Tú escribes los campos y los dejas a la vista; el botón de enviar lo pulsa siempre la persona. Lo que se envía pasa por revisión humana antes de publicarse, así que no lo uses para volcar listas ni para enviar sitios de los que no estés seguro. Antes de rellenar, comprueba con listar_concentraciones que esa ciudad no esté ya.">
     <div class="campo campo--mitad">
       <label for="l-city">Localidad <b aria-hidden="true">*</b></label>
-      <input id="l-city" name="city" required maxlength="80" autocomplete="address-level2" placeholder="Algeciras">
+      <input id="l-city" name="city" required maxlength="80" autocomplete="address-level2"
+             toolparamdescription="Localidad donde es la concentración. Solo el nombre: Algeciras." placeholder="Algeciras">
     </div>
 
     <div class="campo campo--mitad">
       <label for="l-province">Provincia <b aria-hidden="true">*</b></label>
-      <input id="l-province" name="province" required maxlength="80" list="provincias" placeholder="Cádiz">
+      <input id="l-province" name="province" required maxlength="80" list="provincias"
+             toolparamdescription="Provincia española tal como se escribe en castellano: Cádiz, A Coruña, Guipúzcoa." placeholder="Cádiz">
       <datalist id="provincias"></datalist>
     </div>
 
     <div class="campo">
       <label for="l-venue">Lugar <b aria-hidden="true">*</b></label>
-      <input id="l-venue" name="venue" required maxlength="140" placeholder="Ayuntamiento — Plaza Alta">
+      <input id="l-venue" name="venue" required maxlength="140"
+             toolparamdescription="El sitio, como lo diría un vecino: Ayuntamiento — Plaza Alta." placeholder="Ayuntamiento — Plaza Alta">
     </div>
 
     <div class="campo">
       <label for="l-address">Dirección <b aria-hidden="true">*</b></label>
       <div class="campo__conboton">
-        <input id="l-address" name="address" required maxlength="240" autocomplete="street-address" placeholder="Plaza Alta, 11201 Algeciras">
+        <input id="l-address" name="address" required maxlength="240" autocomplete="street-address"
+               toolparamdescription="Dirección postal completa, con código postal si se sabe." placeholder="Plaza Alta, 11201 Algeciras">
         <button type="button" class="boton boton--mini" id="btn-buscar-dir">Situar en el mapa</button>
       </div>
       <ul class="sugerencias" id="sugerencias" role="listbox" aria-label="Direcciones encontradas" hidden></ul>
       <p class="campo__ayuda" id="ayuda-coords">Situar el punto en el mapa es opcional, pero nos ayuda mucho a colocarlo bien.</p>
       <div class="minimapa" id="minimapa" hidden></div>
+      <!-- El punto del mapa vive en el marcador arrastrable, no en el formulario.
+           Estos dos ocultos son para que un agente pueda situar la concentración:
+           enviarLugar() serializa el formulario entero, así que entran solos, y si
+           la persona arrastra el marcador, el pin los sobrescribe. Vacíos valen
+           null en el servidor, que es lo mismo que "sin fijar". -->
+      <input type="hidden" id="l-lat" name="lat"
+             toolparamdescription="Latitud en grados decimales. No la inventes: sácala de situar_direccion o déjala vacía.">
+      <input type="hidden" id="l-lon" name="lon"
+             toolparamdescription="Longitud en grados decimales. No la inventes: sácala de situar_direccion o déjala vacía.">
     </div>
 
     <div class="campo campo--mitad">
       <label for="l-date">Fecha <b aria-hidden="true">*</b></label>
-      <input id="l-date" name="event_date" type="date" required>
+      <input id="l-date" name="event_date" type="date" required
+             toolparamdescription="Formato AAAA-MM-DD. La convocatoria general es el 2 de septiembre.">
     </div>
 
     <div class="campo campo--mitad">
       <label for="l-time">Hora <b aria-hidden="true">*</b></label>
-      <input id="l-time" name="event_time" type="time" required value="20:00">
+      <input id="l-time" name="event_time" type="time" required value="20:00"
+             toolparamdescription="HH:MM en 24 h. La convocatoria general es a las 20:00; pon otra hora solo si te consta.">
     </div>
 
     <div class="campo campo--mitad">
       <label for="l-organizer">Quién convoca</label>
-      <input id="l-organizer" name="organizer" maxlength="140" placeholder="Asociación, plataforma…">
+      <input id="l-organizer" name="organizer" maxlength="140"
+             toolparamdescription="Quién la convoca, si se sabe. Puede quedar vacío." placeholder="Asociación, plataforma…">
     </div>
 
     <div class="campo campo--mitad">
       <label for="l-source">Enlace que lo confirma</label>
-      <input id="l-source" name="source_url" type="url" maxlength="300" inputmode="url" placeholder="https://…">
+      <input id="l-source" name="source_url" type="url" maxlength="300" inputmode="url"
+             toolparamdescription="Enlace público que lo confirme: cartel, publicación, nota de prensa. Déjalo vacío antes que inventarlo: es lo que permite verificar la propuesta." placeholder="https://…">
     </div>
 
     <div class="campo">
       <label for="l-notes">Detalles útiles</label>
-      <textarea id="l-notes" name="notes" rows="2" maxlength="600" placeholder="Recorrido, punto de encuentro exacto, accesibilidad…"></textarea>
+      <textarea id="l-notes" name="notes" rows="2" maxlength="600"
+                toolparamdescription="Detalles útiles para quien vaya: punto exacto, recorrido, accesibilidad." placeholder="Recorrido, punto de encuentro exacto, accesibilidad…"></textarea>
     </div>
 
     <div class="turnstile" id="turnstile-lugar"></div>
@@ -273,5 +307,6 @@
 
 <script src="/vendor/leaflet.js"></script>
 <script src="/app.js" type="module"></script>
+<script src="/webmcp.js" type="module"></script>
 </body>
 </html>
