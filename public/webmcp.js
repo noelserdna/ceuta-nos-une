@@ -293,22 +293,53 @@ async function escribirCampo(sel, valor) {
 function vigilarRellenoDelAgente(selForm, selBoton, aviso, textoBoton) {
   const form = $(selForm);
   if (!form) return;
+
   let avisado = false;
+  let seguidos = 0;
+  let ventana = null;
+
+  /* Se pide el aviso cuando se rellenan DOS campos seguidos. Un agente rellena
+     varios de golpe; app.js, en cambio, escribe alguno suelto (por ejemplo la
+     fecha, después de enviar), y eso no debe disparar el aviso. */
+  const rellenado = (campo) => {
+    if (!campo || campo.type === "hidden") return;
+
+    campo.classList.add("campo--del-agente");
+    setTimeout(() => campo.classList.remove("campo--del-agente"), 4000);
+
+    seguidos++;
+    clearTimeout(ventana);
+    ventana = setTimeout(() => { seguidos = 0; }, 2000);
+
+    if (seguidos >= 2 && !avisado) {
+      avisado = true;
+      avisarDelBoton(selBoton, aviso, textoBoton);
+      anunciar("estoy rellenando el formulario. Léelo y, si está bien, púlsalo tú.");
+    }
+  };
+
+  /* Cómo se sabe que ha escrito un agente y no la persona.
+
+     La primera idea, mirar ev.isTrusted, NO funciona: cuando Chrome rellena el
+     formulario por la API declarativa dispara input y change con isTrusted en
+     true, igual que el autorrelleno del navegador. Tampoco sirve envolver el
+     setter de value, porque el relleno ocurre por debajo de JavaScript.
+
+     Lo que sí distingue: al teclear, cada pulsación dispara beforeinput ANTES
+     que input. El relleno programático dispara input a secas. Comprobado en
+     Chrome 152 en los dos sentidos. Así que un input sin su beforeinput justo
+     antes en el mismo campo es texto que la persona no ha escrito. */
+  const tecleados = new WeakMap();
+
+  form.addEventListener("beforeinput", (ev) => {
+    try { tecleados.set(ev.target, performance.now()); } catch { /* nada */ }
+  }, true);
 
   form.addEventListener("input", (ev) => {
     try {
-      if (ev.isTrusted) return;                       // lo ha escrito una persona
-      const campo = ev.target;
-      if (!campo || campo.type === "hidden") return;
-
-      campo.classList.add("campo--del-agente");
-      setTimeout(() => campo.classList.remove("campo--del-agente"), 4000);
-
-      if (!avisado) {
-        avisado = true;
-        avisarDelBoton(selBoton, aviso, textoBoton);
-        anunciar("estoy rellenando el formulario. Léelo y, si está bien, púlsalo tú.");
-      }
+      const cuando = tecleados.get(ev.target) ?? -Infinity;
+      if (performance.now() - cuando < 150) return;   // lo acaba de teclear una persona
+      rellenado(ev.target);
     } catch { /* la señal visual nunca puede romper el formulario */ }
   }, true);
 }
