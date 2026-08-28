@@ -32,6 +32,11 @@
   --sombra-suave: 6px 6px 0 rgba(53, 16, 27, 0.22);
 
   --transicion: 240ms cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* El papel del cartel: su textura sobre el color liso. El color va debajo, así
+     que si la imagen no cargara la web se ve igual, solo que sin grano. */
+  --papel-textura: var(--papel) url("/media/fondo.webp") repeat;
+  --papel-textura-escala: 642px;   /* medio mosaico: a tamaño natural el motivo sale enorme */
 }
 
 /* ------------------------------------------------------------------ base -- */
@@ -47,7 +52,12 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--papel);
+  /* La textura del cartel, en mosaico. Va con el color de papel debajo, así que
+     si la imagen no cargara la web se ve igual, solo que lisa. El original trae
+     un viñeteado que impide repetirlo, de modo que el mosaico sale del centro
+     reflejado: los bordes opuestos son idénticos y no hay junta posible. */
+  background: var(--papel-textura);
+  background-size: var(--papel-textura-escala);
   color: var(--tinta);
   font-family: var(--texto);
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.09rem);
@@ -177,7 +187,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 .portada {
   position: relative; isolation: isolate;
-  background: var(--papel); color: var(--tinta);
+  background: var(--papel-textura);
+  background-size: var(--papel-textura-escala); color: var(--tinta);
   padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 4vw, 3rem) clamp(2rem, 4vw, 3rem);
   overflow: hidden;
 }
@@ -674,7 +685,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 .muro {
   position: relative; isolation: isolate; overflow: hidden;
-  background: var(--papel);
+  background: var(--papel-textura);
+  background-size: var(--papel-textura-escala);
   padding-bottom: clamp(3.5rem, 8vw, 6rem);
 }
 
@@ -985,7 +997,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 .propon-cab {
   position: relative; isolation: isolate; overflow: hidden;
-  background: var(--papel);
+  background: var(--papel-textura);
+  background-size: var(--papel-textura-escala);
   padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 3rem) clamp(2rem, 5vw, 3rem);
 }
 .propon-cab__cuerpo { position: relative; z-index: 1; max-width: var(--ancho); margin-inline: auto; }
