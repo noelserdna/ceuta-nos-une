@@ -802,6 +802,54 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .pie__marca { margin: 0 0 1.2rem; }
 
 .pie__marca img { display: block; width: min(16rem, 62%); height: auto; margin-inline: auto; }
+/* ------------------------------------------------------------- redes ------ */
+/* Los iconos van en oro sobre tinta y con el borde grueso del cartel, no como
+   pastillas redondas de plantilla. El cuadro de pulsación es de 48 px: son
+   enlaces que se buscan con el pulgar, muchas veces por la calle. */
+
+.redes { margin: 0 0 1.8rem; }
+
+.redes__titulo {
+  margin: 0 0 0.9rem;
+  font-family: var(--display);
+  font-size: 0.94rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(247, 227, 211, 0.72);
+}
+
+.redes__lista {
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 0; padding: 0; list-style: none;
+}
+
+.redes__lista a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px;
+  color: var(--oro);
+  border: var(--borde-pieza) solid rgba(252, 192, 24, 0.55);
+  transition: color var(--transicion), background var(--transicion),
+              border-color var(--transicion), transform var(--transicion);
+}
+
+.redes__lista svg { width: 22px; height: 22px; }
+
+.redes__lista a:hover,
+.redes__lista a:focus-visible {
+  background: var(--oro);
+  border-color: var(--oro);
+  color: var(--tinta);
+  transform: translateY(-2px);
+}
+
+.redes__cuenta {
+  margin: 0.85rem 0 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: rgba(247, 227, 211, 0.72);
+}
+
 .pie__texto { max-width: 62ch; margin: 0 auto 1.5rem; font-size: 0.95rem; }
 .pie__texto a, .pie__legal a { color: var(--oro); }
 .pie__legal { font-size: 0.66rem; color: rgba(247, 227, 211, 0.55); margin: 0; }
@@ -1149,6 +1197,8 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
 .mas-lugares { display: flex; justify-content: center; margin: 1.6rem 0 0.4rem; }
 
 @media (prefers-reduced-motion: reduce) {
+  .redes__lista a { transition: none; }
+  .redes__lista a:hover, .redes__lista a:focus-visible { transform: none; }
   .grupo { transition: none; }
   .leaflet-cluster-anim .leaflet-marker-icon,
   .leaflet-cluster-anim .leaflet-marker-shadow { transition: none; }
