@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; }
+    a { color: #FCC018; } a:hover { color: #F02448; }
+    .trama {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle at center, rgba(252,192,24,.13) 1.1px, transparent 1.3px);
+      background-size: 5px 5px;
+    }
+    .etiqueta {
+      font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+      color: #FCC018; margin: 0 0 14px;
+    }
+    .boton {
+      display: inline-flex; align-items: center; padding: 15px 30px;
+      font-family: Anton, sans-serif; font-size: 17px; letter-spacing: .04em; text-transform: uppercase;
+      border: 3px solid #F7E3D3;
+    }
+  </style>
+</helmet>
+
+<div style="background: #35101B; position: relative; overflow: hidden; padding: 56px 52px;">
+  <div class="trama"></div>
+
+  <div style="position: relative;">
+    <p class="etiqueta">Portada · el logo como titular</p>
+
+    <div style="max-width: 760px;">
+      <p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .18em;
+                text-transform: uppercase; color: rgba(247,227,211,.72);">
+        Convocatoria ciudadana · 2 de septiembre
+      </p>
+
+      <img src="logo.svg" alt="Ceuta nos une"
+           style="display: block; width: 100%; max-width: 620px; height: auto; margin: 8px 0 18px;">
+
+      <p style="margin: 0 0 10px; font-family: Anton, sans-serif; font-size: 40px; line-height: .98;
+                color: #F7E3D3; text-transform: uppercase;">
+        Concentración<br>en toda España
+      </p>
+      <p style="margin: 0 0 30px; font-size: 18px; line-height: 1.5; color: rgba(247,227,211,.82);
+                max-width: 46ch;">
+        A favor del pueblo de Ceuta y por nuestra Unidad
+      </p>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 14px;">
+        <span class="boton" style="background: #FCC018; color: #35101B; box-shadow: 6px 6px 0 #C71B3A;">Ver dónde es</span>
+        <span class="boton" style="background: transparent; color: #F7E3D3;">Dejar mi mensaje</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="background: #F7E3D3; padding: 26px 52px;">
+  <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #35101B; max-width: 66ch;">
+    Hoy el titular es «CEUTA NOS UNE» compuesto en Anton, en crema. Sustituirlo por el logo real
+    pone la marca donde más se ve y aporta el oro y la sombra carmín, que la portada no tenía.
+    El logo se escala a lo ancho, así que en el móvil sigue leyéndose.
+  </p>
+</div>
+</x-dc>
+</body>
+</html>

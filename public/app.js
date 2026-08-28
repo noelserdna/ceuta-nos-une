@@ -280,7 +280,7 @@ function pintarLugares() {
 
     if (lugar.lat != null && lugar.lon != null) {
       const marcador = L.marker([lugar.lat, lugar.lon], {
-        icon: L.divIcon({ className: "", html: '<div class="pin"></div>', iconSize: [18, 18] }),
+        icon: L.divIcon({ className: "", html: '<div class="pin"></div>', iconSize: [24, 24] }),
         title: lugar.city + " · " + lugar.event_time,
       });
       marcador.bindPopup(popupLugar(lugar));
@@ -461,7 +461,7 @@ function fijarCoordenadas(lat, lon) {
     L.tileLayer(TESELAS, { maxZoom: 19 }).addTo(minimapa);
     pinPropuesta = L.marker([lat, lon], {
       draggable: true,
-      icon: L.divIcon({ className: "", html: '<div class="pin"></div>', iconSize: [18, 18] }),
+      icon: L.divIcon({ className: "", html: '<div class="pin"></div>', iconSize: [24, 24] }),
     }).addTo(minimapa);
     pinPropuesta.on("dragend", () => {
       const p = pinPropuesta.getLatLng();

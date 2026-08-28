@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, "Helvetica Neue", sans-serif; background: #F7E3D3; }
+    a { color: #FCC018; } a:hover { color: #F02448; }
+    .etiqueta {
+      font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+      color: #6A4048; margin: 0 0 10px;
+    }
+    .nota { font-size: 14px; line-height: 1.5; color: #35101B; margin: 10px 0 0; max-width: 62ch; }
+    .barra {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 13px 32px; background: #35101B; color: #F7E3D3;
+    }
+    .nav { display: flex; gap: 30px; }
+    .nav span {
+      font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+      border-bottom: 2px solid transparent; padding: 12px 0;
+    }
+    .gyronny {
+      width: 22px; height: 22px; flex: none; border: 2px solid #F7E3D3; background: #35101B;
+      background-image: conic-gradient(from 22.5deg,
+        #F7E3D3 0deg 45deg, transparent 45deg 90deg, #F7E3D3 90deg 135deg, transparent 135deg 180deg,
+        #F7E3D3 180deg 225deg, transparent 225deg 270deg, #F7E3D3 270deg 315deg, transparent 315deg 360deg);
+    }
+    .marca-texto {
+      font-family: Anton, "Arial Narrow", sans-serif; font-size: 19px;
+      letter-spacing: .03em; text-transform: uppercase;
+    }
+  </style>
+</helmet>
+
+<div style="padding: 40px 44px; display: flex; flex-direction: column; gap: 38px;">
+
+  <div>
+    <p class="etiqueta">A · Solo el logo</p>
+    <div class="barra">
+      <img src="logo.svg" alt="Ceuta nos une" style="height: 42px; width: auto; display: block;">
+      <div class="nav"><span>Lugares</span><span>Propón uno</span><span>Muro de apoyo</span></div>
+    </div>
+    <p class="nota">El logo sustituye al escudo y al nombre. Es el más limpio y el que más respeta la
+      pieza original, pero pierde el escudo, que es lo único que identifica a Ceuta de un vistazo.</p>
+  </div>
+
+  <div>
+    <p class="etiqueta">B · Escudo y logo</p>
+    <div class="barra">
+      <div style="display: flex; align-items: center; gap: 13px;">
+        <div class="gyronny"></div>
+        <img src="logo.svg" alt="Ceuta nos une" style="height: 40px; width: auto; display: block;">
+      </div>
+      <div class="nav"><span>Lugares</span><span>Propón uno</span><span>Muro de apoyo</span></div>
+    </div>
+    <p class="nota">Mantiene el escudo de Ceuta que ya lleva la web y añade el logo. Es lo más
+      continuista, pero en el móvil son dos elementos peleando por un sitio muy estrecho.</p>
+  </div>
+
+  <div>
+    <p class="etiqueta">C · Lo que hay hoy, para comparar</p>
+    <div class="barra">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="gyronny"></div>
+        <span class="marca-texto">Ceuta nos une</span>
+      </div>
+      <div class="nav"><span>Lugares</span><span>Propón uno</span><span>Muro de apoyo</span></div>
+    </div>
+    <p class="nota">Anton en una línea. Ocupa poco y se lee bien de lejos, pero es tipografía
+      genérica: no es la marca.</p>
+  </div>
+
+  <div>
+    <p class="etiqueta">En el móvil (390 px)</p>
+    <div style="display: flex; gap: 26px; align-items: flex-start;">
+      <div style="width: 390px; border: 3px solid #35101B;">
+        <div class="barra" style="padding: 11px 16px;">
+          <img src="logo.svg" alt="Ceuta nos une" style="height: 34px; width: auto; display: block;">
+          <div class="nav" style="gap: 14px;">
+            <span style="font-size: 10px;">Lugares</span><span style="font-size: 10px;">Muro</span>
+          </div>
+        </div>
+      </div>
+      <div style="width: 390px; border: 3px solid #35101B;">
+        <div class="barra" style="padding: 11px 16px;">
+          <div style="display: flex; align-items: center; gap: 9px;">
+            <div class="gyronny" style="width: 19px; height: 19px;"></div>
+            <img src="logo.svg" alt="Ceuta nos une" style="height: 30px; width: auto; display: block;">
+          </div>
+          <div class="nav" style="gap: 14px;">
+            <span style="font-size: 10px;">Lugares</span><span style="font-size: 10px;">Muro</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="nota">A la izquierda A, a la derecha B. En 390 px el logo de dos líneas baja a 30-34 px
+      de alto y cada renglón se queda en unos 12 px: se lee, porque la letra es condensada y muy
+      contrastada, pero es el límite. Con el escudo delante va justo.</p>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

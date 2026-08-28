@@ -9,3 +9,7 @@ worker-configuration.d.ts
 site/
 
 .vercel
+
+# Los canvas de diseño publicados se generan a partir de los .dc.html y pesan megas
+design/**/*.html
+!design/**/*.dc.html
