@@ -1,4 +1,20 @@
+# La información de esta web está para que se difunda: los rastreadores, también
+# los de modelos de lenguaje, son bienvenidos en los lugares y en la guía legal.
+
 User-agent: *
 Allow: /
+Allow: /api/places
+Allow: /api/config
+
+# El muro son mensajes de personas, firmados y publicados sin revisión previa. El
+# pie promete borrarlos a quien lo pida, y esa promesa no se puede cumplir dentro
+# de un corpus de entrenamiento ajeno: queda fuera de alcance.
+Disallow: /api/messages
+
+# Geocodificación: es un proxy con límite de uso, no una API para rastrear.
+Disallow: /api/geocode
+
+Disallow: /api/admin/
 Disallow: /admin
-Disallow: /api/
+
+Sitemap: https://ceutanosune.es/sitemap.xml

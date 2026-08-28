@@ -4,12 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ceuta nos une · 2 de septiembre</title>
-<meta name="description" content="Concentración en toda España el 2 de septiembre, a las 20:00 h frente a cada ayuntamiento o Delegación del Gobierno. Mapa de lugares, propuestas y muro de apoyo.">
+<meta name="description" content="Concentraciones en toda España el 2 de septiembre de 2026, casi todas a las 20:00 h frente a cada ayuntamiento o Delegación del Gobierno. Mira el mapa y busca la manifestación de tu ciudad.">
 <meta name="theme-color" content="#F7E3D3">
 <meta property="og:title" content="Ceuta nos une · 2 de septiembre">
 <meta property="og:description" content="Concentración en toda España. En cada comunidad, en cada ciudad, en cada pueblo. Consulta dónde, propón un lugar y deja tu mensaje de apoyo.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
+<!-- Seis hosts sirven este mismo directorio (los dos dominios con y sin www, la
+     URL del Worker y el espejo de GitHub Pages). Sin esto, Google elige por su
+     cuenta cuál es el bueno, y podría elegir el .com, bloqueado en España. -->
+<link rel="canonical" href="https://ceutanosune.es/">
 <meta property="og:url" content="https://ceutanosune.es/">
 <meta property="og:site_name" content="Ceuta nos une">
 <!-- El cartel oficial compuesto a 1200x630: al pegar el enlace en WhatsApp o
@@ -21,7 +25,7 @@
 <meta property="og:image:alt" content="Cartel de la convocatoria Ceuta nos une: concentración en toda España el 2 de septiembre a las 20:00 h, frente a cada ayuntamiento o Delegación del Gobierno.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Ceuta nos une · 2 de septiembre">
-<meta name="twitter:description" content="Concentración en toda España a las 20:00 h. Consulta dónde es tu plaza más cercana.">
+<meta name="twitter:description" content="Concentraciones en toda España el 2 de septiembre de 2026. Consulta la plaza y la hora de tu ciudad.">
 <meta name="twitter:image" content="https://ceutanosune.es/media/og.jpg">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -135,7 +139,7 @@
       <p class="fecha__numero"><b>02</b> <span>de</span></p>
       <p class="fecha__mes">Septiembre</p>
       <p class="fecha__donde">
-        20:00 h · Frente a cada ayuntamiento<br>o Delegación del Gobierno
+        20:00 h en casi toda España<br>Mira la hora de tu ciudad
       </p>
 
       <div class="cuenta" id="cuenta" aria-live="polite">
@@ -173,7 +177,7 @@
     <p class="etiqueta">Dónde</p>
     <h2 class="seccion__titulo">Un mapa de plazas</h2>
     <p class="seccion__texto">
-      Cada punto es una concentración confirmada, a las 20:00 h frente al ayuntamiento
+      Cada punto es una concentración confirmada, casi todas a las 20:00 h frente al ayuntamiento
       o la Delegación del Gobierno. Busca la tuya y comparte el enlace con quien tengas cerca.
     </p>
   </div>
@@ -214,6 +218,13 @@
       <div class="mas-lugares">
         <button type="button" class="boton boton--linea" id="btn-mas-lugares" hidden></button>
       </div>
+
+      <!-- Enlace de verdad, en el HTML servido: es el único camino por el que un
+           buscador o un modelo puede llegar al listado completo, porque lo de
+           arriba se pinta con JavaScript y ellos no lo ven. -->
+      <p class="lugares__todos">
+        <a href="/lugares">Ver el listado completo de todas las concentraciones, ciudad por ciudad</a>
+      </p>
 
       <p class="aviso aviso--sutil">
         Los lugares los envía la gente y se revisan uno a uno antes de publicarlos. Aun así,

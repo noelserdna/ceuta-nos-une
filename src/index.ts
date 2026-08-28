@@ -580,6 +580,178 @@ async function likeMessage(request: Request, env: Env, id: number): Promise<Resp
   return json({ ok: true, likes: total, mio: !previo });
 }
 
+/* La página de lugares en HTML de verdad.
+ *
+ * Existe porque la portada pinta las concentraciones con JavaScript, así que el
+ * HTML que se sirve no contiene ni un nombre de ciudad: quien busque "manifestación
+ * Ceuta Talavera" no encuentra esta web, y un modelo al que le pregunten dónde es
+ * en Málaga no tiene de dónde sacarlo.
+ *
+ * La sirve el Worker leyendo la base, no un fichero generado, para que no pueda
+ * quedarse desfasada cuando se aprueba un lugar nuevo.
+ *
+ * Deliberadamente NO incluye el muro. Esos mensajes van firmados, se publican sin
+ * revisión previa y el pie promete borrarlos a quien lo pida: esa promesa no se
+ * puede cumplir dentro del corpus de un tercero. Hoy están a salvo porque se pintan
+ * con JavaScript, y así deben seguir.
+ */
+async function paginaLugares(env: Env): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    `SELECT city, province, venue, address, event_date, event_time, lat, lon, notes, organizer
+       FROM places WHERE status = 'approved'
+       ORDER BY province COLLATE NOCASE, city COLLATE NOCASE`,
+  ).all<{
+    city: string; province: string; venue: string; address: string;
+    event_date: string; event_time: string; lat: number | null; lon: number | null;
+    notes: string | null; organizer: string | null;
+  }>();
+
+  const lugares = results ?? [];
+  const provincias = [...new Set(lugares.map((l) => l.province))]
+    .sort((a, b) => a.localeCompare(b, "es"));
+
+  const TODAS = [
+    "A Coruña","Álava","Albacete","Alicante","Almería","Asturias","Ávila","Badajoz",
+    "Baleares","Barcelona","Burgos","Cáceres","Cádiz","Cantabria","Castellón","Ceuta",
+    "Ciudad Real","Córdoba","Cuenca","Girona","Granada","Guadalajara","Guipúzcoa","Huelva",
+    "Huesca","Jaén","La Rioja","Las Palmas","León","Lleida","Lugo","Madrid","Málaga",
+    "Melilla","Murcia","Navarra","Ourense","Palencia","Pontevedra","Salamanca",
+    "Santa Cruz de Tenerife","Segovia","Sevilla","Soria","Tarragona","Teruel","Toledo",
+    "Valencia","Valladolid","Vizcaya","Zamora","Zaragoza",
+  ];
+  const vacias = TODAS.filter((p) => !provincias.includes(p));
+
+  /* La fecha larga, escrita entera en cada línea. A una persona le sobra, pero un
+     modelo cita líneas sueltas y necesita que cada una se entienda por sí sola. */
+  const fechaLarga = (iso: string) => {
+    const d = new Date(iso + "T00:00:00Z");
+    const dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto",
+                   "septiembre","octubre","noviembre","diciembre"];
+    return `${dias[d.getUTCDay()]} ${d.getUTCDate()} de ${meses[d.getUTCMonth()]} de ${d.getUTCFullYear()}`;
+  };
+
+  const anclaId = (t: string) =>
+    t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+  const horas = [...new Set(lugares.map((l) => l.event_time))];
+  const excepciones = lugares.filter((l) => l.event_time !== "20:00");
+
+  const secciones = provincias.map((prov) => {
+    const suyos = lugares.filter((l) => l.province === prov);
+    const filas = suyos.map((l) => {
+      const partes = [
+        `<strong>${escapeHtml(l.city)}</strong> (${escapeHtml(l.province)})`,
+        escapeHtml(l.venue),
+        escapeHtml(l.address),
+        `${fechaLarga(l.event_date)}, ${escapeHtml(l.event_time)} h`,
+      ];
+      if (l.organizer) partes.push("convoca " + escapeHtml(l.organizer));
+      const nota = l.notes ? `<br><small>${escapeHtml(l.notes)}</small>` : "";
+      return `<li>${partes.join(" — ")}${nota}</li>`;
+    }).join("\n      ");
+    return `    <h2 id="${anclaId(prov)}">${escapeHtml(prov)} · ${suyos.length} ${suyos.length === 1 ? "concentración" : "concentraciones"}</h2>
+    <ul>
+      ${filas}
+    </ul>`;
+  }).join("\n\n");
+
+  const eventos = lugares.map((l) => {
+    const zona = /Palmas|Tenerife/.test(l.province) ? "+01:00" : "+02:00";
+    const cp = /\b(\d{5})\b/.exec(l.address || "");
+    const ev: Record<string, unknown> = {
+      "@type": "Event",
+      name: `Ceuta nos une · Concentración en ${l.city}`,
+      startDate: `${l.event_date}T${l.event_time}:00${zona}`,
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      isAccessibleForFree: true,
+      inLanguage: "es",
+      url: "https://ceutanosune.es/lugares",
+      location: {
+        "@type": "Place",
+        name: l.venue,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: l.venue,
+          addressLocality: l.city,
+          addressRegion: l.province,
+          addressCountry: "ES",
+          ...(cp ? { postalCode: cp[1] } : {}),
+        },
+        ...(l.lat != null && l.lon != null
+          ? { geo: { "@type": "GeoCoordinates", latitude: l.lat, longitude: l.lon } }
+          : {}),
+      },
+    };
+    return ev;
+  });
+
+  const jsonld = JSON.stringify({ "@context": "https://schema.org", "@graph": eventos })
+    .replace(/</g, "\\u003c");
+
+  const html = `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dónde es cada concentración del 2 de septiembre de 2026 · Ceuta nos une</title>
+<meta name="description" content="Listado completo de las ${lugares.length} concentraciones convocadas en toda España el 2 de septiembre de 2026, con la plaza, la dirección y la hora de cada localidad.">
+<link rel="canonical" href="https://ceutanosune.es/lugares">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="barra">
+  <a class="barra__marca" href="/">
+    <span class="barra__gyronny" aria-hidden="true"></span>
+    <img class="barra__logo" src="/media/logo.svg" alt="Ceuta nos une" width="1837" height="816">
+  </a>
+</header>
+
+<main class="listado-plano">
+  <h1>Dónde es cada concentración del 2 de septiembre de 2026</h1>
+
+  <p><strong>${lugares.length} concentraciones confirmadas en ${provincias.length} de las 52 provincias españolas</strong>,
+  el ${fechaLarga(lugares[0]?.event_date ?? "2026-09-02")}, frente al ayuntamiento de cada
+  localidad o la Delegación del Gobierno de cada provincia. El lema es «A favor del pueblo
+  de Ceuta y por nuestra Unidad». Son actos pacíficos, gratuitos y abiertos: no hay que
+  apuntarse en ningún sitio.</p>
+
+  <p>${excepciones.length > 0
+    ? `La mayoría son a las 20:00 h, pero <strong>${excepciones.length} no</strong>: ` +
+      excepciones.map((l) => `${escapeHtml(l.city)} a las ${escapeHtml(l.event_time)} h`).join(", ") +
+      ". Mira la hora de tu localidad en el listado, no des por hecho que son las 20:00."
+    : `Todas son a las ${escapeHtml(horas[0] ?? "20:00")} h.`}</p>
+
+  <p><a href="/">Volver al mapa</a> · <a href="/propon">Cómo convocar una concentración donde no hay ninguna</a></p>
+
+${secciones}
+
+  <h2 id="huecos">Provincias sin ninguna concentración convocada</h2>
+  <p>Siguen sin nada convocado ${vacias.length} de las 52 provincias:
+  ${vacias.map((p) => escapeHtml(p)).join(", ")}. Donde no hay nada convocado, nadie sale.
+  Convocar una concentración es un trámite gratuito que puede firmar una sola persona
+  física, sin asociación ni partido: <a href="/propon">aquí se explica cómo</a>.</p>
+
+  <p class="listado-plano__pie">Los lugares los envía la gente y se revisan uno a uno antes
+  de publicarlos. Aun así, confirma siempre la convocatoria con la organización de tu ciudad
+  antes de desplazarte. Página actualizada al momento desde
+  <a href="/api/places">los datos públicos</a>.</p>
+</main>
+
+<script type="application/ld+json">${jsonld}</script>
+</body>
+</html>`;
+
+  return new Response(html, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=300",
+    },
+  });
+}
+
 async function serveImage(request: Request, env: Env, key: string): Promise<Response> {
   if (!/^muro\/\d{4}-\d{2}-\d{2}\/[0-9a-f]{32}\.(jpg|png|webp|gif)$/.test(key)) {
     return new Response("No encontrado", { status: 404 });
@@ -966,6 +1138,8 @@ export default {
 
         return fail("Ruta no encontrada.", 404);
       }
+
+      if (path === "/lugares" && method === "GET") return await paginaLugares(env);
 
       if (path.startsWith("/api/")) return fail("Ruta no encontrada.", 404);
 
