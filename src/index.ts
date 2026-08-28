@@ -40,6 +40,7 @@ export interface Env {
   RL_PLACES: RateLimit;
   RL_GEOCODE: RateLimit;
   RL_REPORTS: RateLimit;
+  RL_LIKES: RateLimit;
   RL_LOGIN: RateLimit;
   ADMIN_PASSWORD?: string;
   SESSION_SECRET?: string;
@@ -364,11 +365,11 @@ async function listMessages(request: Request, env: Env): Promise<Response> {
 
   const query = before
     ? env.DB.prepare(
-        `SELECT id, author, origin, body, photo_key, created_at
+        `SELECT id, author, origin, body, photo_key, likes, created_at
            FROM messages WHERE hidden = 0 AND id < ? ORDER BY id DESC LIMIT ?`,
       ).bind(before, MESSAGES_PAGE)
     : env.DB.prepare(
-        `SELECT id, author, origin, body, photo_key, created_at
+        `SELECT id, author, origin, body, photo_key, likes, created_at
            FROM messages WHERE hidden = 0 ORDER BY id DESC LIMIT ?`,
       ).bind(MESSAGES_PAGE);
 
@@ -378,6 +379,7 @@ async function listMessages(request: Request, env: Env): Promise<Response> {
     origin: string | null;
     body: string;
     photo_key: string | null;
+    likes: number;
     created_at: string;
   }>();
 
@@ -388,6 +390,7 @@ async function listMessages(request: Request, env: Env): Promise<Response> {
     origin: m.origin,
     body: m.body,
     created_at: m.created_at,
+    likes: m.likes ?? 0,
     photo_url: m.photo_key ? "/img/" + m.photo_key : null,
   }));
 
@@ -538,6 +541,43 @@ async function reportMessage(request: Request, env: Env, id: number): Promise<Re
       ? "Gracias. Con las denuncias recibidas, el mensaje se ha ocultado y lo revisaremos."
       : "Gracias, lo revisaremos.",
   });
+}
+
+/* El "me gusta" se puede quitar, así que esto alterna: si la huella ya estaba,
+   se borra la fila; si no, se inserta. El total se guarda en la propia fila del
+   mensaje para no tener que contar en cada carga del muro. */
+async function likeMessage(request: Request, env: Env, id: number): Promise<Response> {
+  const { success } = await env.RL_LIKES.limit({ key: ipVisitante(request, env) });
+  if (!success) return fail("Demasiados me gusta seguidos.", 429);
+
+  const existe = await env.DB.prepare(
+    "SELECT 1 AS x FROM messages WHERE id = ? AND hidden = 0",
+  ).bind(id).first<{ x: number }>();
+  if (!existe) return fail("Ese mensaje ya no está.", 404);
+
+  const ipHash = await hashIp(ipVisitante(request, env), env.IP_SALT ?? "sin-sal");
+  const previo = await env.DB.prepare(
+    "SELECT 1 AS x FROM message_likes WHERE message_id = ? AND ip_hash = ?",
+  ).bind(id, ipHash).first<{ x: number }>();
+
+  if (previo) {
+    await env.DB.prepare(
+      "DELETE FROM message_likes WHERE message_id = ? AND ip_hash = ?",
+    ).bind(id, ipHash).run();
+  } else {
+    await env.DB.prepare(
+      "INSERT OR IGNORE INTO message_likes (message_id, ip_hash) VALUES (?, ?)",
+    ).bind(id, ipHash).run();
+  }
+
+  const fila = await env.DB.prepare(
+    "SELECT COUNT(*) AS n FROM message_likes WHERE message_id = ?",
+  ).bind(id).first<{ n: number }>();
+  const total = fila?.n ?? 0;
+
+  await env.DB.prepare("UPDATE messages SET likes = ? WHERE id = ?").bind(total, id).run();
+
+  return json({ ok: true, likes: total, mio: !previo });
 }
 
 async function serveImage(request: Request, env: Env, key: string): Promise<Response> {
@@ -890,6 +930,9 @@ export default {
       if (path === "/api/messages" && method === "GET") return await listMessages(request, env);
       if (path === "/api/messages" && method === "POST") return await createMessage(request, env);
       if (path === "/api/geocode" && method === "GET") return await geocode(request, env);
+
+      const likeId = matchId(path, "/api/messages/", "/like");
+      if (likeId !== null && method === "POST") return await likeMessage(request, env, likeId);
 
       const reportId = matchId(path, "/api/messages/", "/report");
       if (reportId !== null && method === "POST") return await reportMessage(request, env, reportId);

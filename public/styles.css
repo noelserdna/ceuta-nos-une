@@ -104,6 +104,32 @@ button, input, textarea, select { font: inherit; color: inherit; }
   text-transform: uppercase;
 }
 
+/* El me gusta. En un muro de apoyo es la acción natural, así que tiene más
+   presencia que denunciar: color de marca y el corazón se rellena al darlo. */
+.postal__megusta {
+  display: inline-flex; align-items: center; gap: 0.32rem;
+  min-height: 32px; padding: 0.25rem 0.5rem;
+  background: none; border: 0; cursor: pointer;
+  color: var(--gris);
+  font-family: var(--texto); font-size: 0.82rem; font-weight: 700;
+  transition: color var(--transicion), transform var(--transicion);
+}
+
+.postal__megusta svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+.postal__megusta:hover { color: var(--carmin); }
+.postal__megusta:active { transform: scale(0.92); }
+
+.postal__megusta--mio { color: var(--carmin); }
+.postal__megusta--mio svg { fill: currentColor; }
+
+.postal__megusta-n { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .postal__megusta { transition: none; }
+  .postal__megusta:active { transform: none; }
+}
+
 /* Cuando un mensaje se retira por denuncias, su tarjeta se queda en el sitio con
    el motivo: si desapareciera de golpe, quien acaba de denunciarlo no sabría si
    ha funcionado. */

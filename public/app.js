@@ -84,6 +84,26 @@ function fechaLegible(iso) {
   return d.toLocaleDateString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
+/* Los "me gusta" que ha dado quien está delante. El servidor los cuenta por
+   huella, pero no hay sesión que preguntar, así que el navegador recuerda cuáles
+   son suyos para pintarlos al volver. Si el almacenamiento falla (ventana
+   privada, ajustes del navegador), se sigue sin memoria y ya está. */
+const MIS_ME_GUSTA = "cnu:megusta";
+
+function misMeGusta() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(MIS_ME_GUSTA) || "[]"));
+  } catch {
+    return new Set();
+  }
+}
+
+function guardarMeGusta(conjunto) {
+  try {
+    localStorage.setItem(MIS_ME_GUSTA, JSON.stringify([...conjunto]));
+  } catch { /* sin memoria, pero el me gusta ya ha contado en el servidor */ }
+}
+
 function sinAcentos(texto) {
   return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
@@ -209,7 +229,9 @@ function iniciarMapa() {
   L.tileLayer(TESELAS, { attribution: ATRIBUCION, maxZoom: 19 }).addTo(mapa);
   capaMarcadores = (typeof L.markerClusterGroup === "function")
     ? L.markerClusterGroup({
-        maxClusterRadius: 45,
+        /* 70 y no 45: con 172 puntos, los grupos pequeños se solapaban entre
+           sí y dejaban zonas de 22 px imposibles de pulsar con el dedo. */
+        maxClusterRadius: 70,
         showCoverageOnHover: false,   // el polígono azul de serie no pega con el cartel
         spiderfyOnMaxZoom: true,
         chunkedLoading: true,
@@ -671,6 +693,44 @@ function postal(mensaje) {
   const derecha = crear("div");
   derecha.append(crear("div", "postal__fecha", fechaLegible(mensaje.created_at)));
 
+  /* El me gusta. Va antes que denunciar y con más presencia: en un muro de apoyo
+     lo normal es querer sumarse a un mensaje, no señalarlo. */
+  const mios = misMeGusta();
+  const meGusta = crear("button", "postal__megusta");
+  meGusta.type = "button";
+  const pintarMeGusta = (n, mio) => {
+    meGusta.classList.toggle("postal__megusta--mio", mio);
+    meGusta.setAttribute("aria-pressed", String(mio));
+    meGusta.title = mio ? "Quitar mi me gusta" : "Me gusta este mensaje";
+    meGusta.replaceChildren();
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M12 20.7 4.1 13a4.6 4.6 0 0 1 6.5-6.5l1.4 1.4 1.4-1.4A4.6 4.6 0 1 1 19.9 13z");
+    svg.append(path);
+    meGusta.append(svg);
+    const cuenta = crear("span", "postal__megusta-n", n > 0 ? String(n) : "");
+    meGusta.append(cuenta);
+    const oculto = crear("span", "visualmente-oculto",
+      n === 1 ? "1 me gusta" : n + " me gusta");
+    meGusta.append(oculto);
+  };
+  pintarMeGusta(mensaje.likes || 0, mios.has(mensaje.id));
+
+  meGusta.addEventListener("click", async () => {
+    meGusta.disabled = true;
+    try {
+      const res = await pedir("/api/messages/" + mensaje.id + "/like", { method: "POST" });
+      const guardados = misMeGusta();
+      if (res.mio) guardados.add(mensaje.id); else guardados.delete(mensaje.id);
+      guardarMeGusta(guardados);
+      pintarMeGusta(res.likes, res.mio);
+    } catch { /* si falla, se queda como estaba */ }
+    meGusta.disabled = false;
+  });
+  derecha.append(meGusta);
+
   const reportar = crear("button", "postal__reportar", "Denunciar");
   reportar.type = "button";
   reportar.title = "Denunciar un contenido inadecuado";
@@ -861,6 +921,41 @@ async function enviarMensaje(ev) {
 
 /* ------------------------------------------------------------- difundir -- */
 
+/* Carga automática al llegar al final del muro. Con miles de mensajes, pulsar
+   "ver más" veinte veces no es forma de leer nada.
+   Se para a las CARGAS_AUTOMATICAS tandas y pide un clic: un scroll infinito sin
+   freno impide llegar al pie de la página, y ahí está el contacto y el aviso
+   legal. El botón se queda siempre, que es lo que funciona con teclado. */
+const CARGAS_AUTOMATICAS = 5;
+let cargasSeguidas = 0;
+let vigilanteMuro = null;
+
+function prepararScrollDelMuro() {
+  const boton = $("#btn-mas");
+  if (!boton || typeof IntersectionObserver !== "function") return;
+
+  /* El observador avisa cuando el botón ENTRA en pantalla, pero tras cargar una
+     tanda el botón sigue ahí abajo sin haber salido nunca, así que no vuelve a
+     avisar. Por eso, después de cada carga se comprueba a mano si sigue a la
+     vista y se encadena la siguiente. */
+  async function quizasCargarMas() {
+    if (boton.hidden || estado.cargandoMensajes) return;
+    if (cargasSeguidas >= CARGAS_AUTOMATICAS) return;
+    const caja = boton.getBoundingClientRect();
+    if (caja.top > window.innerHeight + 300) return;   // aún queda por bajar
+
+    cargasSeguidas++;
+    await cargarMensajes(true);
+    requestAnimationFrame(() => quizasCargarMas());
+  }
+
+  vigilanteMuro = new IntersectionObserver((entradas) => {
+    if (entradas.some((e) => e.isIntersecting)) quizasCargarMas();
+  }, { rootMargin: "300px" });   // se adelanta, para que no haya salto visible
+
+  vigilanteMuro.observe(boton);
+}
+
 function prepararCompartir() {
   const boton = $("#btn-compartir");
   const nota = $("#difunde-nota");
@@ -940,7 +1035,10 @@ function conectarEventos() {
   $("#btn-buscar-dir")?.addEventListener("click", buscarDireccion);
   $("#form-lugar")?.addEventListener("submit", enviarLugar);
   $("#form-mensaje")?.addEventListener("submit", enviarMensaje);
-  $("#btn-mas")?.addEventListener("click", () => cargarMensajes(true));
+  $("#btn-mas")?.addEventListener("click", () => {
+    cargasSeguidas = 0;          // ha pedido seguir a mano: vuelven a permitirse tandas solas
+    cargarMensajes(true);
+  });
 
   $("#btn-mas-lugares")?.addEventListener("click", () => {
     const antes = $$("#lista-lugares .tarjeta").length;
@@ -991,6 +1089,7 @@ async function iniciar() {
 
   await cargarConfig();
   prepararCompartir();
+  prepararScrollDelMuro();
   await Promise.all([
     cargarLugares().catch((err) => {
       $("#lista-lugares").replaceChildren(
