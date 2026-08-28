@@ -23,6 +23,10 @@
     {
       "source": "/llms.txt",
       "destination": "https://ceuta-nos-une.andresleontest.workers.dev/llms.txt"
+    },
+    {
+      "source": "/lugares.csv",
+      "destination": "https://ceuta-nos-une.andresleontest.workers.dev/lugares.csv"
     }
   ],
   "headers": [
