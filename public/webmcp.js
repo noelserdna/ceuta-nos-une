@@ -35,6 +35,10 @@ const PROVINCIAS = [
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
 
+/* Quien pide menos movimiento no quiere ver escribir al asistente campo a
+   campo: para esa persona el texto aparece de golpe. */
+const quieto = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+
 const sinAcentos = (t) =>
   String(t ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
@@ -290,6 +294,49 @@ async function escribirCampo(sel, valor) {
    así que sirven de señal fiable: en cuanto aparece uno, se marca el campo y se
    avisa de que el botón le toca a la persona. Sin esto, la vía declarativa
    rellenaría el formulario en silencio, que es justo lo que no queremos. */
+/* Rellena un formulario campo a campo, a la vista, y NO lo envía.
+ *
+ * Existe porque la API declarativa de WebMCP (los atributos toolname y
+ * tooldescription del <form>) la sintetiza el NAVEGADOR, no la página: un
+ * cliente que sólo lee document.modelContext.getTools() no ve esas
+ * herramientas. Comprobado con ChatGPT, que veía las siete registradas por
+ * JavaScript y ninguna de las dos declarativas.
+ *
+ * La garantía es la misma que daba la versión declarativa y por el mismo
+ * motivo: aquí no se llama a submit() ni se pulsa el botón. Se escribe y se
+ * para. Lo demás lo hace vigilarRellenoDelAgente, que detecta el relleno
+ * programático y cambia el botón a «Revísalo y publica tú».
+ *
+ * El retardo de 120 ms entre campos no es decorativo: hace que la persona vea
+ * aparecer el texto en vez de encontrárselo escrito.
+ */
+async function rellenarAlaVista(selForm, campos) {
+  const form = $(selForm);
+  if (!form) throw new Error("no encuentro el formulario en esta página");
+
+  form.scrollIntoView({ behavior: quieto() ? "auto" : "smooth", block: "center" });
+
+  let primero = null;
+  for (const [sel, valor] of campos) {
+    if (valor == null || valor === "") continue;
+    const campo = $(sel);
+    if (!campo) continue;
+
+    // Un <details> cerrado esconde el campo: si escribo dentro sin abrirlo,
+    // la persona no ve lo que ha escrito el asistente.
+    const plegado = campo.closest("details");
+    if (plegado && !plegado.open) plegado.open = true;
+
+    campo.value = String(valor);
+    campo.dispatchEvent(new Event("input", { bubbles: true }));
+    campo.dispatchEvent(new Event("change", { bubbles: true }));
+    primero = primero ?? campo;
+    if (!quieto()) await new Promise((r) => setTimeout(r, 120));
+  }
+  if (primero) primero.focus({ preventScroll: true });
+  return form;
+}
+
 function vigilarRellenoDelAgente(selForm, selBoton, aviso, textoBoton) {
   const form = $(selForm);
   if (!form) return;
@@ -976,6 +1023,136 @@ function definiciones({ config, lugares }) {
                  "arrastrar: si el sitio exacto está unos metros más allá, dile a la persona " +
                  "que lo mueva ella, que es quien conoce la plaza.",
           vista: "he situado el punto en el minimapa: " + etiqueta,
+        };
+      }),
+    });
+  }
+
+
+  /* 8 y 9. Escribir. Las dos rellenan y paran: el botón lo pulsa la persona.
+   *
+   * Estaban como herramientas declarativas (atributos toolname en el <form>),
+   * y así funcionaban en Chrome, pero un cliente que sólo lee getTools() no
+   * las veía: las declarativas las sintetiza el navegador, no la página. Con
+   * ChatGPT aparecían siete herramientas y faltaban justo estas dos.
+   *
+   * Que estén aquí no relaja nada. La regla sigue siendo la del principio: si
+   * la acción deja rastro público firmado con el nombre de alguien, el envío
+   * lo hace una persona. Ninguna de las dos llama a submit(). */
+
+  if (config.messages_open !== false && $("#form-mensaje")) {
+    lista.push({
+      name: "escribir_mensaje_apoyo",
+      description:
+        "Deja escrito en el muro de apoyo el mensaje que la persona te dicte, con la firma que " +
+        "ella elija, y lo deja A LA VISTA SIN publicarlo: el botón de publicar lo pulsa ella. " +
+        "El muro sale al momento, sin revisión previa, firmado en una página pública que lee " +
+        "cualquiera, así que no redactes mensajes en nombre de nadie que no te lo haya pedido, " +
+        "no escribas varios seguidos y no inventes una firma: si no te ha dicho cómo quiere " +
+        "firmar, pregúntaselo. Si te dicta el mensaje, no lo mejores ni lo alargues.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          mensaje: {
+            type: "string", maxLength: 800,
+            description: "El mensaje de apoyo, con las palabras de la persona. Máximo 800 caracteres.",
+          },
+          firma: {
+            type: "string", maxLength: 60,
+            description: "Cómo quiere firmar. No hace falta el nombre real, vale un apodo. Pregúntaselo, no lo deduzcas.",
+          },
+          desde: {
+            type: "string", maxLength: 60,
+            description: "Desde dónde escribe: Ceuta, Melilla, Madrid… Opcional, déjalo vacío si no lo ha dicho.",
+          },
+        },
+        required: ["mensaje", "firma"],
+      },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+      execute: conAnuncio("escribir_mensaje_apoyo", async ({ mensaje, firma, desde }) => {
+        const texto = String(mensaje ?? "").trim();
+        const quien = String(firma ?? "").trim();
+        if (!texto) return { texto: "Necesito el mensaje que quiere dejar.", vista: "" };
+        if (!quien) {
+          return {
+            texto: "Falta la firma. Pregúntale cómo quiere firmar: vale un apodo, no hace falta el nombre real.",
+            vista: "",
+          };
+        }
+        if (texto.length > 800) {
+          return { texto: "El mensaje pasa de 800 caracteres. Pídele que lo acorte.", vista: "" };
+        }
+
+        await rellenarAlaVista("#form-mensaje", [
+          ["#m-body", texto.slice(0, 800)],
+          ["#m-author", quien.slice(0, 60)],
+          ["#m-origin", String(desde ?? "").trim().slice(0, 60)],
+        ]);
+
+        return {
+          texto:
+            "Lo he dejado escrito en el muro, sin publicar:\n\n" +
+            "  «" + texto + "»\n  — " + quien + (desde ? ", " + desde : "") + "\n\n" +
+            "Dile que lo lea y que pulse «Publicar» ella. No lo envío yo: sale al momento, " +
+            "sin revisión, y va firmado con su nombre.",
+          vista:
+            "el mensaje está escrito en el muro pero NO publicado. El botón lo pulsa la persona.",
+        };
+      }),
+    });
+  }
+
+  if (config.places_open !== false && $("#form-lugar")) {
+    lista.push({
+      name: "proponer_concentracion",
+      description:
+        "Rellena el formulario para añadir al mapa una concentración que falta, y lo deja A LA " +
+        "VISTA SIN enviar: el botón lo pulsa la persona. Lo que se envía lo revisa alguien a " +
+        "mano antes de publicarlo, y ese tiempo es lo escaso aquí, así que no la uses para " +
+        "volcar listas ni para mandar sitios de los que no estés seguro. Antes de rellenar, " +
+        "comprueba con listar_concentraciones que esa ciudad no esté ya. " + estadoActual,
+      inputSchema: {
+        type: "object",
+        properties: {
+          ciudad:    { type: "string", description: "El municipio." },
+          provincia: { type: "string", description: "La provincia, escrita como en el listado." },
+          sitio:     { type: "string", description: "La plaza o el punto exacto: «Plaza Mayor», «Puerta del Ayuntamiento»." },
+          direccion: { type: "string", description: "La dirección postal, si se sabe." },
+          hora:      { type: "string", description: "En formato 20:00. Si no la sabes, déjalo vacío antes que inventarla." },
+        },
+        required: ["ciudad", "provincia", "sitio"],
+      },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+      execute: conAnuncio("proponer_concentracion", async ({ ciudad, provincia, sitio, direccion, hora }) => {
+        const donde = String(ciudad ?? "").trim();
+        if (!donde) return { texto: "Necesito al menos el municipio.", vista: "" };
+
+        const { lugares: ahora } = await datos();
+        const ya = ahora.find((l) => sinAcentos(l.city) === sinAcentos(donde));
+        if (ya) {
+          await mostrarLugar(ya.id);
+          return {
+            texto:
+              "En " + ya.city + " ya hay una convocada: " + sitioYDireccion(ya) +
+              ", a las " + ya.event_time + " h. No hace falta proponerla otra vez.",
+            vista: "he centrado el mapa en la que ya existe en " + ya.city + ".",
+          };
+        }
+
+        await rellenarAlaVista("#form-lugar", [
+          ["#l-city", donde],
+          ["#l-province", String(provincia ?? "").trim()],
+          ["#l-venue", String(sitio ?? "").trim()],
+          ["#l-address", String(direccion ?? "").trim()],
+          ["#l-time", String(hora ?? "").trim()],
+        ]);
+
+        return {
+          texto:
+            "He rellenado la propuesta de " + donde + ", sin enviarla. Dile que compruebe el " +
+            "sitio y la hora y que pulse ella el botón: lo va a leer una persona antes de que " +
+            "salga en el mapa. Los datos de contacto los escribe ella, no pasan por mí.",
+          vista: "la propuesta está rellena pero NO enviada. El botón lo pulsa la persona.",
         };
       }),
     });
