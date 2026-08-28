@@ -15,6 +15,10 @@
     {
       "source": "/tiles/:ruta*",
       "destination": "https://ceuta-nos-une.andresleontest.workers.dev/tiles/:ruta*"
+    },
+    {
+      "source": "/lugares",
+      "destination": "https://ceuta-nos-une.andresleontest.workers.dev/lugares"
     }
   ],
   "headers": [

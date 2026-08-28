@@ -1632,3 +1632,43 @@ a.chip--hueco:focus-visible {
   .leaflet-cluster-anim .leaflet-marker-icon,
   .leaflet-cluster-anim .leaflet-marker-shadow { transition: none; }
 }
+
+/* ------------------------------------------- listado completo en texto ----- */
+/* La página /lugares existe para quien no ejecuta JavaScript: buscadores,
+   modelos de lenguaje y quien llegue con mala conexión. Hereda la tipografía y
+   los colores del sitio, pero sin nada que dependa de scripts. */
+
+.lugares__todos { margin: 1.4rem 0 0; font-size: 0.95rem; }
+
+.listado-plano {
+  max-width: 62rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem) 4rem;
+}
+
+.listado-plano h1 {
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  margin: 0 0 1.2rem;
+}
+
+.listado-plano h2 {
+  font-family: var(--display);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  text-transform: uppercase;
+  margin: 2.4rem 0 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: var(--borde-pieza) solid var(--tinta);
+}
+
+.listado-plano ul { margin: 0; padding-left: 1.2rem; }
+.listado-plano li { margin-bottom: 0.7rem; line-height: 1.5; }
+.listado-plano small { color: var(--gris); }
+
+.listado-plano__pie {
+  margin-top: 3rem; padding-top: 1.2rem;
+  border-top: 2px solid var(--papel-linea);
+  font-size: 0.9rem; color: var(--gris);
+}
