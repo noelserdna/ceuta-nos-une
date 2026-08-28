@@ -501,12 +501,43 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
   }
 }
 
+/* A partir de esta cifra de denuncias distintas, el mensaje se oculta solo y
+   queda esperando revisión. El muro se publica sin moderación previa, así que
+   sin esto un mensaje ofensivo puede estar horas a la vista si nadie entra al
+   panel a mirarlo. */
+const DENUNCIAS_PARA_OCULTAR = 10;
+
 async function reportMessage(request: Request, env: Env, id: number): Promise<Response> {
   const { success } = await env.RL_REPORTS.limit({ key: ipVisitante(request, env) });
-  if (!success) return fail("Demasiados avisos seguidos.", 429);
+  if (!success) return fail("Demasiadas denuncias seguidas.", 429);
 
-  await env.DB.prepare("UPDATE messages SET reports = reports + 1 WHERE id = ?").bind(id).run();
-  return json({ ok: true, message: "Gracias, lo revisaremos." });
+  /* Se cuentan denuncias de personas distintas, no pulsaciones: la clave primaria
+     de la tabla es (mensaje, huella), así que insistir no suma. Sin esto, con el
+     ocultado automático bastaría una persona pulsando diez veces. */
+  const ipHash = await hashIp(ipVisitante(request, env), env.IP_SALT ?? "sin-sal");
+  await env.DB.prepare(
+    "INSERT OR IGNORE INTO message_reports (message_id, ip_hash) VALUES (?, ?)",
+  ).bind(id, ipHash).run();
+
+  const fila = await env.DB.prepare(
+    "SELECT COUNT(*) AS n FROM message_reports WHERE message_id = ?",
+  ).bind(id).first<{ n: number }>();
+  const denuncias = fila?.n ?? 0;
+  const ocultar = denuncias >= DENUNCIAS_PARA_OCULTAR;
+
+  await env.DB.prepare(
+    ocultar
+      ? "UPDATE messages SET reports = ?, hidden = 1 WHERE id = ?"
+      : "UPDATE messages SET reports = ? WHERE id = ?",
+  ).bind(denuncias, id).run();
+
+  return json({
+    ok: true,
+    hidden: ocultar,
+    message: ocultar
+      ? "Gracias. Con las denuncias recibidas, el mensaje se ha ocultado y lo revisaremos."
+      : "Gracias, lo revisaremos.",
+  });
 }
 
 async function serveImage(request: Request, env: Env, key: string): Promise<Response> {

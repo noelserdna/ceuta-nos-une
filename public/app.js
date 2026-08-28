@@ -665,14 +665,26 @@ function postal(mensaje) {
   const derecha = crear("div");
   derecha.append(crear("div", "postal__fecha", fechaLegible(mensaje.created_at)));
 
-  const reportar = crear("button", "postal__reportar", "Avisar");
+  const reportar = crear("button", "postal__reportar", "Denunciar");
   reportar.type = "button";
-  reportar.title = "Avisar de un contenido inadecuado";
+  reportar.title = "Denunciar un contenido inadecuado";
   reportar.addEventListener("click", async () => {
     reportar.disabled = true;
     try {
-      await pedir("/api/messages/" + mensaje.id + "/report", { method: "POST" });
-      reportar.textContent = "Avisado";
+      const res = await pedir("/api/messages/" + mensaje.id + "/report", { method: "POST" });
+      if (res.hidden) {
+        /* Ha llegado al número de denuncias y se ha ocultado: quitarlo de la
+           vista al momento, o quien acaba de denunciarlo seguiría leyéndolo. */
+        art.classList.add("postal--retirada");
+        art.replaceChildren(
+          crear("p", "postal__retirada",
+                "Mensaje oculto por las denuncias recibidas. Lo revisaremos."),
+        );
+        const cifra = $("#cifra-mensajes");
+        if (cifra) cifra.textContent = String(Math.max(0, (Number(cifra.textContent) || 1) - 1));
+      } else {
+        reportar.textContent = "Denunciado";
+      }
     } catch {
       reportar.textContent = "No se pudo";
     }
