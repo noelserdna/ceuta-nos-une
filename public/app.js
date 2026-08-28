@@ -9,10 +9,11 @@ const TESELAS = "/tiles/{z}/{x}/{y}.png";
 const ATRIBUCION =
   '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
-/* El listado enseña las tarjetas de 24 en 24: con 89 concentraciones, pintarlas
-   todas hace una lista larguísima que en el móvil no se acaba nunca. Los puntos
-   del mapa no se paginan: ahí salen todos siempre. */
-const POR_PAGINA = 24;
+/* El listado enseña las tarjetas de cinco en cinco: con 89 concentraciones,
+   pintarlas todas hace una lista larguísima que en el móvil no se acaba nunca.
+   Quien busca la suya tira del buscador o del filtro por provincia, no de
+   bajar. Los puntos del mapa no se paginan: ahí salen todos siempre. */
+const POR_PAGINA = 5;
 
 const PROVINCIAS = [
   "A Coruña", "Álava", "Albacete", "Alicante", "Almería", "Asturias", "Ávila", "Badajoz",
