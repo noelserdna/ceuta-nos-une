@@ -843,6 +843,42 @@ button, input, textarea, select { font: inherit; color: inherit; }
   transform: translateY(-2px);
 }
 
+/* Las mismas redes, dentro de la franja del cartel. Ahí el fondo ya es tinta,
+   así que solo cambia el encuadre: un bloque separado por una línea. */
+
+.difunde__redes {
+  margin-top: 1.6rem;
+  padding-top: 1.4rem;
+  border-top: 2px solid rgba(252, 192, 24, 0.3);
+}
+
+.difunde__redes .redes__lista { justify-content: flex-start; }
+
+.difunde__redes-titulo {
+  margin: 0 0 0.85rem;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--oro);
+}
+
+.difunde__redes-nota {
+  margin: 0.9rem 0 0;
+  max-width: 52ch;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(247, 227, 211, 0.78);
+}
+
+.difunde__redes-nota b { color: var(--oro); }
+
+@media (max-width: 620px) {
+  .difunde__redes .redes__lista { justify-content: center; }
+  .difunde__redes-titulo, .difunde__redes-nota { text-align: center; }
+  .difunde__redes-nota { margin-inline: auto; }
+}
+
 .redes__cuenta {
   margin: 0.85rem 0 0;
   font-size: 0.9rem;
