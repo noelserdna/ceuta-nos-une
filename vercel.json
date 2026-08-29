@@ -27,6 +27,10 @@
     {
       "source": "/lugares.csv",
       "destination": "https://ceuta-nos-une.andresleontest.workers.dev/lugares.csv"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://ceuta-nos-une.andresleontest.workers.dev/sitemap.xml"
     }
   ],
   "headers": [
