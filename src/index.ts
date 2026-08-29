@@ -659,15 +659,50 @@ async function paginaLugares(env: Env): Promise<Response> {
   const eventos = lugares.map((l) => {
     const zona = /Palmas|Tenerife/.test(l.province) ? "+01:00" : "+02:00";
     const cp = /\b(\d{5})\b/.exec(l.address || "");
+
+    /* Hora de fin. No la da el listado, así que se estima en una hora, que es lo
+       que dura una concentración de este tipo: la gente se junta, se lee algo y
+       se disuelve. Donde el dato sí consta sale exacto: la marcha de Ciudad Real
+       empieza a las 19:30 y termina a las 20:30, y así queda.
+
+       Es una estimación, no un dato, pero sin endDate Google trata el acto como
+       si durase un instante y lo muestra peor. */
+    const [hh, mm] = (l.event_time || "20:00").split(":").map(Number);
+    const fin = String((hh + 1) % 24).padStart(2, "0") + ":" + String(mm).padStart(2, "0");
+
     const ev: Record<string, unknown> = {
       "@type": "Event",
       name: `Ceuta nos une · Concentración en ${l.city}`,
       startDate: `${l.event_date}T${l.event_time}:00${zona}`,
+      endDate: `${l.event_date}T${fin}:00${zona}`,
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       isAccessibleForFree: true,
       inLanguage: "es",
       url: "https://ceutanosune.es/lugares",
+      image: ["https://ceutanosune.es/media/og.jpg"],
+      description:
+        `Concentración en ${l.city} (${l.province}) en ${l.venue}, el 2 de septiembre de 2026 ` +
+        `a las ${l.event_time} h. Acto pacífico, gratuito y abierto, sin necesidad de inscribirse. ` +
+        `Lema: «A favor del pueblo de Ceuta y por nuestra Unidad».`,
+
+      /* Quien convoca. Donde consta —un ayuntamiento, una subdelegación— va con
+         su nombre; donde no, la convocatoria ciudadana, que es la verdad: no hay
+         ninguna organización detrás. */
+      organizer: l.organizer
+        ? { "@type": "Organization", name: l.organizer }
+        : { "@type": "Organization", name: "Ceuta nos une", url: "https://ceutanosune.es/" },
+
+      /* Es gratis y sin entrada. Se dice con un Offer a cero en vez de callarlo,
+         porque un evento sin offers hace que Google se pregunte si hay que pagar. */
+      offers: {
+        "@type": "Offer",
+        price: 0,
+        priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
+        validFrom: "2026-08-25T00:00:00+02:00",
+        url: "https://ceutanosune.es/lugares",
+      },
       location: {
         "@type": "Place",
         name: l.venue,
