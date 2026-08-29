@@ -208,10 +208,25 @@ function arrancarCuentaAtras(fechaISO) {
       return true;
     }
     const seg = Math.floor(resto / 1000);
-    $("#c-dias").textContent = String(Math.floor(seg / 86400));
-    $("#c-horas").textContent = String(Math.floor((seg % 86400) / 3600)).padStart(2, "0");
-    $("#c-min").textContent = String(Math.floor((seg % 3600) / 60)).padStart(2, "0");
+    const dias  = Math.floor(seg / 86400);
+    const horas = Math.floor((seg % 86400) / 3600);
+    const min   = Math.floor((seg % 3600) / 60);
+    $("#c-dias").textContent = String(dias);
+    $("#c-horas").textContent = String(horas).padStart(2, "0");
+    $("#c-min").textContent = String(min).padStart(2, "0");
     $("#c-seg").textContent = String(seg % 60).padStart(2, "0");
+
+    /* Lo que oye quien usa un lector de pantalla. Se reescribe solo al cambiar
+       el minuto, no cada segundo: el bloque de números está en aria-hidden y
+       este párrafo no es una región viva, así que no interrumpe nada; se lee
+       cuando la persona llega hasta aquí, y entonces está al día. */
+    const hablada = $("#cuenta-hablada");
+    if (hablada) {
+      const frase = "Faltan " + dias + (dias === 1 ? " día, " : " días, ") +
+                    horas + (horas === 1 ? " hora y " : " horas y ") +
+                    min + (min === 1 ? " minuto." : " minutos.");
+      if (hablada.textContent !== frase) hablada.textContent = frase;
+    }
     return false;
   };
 
@@ -241,6 +256,10 @@ function iniciarMapa() {
           const caja = document.createElement("div");
           caja.className = "grupo " + talla;
           caja.textContent = String(n);
+          /* Un lector de pantalla leía «7», «69», «323» y ya está: un número
+             suelto en mitad de un mapa no dice nada. Ahora dice qué son. */
+          caja.setAttribute("aria-label", n + (n === 1 ? " concentración" : " concentraciones") + " en esta zona");
+          caja.setAttribute("role", "img");
           return L.divIcon({ html: caja.outerHTML, className: "", iconSize: [40, 40] });
         },
       }).addTo(mapa)

@@ -569,8 +569,16 @@ button, input, textarea, select { font: inherit; color: inherit; }
   font-family: var(--display); font-size: 1.15rem; letter-spacing: 0.02em;
 }
 .buscador input::placeholder { color: var(--marcador); text-transform: uppercase; }
+/* El foco del buscador se marcaba solo cambiando el borde de tinta a carmín, y
+   entre esos dos colores hay 2,94:1: por debajo del 3:1 que pide WCAG para que
+   un indicador de foco se distinga del estado sin foco. Se ve, pero poco, y a
+   quien peor le va es a quien más lo necesita. Ahora el borde engorda además de
+   cambiar de color, que es un cambio que no depende de distinguir tonos. */
 .buscador input:focus { outline: none; }
-.buscador:focus-within { border-color: var(--carmin-osc); }
+.buscador:focus-within {
+  border-color: var(--carmin-osc);
+  box-shadow: 0 0 0 3px var(--oro);
+}
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
