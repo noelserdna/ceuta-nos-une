@@ -817,6 +817,52 @@ ${secciones}
  * lleve entero sin tener que copiar de la web. Es el mismo dato que ve todo el
  * mundo, así que no lleva nada que no esté ya publicado.
  */
+/**
+ * El sitemap, generado desde la base.
+ *
+ * Estaba escrito a mano en public/ y tenía dos problemas. El namespace decía
+ * "http://www.w3.org/1999/sitemaps/0.9", que no existe: el bueno es el de
+ * sitemaps.org, y con el otro un validador estricto rechaza el fichero entero.
+ * Y el lastmod era una fecha a mano que se quedaba vieja al día siguiente, que
+ * es justo lo que le dice a Google si merece la pena volver a mirar.
+ *
+ * Ahora la fecha de /lugares sale del último lugar aprobado, así que cuando
+ * entran concentraciones nuevas el sitemap lo refleja solo.
+ */
+async function sitemapXml(env: Env): Promise<Response> {
+  const fila = await env.DB.prepare(
+    `SELECT MAX(COALESCE(reviewed_at, created_at)) AS ultimo FROM places WHERE status = 'approved'`,
+  ).first<{ ultimo: string | null }>();
+
+  const hoy = new Date().toISOString().slice(0, 10);
+  const cambioLugares = (fila?.ultimo ?? hoy).slice(0, 10);
+
+  const urls = [
+    { loc: "https://ceutanosune.es/", lastmod: cambioLugares, priority: "1.0", freq: "daily" },
+    { loc: "https://ceutanosune.es/lugares", lastmod: cambioLugares, priority: "0.9", freq: "daily" },
+    { loc: "https://ceutanosune.es/propon", lastmod: cambioLugares, priority: "0.6", freq: "weekly" },
+  ];
+
+  const xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls
+      .map(
+        (u) =>
+          `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n` +
+          `    <changefreq>${u.freq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`,
+      )
+      .join("\n") +
+    `\n</urlset>\n`;
+
+  return new Response(xml, {
+    headers: {
+      "content-type": "application/xml; charset=utf-8",
+      "cache-control": "public, max-age=600",
+    },
+  });
+}
+
 async function lugaresCsv(env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT city, province, venue, address, event_date, event_time, lat, lon,
@@ -1332,6 +1378,7 @@ export default {
 
       if (path === "/lugares" && method === "GET") return await paginaLugares(env);
       if (path === "/lugares.csv" && method === "GET") return await lugaresCsv(env);
+      if (path === "/sitemap.xml" && method === "GET") return await sitemapXml(env);
       if (path === "/llms.txt" && method === "GET") return await llmsTxt(env);
 
       if (path.startsWith("/api/")) return fail("Ruta no encontrada.", 404);
