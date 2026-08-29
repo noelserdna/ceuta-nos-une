@@ -1,0 +1,12 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",    "x": 0,    "y": 0, "w": 800, "h": 940, "title": "Opción C · la mezcla (recomendada)" },
+    { "file": "OpcionA.dc.html", "x": 900,  "y": 0, "w": 800, "h": 700, "title": "Opción A · una banda antes del mapa" },
+    { "file": "OpcionB.dc.html", "x": 1800, "y": 0, "w": 800, "h": 1080, "title": "Opción B · repartido donde toca" }
+  ],
+  "annotations": [
+    { "id": "brief", "x": 0, "y": -150, "w": 620,
+      "text": "Cuatro mensajes de los carteles oficiales que la web no recoge.\n\nTres maneras de meterlos sin tocar la jerarquía de la portada. Cada una dice lo que gana y lo que cuesta.\n\nColores, tipos y bordes salen de styles.css tal cual: papel #F7E3D3, carmín #C71B3A, oro #FCC018, tinta #35101B, Anton para titulares y Archivo para el texto." }
+  ],
+  "launch": { "view": "canvas" }
+}

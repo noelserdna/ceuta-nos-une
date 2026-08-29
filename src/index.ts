@@ -730,13 +730,19 @@ ${secciones}
 
   <h2 id="huecos">Provincias sin ninguna concentración convocada</h2>
   <p>Siguen sin nada convocado ${vacias.length} de las 52 provincias:
-  ${vacias.map((p) => escapeHtml(p)).join(", ")}. Donde no hay nada convocado, nadie sale.
-  Convocar una concentración es un trámite gratuito que puede firmar una sola persona
-  física, sin asociación ni partido: <a href="/propon">aquí se explica cómo</a>.</p>
+  ${vacias.map((p) => escapeHtml(p)).join(", ")}. Donde no hay nada convocado, nadie sale.</p>
 
-  <p class="listado-plano__pie">Los lugares los envía la gente y se revisan uno a uno antes
-  de publicarlos. Aun así, confirma siempre la convocatoria con la organización de tu ciudad
-  antes de desplazarte. Página actualizada al momento desde
+  <p>La FEMP, la federación que agrupa a los ayuntamientos de España, hizo un llamamiento a
+  todos los municipios. Unos lo secundaron y otros no, y de ahí que haya pueblos y provincias
+  enteras sin nada: no es que se hayan olvidado, es que su ayuntamiento no se sumó. Eso no
+  impide nada: convocar una concentración es un trámite gratuito que puede firmar una sola
+  persona física, sin asociación ni partido detrás, y
+  <a href="/propon">aquí se explica cómo</a>.</p>
+
+  <p class="listado-plano__pie">Los lugares salen del listado confirmado con las Delegaciones
+  del Gobierno y los ayuntamientos: solo convocatorias comunicadas en regla y con organizador
+  identificado. Aun así, si algo cambia a última hora se contará antes en las redes de la
+  convocatoria que aquí. Página generada al momento desde
   <a href="/api/places">los datos públicos</a>.</p>
 
   <p class="listado-plano__pie">¿Ves aquí un lugar mal puesto o una hora que no cuadra?
