@@ -1430,3 +1430,64 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
   color: rgba(247, 227, 211, 0.78);
 }
 .pie__codigo a { color: var(--oro); }
+
+/* ------------------------------------------------------------ antes de ir -- */
+
+/* Lo que pide el cartel a quien va: el 2 es el Día de Ceuta y ese día se va sin
+   siglas. Las dos cosas van juntas porque la una explica a la otra.
+
+   Es lo único de la web que le pide algo al visitante, así que usa el panel de
+   borde grueso y sombra dura —el mismo lenguaje que los paneles de datos— y no
+   el .aviso, que es para notas al pie. */
+
+.antesdeir {
+  background: var(--papel-textura);
+  background-size: var(--papel-textura-escala);
+  padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem);
+}
+
+.antesdeir__panel {
+  max-width: 62rem; margin-inline: auto;
+  background: var(--papel-claro);
+  border: var(--borde-panel) solid var(--tinta);
+  box-shadow: var(--sombra-dura);
+  display: grid; grid-template-columns: 1fr;
+}
+@media (min-width: 760px) {
+  .antesdeir__panel { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); }
+}
+
+.antesdeir__dia {
+  padding: clamp(1.2rem, 3vw, 1.6rem);
+  border-bottom: var(--borde-pieza) solid var(--tinta);
+}
+@media (min-width: 760px) {
+  .antesdeir__dia { border-bottom: 0; border-right: var(--borde-pieza) solid var(--tinta); }
+}
+
+.antesdeir__fecha,
+.antesdeir__fiesta {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  line-height: 1.05; text-transform: uppercase; letter-spacing: 0.01em;
+}
+.antesdeir__fiesta { color: var(--carmin-osc); }
+.antesdeir__nota {
+  margin: 0.6rem 0 0; font-size: 0.9rem; line-height: 1.55; color: var(--gris);
+}
+
+.antesdeir__ruego { padding: clamp(1.2rem, 3vw, 1.6rem); }
+
+.antesdeir__titular {
+  margin: 0 0 0.5rem;
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  font-weight: 700; font-size: 1rem; line-height: 1.4;
+}
+/* El icono va en carmín y el texto en tinta: en un aviso, el color llama y la
+   palabra se lee. */
+.antesdeir__titular svg { flex: none; margin-top: 0.15rem; color: var(--carmin-osc); }
+
+.antesdeir__texto {
+  margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--gris);
+}
