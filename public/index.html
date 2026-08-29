@@ -154,12 +154,19 @@
         20:00 h en casi toda España<br>Mira la hora de tu ciudad
       </p>
 
-      <div class="cuenta" id="cuenta" aria-live="polite">
+      <!-- Sin aria-live. Lo tenía, y como el segundero cambia una vez por
+           segundo, un lector de pantalla leía la cuenta entera cada segundo,
+           para siempre: la página era inservible. Ahora los números quedan
+           ocultos para el lector y en su lugar hay una frase que se reescribe
+           solo cuando cambian los minutos, que es cuando cambia algo que
+           merezca oírse. -->
+      <div class="cuenta" id="cuenta" aria-hidden="true">
         <div class="cuenta__bloque"><b id="c-dias">--</b><span>días</span></div>
         <div class="cuenta__bloque"><b id="c-horas">--</b><span>horas</span></div>
         <div class="cuenta__bloque"><b id="c-min">--</b><span>min</span></div>
         <div class="cuenta__bloque"><b id="c-seg">--</b><span>seg</span></div>
       </div>
+      <p class="visualmente-oculto" id="cuenta-hablada"></p>
     </div>
 
     <dl class="portada__cifras">
