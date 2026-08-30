@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fila cero, el 2 de septiembre en directo · Ceuta nos une</title>
+<meta name="description" content="Para quien no puede ir a una plaza el 2 de septiembre: mira lo que sube la gente desde toda España, di algo y cuenta como una más.">
+<!-- Esta pantalla es oscura: sin esto, la barra de estado del movil se queda color papel sobre una pagina negra. -->
+<meta name="theme-color" content="#2B0C14">
+<!-- Se pinta en bucle lo que sube gente desconocida, con caras dentro. Mientras
+     dure el acto no tiene por que estar en los buscadores. -->
+<meta name="robots" content="noindex, follow">
+<meta property="og:title" content="Fila cero · Ceuta nos une">
+<meta property="og:description" content="El 2 de septiembre, para quien no puede ir. Mira lo que llega desde las plazas y súmate desde donde estés.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<link rel="canonical" href="https://ceutanosune.es/directo">
+<meta property="og:url" content="https://ceutanosune.es/directo">
+<meta property="og:site_name" content="Ceuta nos une">
+<meta property="og:image" content="https://ceutanosune.es/media/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/directo.css">
+</head>
+<body class="directo">
+
+<a class="saltar" href="#participar">Saltar al formulario</a>
+
+<header class="barra">
+  <a class="barra__marca" href="/">
+    <span class="barra__gyronny" aria-hidden="true"></span>
+    <img class="barra__logo" src="/media/logo.svg" alt="Ceuta nos une" width="1837" height="816">
+  </a>
+  <nav class="barra__nav" aria-label="Secciones">
+    <a href="https://porceuta.es/que-esta-pasando" target="_blank" rel="noopener"
+       aria-label="Qué está pasando en Ceuta, en porceuta.es, se abre en una pestaña nueva"><span class="nav-texto">Qué<span class="nav-largo"> está</span> pasa<span class="nav-largo">ndo</span></span><svg class="fuera" viewBox="0 0 24 24" aria-hidden="true" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a>
+    <a href="/#lugares">Lugares</a>
+    <a href="/manifiesto">Manifiesto</a>
+  </nav>
+</header>
+
+<!-- La llegada. Se ve una vez, se cierra con cualquier toque, y quien ya ha
+     entrado antes cae directo al río. Un número propio se entiende sin leer nada. -->
+<div class="entrada" id="entrada" hidden>
+  <div class="entrada__caja">
+    <p class="entrada__eco" id="entrada-eco">Fila cero</p>
+    <p class="entrada__cifra" id="entrada-butaca">—</p>
+    <p class="entrada__pie" id="entrada-pie">Estamos preparando tu sitio…</p>
+    <div class="turnstile" id="turnstile-directo"></div>
+    <button type="button" class="boton boton--brasa" id="entrada-boton" disabled>Entrar</button>
+    <p class="entrada__nota">Esto es para quien hoy no puede ir a una plaza: por trabajo,
+      por salud, por distancia o porque cuida de alguien. Aquí también se está.</p>
+  </div>
+</div>
+
+<!-- La cifra viva. Franja fina y pegajosa: grande sólo los tres primeros
+     segundos, y después estorbaría. Nunca aria-live: un lector de pantalla
+     leería un número cada cuatro segundos para siempre. -->
+<p class="cifra" id="cifra" aria-live="off">
+  <span class="cifra__punto" aria-hidden="true"></span>
+  <span id="cifra-texto">Conectando…</span>
+</p>
+
+<main class="rio-zona">
+
+  <!-- La retransmisión, si el admin ha puesto una. Es una banda, no un panel:
+       vacía el 90 % del tiempo no merece un cuarto de pantalla. -->
+  <div class="retrans" id="retrans" hidden>
+    <button type="button" class="retrans__abrir" id="retrans-abrir">
+      Hay retransmisión en directo — verla
+    </button>
+    <div class="retrans__hueco" id="retrans-hueco"></div>
+  </div>
+
+  <!-- El río. Es una lista de verdad en el DOM y un pase en la pantalla: así
+       quien usa lector de pantalla tiene la noche entera, en orden, y no sólo
+       lo que se ve en este instante. -->
+  <ol class="rio" id="rio" aria-label="Lo que va llegando"></ol>
+
+  <div class="rio__vacio" id="rio-vacio">
+    <p class="rio__vacio-titulo">Todavía no ha llegado nada.</p>
+    <p>Que sea lo tuyo lo primero que se vea.</p>
+  </div>
+
+  <div class="mando">
+    <button type="button" class="mando__boton" id="pausa" aria-pressed="false">
+      <span id="pausa-texto">Pausar</span>
+    </button>
+    <span class="mando__avance" id="avance" aria-hidden="true"></span>
+  </div>
+
+  <!-- Los municipios, en texto. Sustituye al mapa: pesa nada, se lee en voz
+       alta, funciona sin fotos y se ve desde el fondo de una plaza. -->
+  <p class="pueblos" id="pueblos" aria-label="Municipios de donde está llegando gente"></p>
+
+</main>
+
+<form class="participar" id="participar" autocomplete="off">
+  <input class="trampa" type="text" name="website" tabindex="-1" aria-hidden="true">
+
+  <!-- Se pide una vez y se recuerda: en el directo nadie reescribe su nombre
+       en cada mensaje. -->
+  <div class="participar__quien" id="participar-quien">
+    <label class="visualmente-oculto" for="p-author">¿Cómo quieres firmar?</label>
+    <input id="p-author" name="author" type="text" maxlength="60" placeholder="¿Cómo firmas?" required>
+    <label class="visualmente-oculto" for="p-origin">¿Desde dónde?</label>
+    <input id="p-origin" name="origin" type="text" maxlength="60" placeholder="¿Desde qué pueblo?">
+  </div>
+
+  <div class="participar__fila">
+    <input id="p-foto" name="foto" type="file" class="visualmente-oculto"
+           accept="image/jpeg,image/png,image/webp">
+    <label class="participar__camara" for="p-foto" id="p-foto-label"
+           title="Añadir una foto">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span class="visualmente-oculto">Añadir una foto</span>
+    </label>
+
+    <label class="visualmente-oculto" for="p-body">Di algo</label>
+    <input id="p-body" name="body" type="text" maxlength="140" placeholder="Di algo…" enterkeyhint="send">
+
+    <button type="submit" class="participar__enviar" id="p-enviar">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      <span class="visualmente-oculto">Enviar</span>
+    </button>
+  </div>
+
+  <div class="previa" id="p-previa" hidden>
+    <img id="p-previa-img" alt="La foto que vas a enviar">
+    <button type="button" class="previa__quitar" id="p-previa-quitar">Quitar la foto</button>
+  </div>
+
+  <p class="estado" id="p-estado" role="status" aria-live="polite"></p>
+  <p class="participar__aviso">Una foto por persona. Lo que mandes se ve en esta pantalla y
+    puede verlo cualquiera. <a href="/normas">Las normas</a>.</p>
+</form>
+
+<script src="/directo.js" type="module"></script>
+<script src="/analitica.js" defer></script>
+</body>
+</html>
