@@ -503,6 +503,146 @@ async function cargarAvisos() {
   }
 }
 
+/* ------------------------------------------------------------------ fotos -- */
+
+/**
+ * La cola de la fila cero.
+ *
+ * Todo lo que lleva imagen nace esperando y no se ve en ninguna parte hasta que
+ * alguien lo aprueba aquí. Está pensado para vaciarse deprisa y desde el móvil:
+ * miniaturas grandes (en una de ochenta píxeles no se ve lo que hay que ver),
+ * dos botones por tarjeta, y marcar varias para resolverlas de golpe.
+ *
+ * El pase enseña unas diez fotos por minuto, así que con sesenta aprobadas hay
+ * noche entera: no hace falta revisarlo todo, hace falta revisar lo suficiente.
+ */
+
+const marcadas = new Set();
+
+function actualizarBotonesLote() {
+  $("#cuenta-marcadas").textContent = String(marcadas.size);
+  $("#btn-aprobar-lote").disabled = marcadas.size === 0;
+  $("#btn-rechazar-lote").disabled = marcadas.size === 0;
+}
+
+function marcar(ficha, id, si) {
+  if (si) marcadas.add(id);
+  else marcadas.delete(id);
+  ficha.classList.toggle("marcada", si);
+  ficha.setAttribute("aria-pressed", String(si));
+  actualizarBotonesLote();
+}
+
+async function resolver(ids, nuevoEstado, fichas) {
+  if (!ids.length) return;
+  fichas.forEach((f) => f.classList.add("hecha"));
+  try {
+    await pedir("/api/admin/lote", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ids, estado: nuevoEstado }),
+    });
+    ids.forEach((id) => marcadas.delete(id));
+    fichas.forEach((f) => f.remove());
+    actualizarBotonesLote();
+    const quedan = $$("#listado-fotos .rev").length;
+    $("#cuenta-espera").textContent = String(quedan);
+    $("#globo-espera").hidden = quedan === 0;
+    $("#globo-espera").textContent = String(quedan);
+    if (!quedan) {
+      $("#listado-fotos").append(crear("p", "rev__vacio", "No queda nada por revisar."));
+    }
+  } catch (err) {
+    // Si falla, la tarjeta vuelve: nunca se da por hecho algo que no se ha hecho.
+    fichas.forEach((f) => f.classList.remove("hecha"));
+    alert(err.message);
+  }
+}
+
+function fichaRevision(m) {
+  const ficha = crear("article", "rev");
+  ficha.tabIndex = 0;
+  ficha.setAttribute("role", "button");
+  ficha.setAttribute("aria-pressed", "false");
+  ficha.dataset.id = String(m.id);
+
+  if (m.photo_key) {
+    // Se pide por la ruta del panel: lo que está en cuarentena no tiene URL
+    // pública, y es justo lo que hace que una foto descartada no pueda circular.
+    const esVideo = m.media_tipo === "video";
+    const media = crear(esVideo ? "video" : "img", "rev__media");
+    media.src = "/api/admin/foto/" + m.photo_key;
+    if (esVideo) { media.muted = true; media.controls = true; media.playsInline = true; }
+    else { media.alt = "Foto enviada por " + m.author; media.loading = "lazy"; }
+    ficha.append(media);
+  }
+
+  const cuerpo = crear("div", "rev__cuerpo");
+  if (m.body) cuerpo.append(crear("p", "rev__texto", m.body));
+  const meta = crear("p", "rev__meta");
+  meta.append(document.createTextNode(m.author + (m.origin ? " · " + m.origin : "")));
+  meta.append(crear("br"));
+  meta.append(document.createTextNode(fechaCorta(m.created_at) + " · " + m.canal));
+  cuerpo.append(meta);
+  if (m.moderacion) cuerpo.append(crear("span", "rev__motivo", m.moderacion));
+  ficha.append(cuerpo);
+
+  const botones = crear("div", "rev__botones");
+  const si = crear("button", "btn btn--primario", "Publicar");
+  const no = crear("button", "btn btn--peligro", "Descartar");
+  si.addEventListener("click", (ev) => { ev.stopPropagation(); resolver([m.id], "ok", [ficha]); });
+  no.addEventListener("click", (ev) => { ev.stopPropagation(); resolver([m.id], "no", [ficha]); });
+  botones.append(si, no);
+  ficha.append(botones);
+
+  ficha.addEventListener("click", () => marcar(ficha, m.id, !marcadas.has(m.id)));
+  ficha.addEventListener("keydown", (ev) => {
+    const k = ev.key.toLowerCase();
+    if (k === "a") { ev.preventDefault(); resolver([m.id], "ok", [ficha]); }
+    else if (k === "d") { ev.preventDefault(); resolver([m.id], "no", [ficha]); }
+    else if (ev.key === " ") { ev.preventDefault(); marcar(ficha, m.id, !marcadas.has(m.id)); }
+  });
+
+  return ficha;
+}
+
+async function cargarFotos() {
+  const listado = $("#listado-fotos");
+  listado.textContent = "";
+  marcadas.clear();
+  actualizarBotonesLote();
+
+  try {
+    // La cola primero y sola. La comprobación del filtro hace una inferencia de
+    // verdad y tarda segundos: esperarla aquí dejaría la pantalla en blanco justo
+    // cuando hay prisa por revisar.
+    const datos = await pedir("/api/admin/messages?filter=espera");
+
+    pedir("/api/admin/ia")
+      .then((ia) => {
+        $("#nota-ia").textContent = ia?.ia
+          ? "El filtro de textos responde en " + (ia.texto_ms ?? "?") + " ms."
+          : "Sin filtro automático: se revisa todo aquí.";
+      })
+      .catch(() => { $("#nota-ia").textContent = ""; });
+
+    const cola = datos.messages;
+    $("#cuenta-espera").textContent = String(cola.length);
+    $("#globo-espera").hidden = cola.length === 0;
+    $("#globo-espera").textContent = String(cola.length);
+
+    if (!cola.length) {
+      listado.append(crear("p", "rev__vacio", "No hay nada esperando. Todo al día."));
+      return;
+    }
+    // De la más antigua a la más nueva: quien lleva más rato esperando, primero.
+    cola.slice().reverse().forEach((m) => listado.append(fichaRevision(m)));
+    listado.querySelector(".rev")?.focus();
+  } catch (err) {
+    listado.append(crear("p", "rev__vacio", err.message));
+  }
+}
+
 /* ----------------------------------------------------------------- vistas -- */
 
 function cambiarVista(vista) {
@@ -515,6 +655,7 @@ function cambiarVista(vista) {
 function cargarVista() {
   if (estado.vista === "lugares") cargarLugares();
   else if (estado.vista === "muro") cargarMuro();
+  else if (estado.vista === "fotos") cargarFotos();
   else cargarAjustes();
 }
 
@@ -524,5 +665,21 @@ $("#form-login").addEventListener("submit", entrar);
 $("#btn-salir").addEventListener("click", salir);
 $("#btn-guardar-ajustes").addEventListener("click", guardarAjustes);
 $$(".pestana").forEach((p) => p.addEventListener("click", () => cambiarVista(p.dataset.vista)));
+
+$("#btn-refrescar-fotos").addEventListener("click", cargarFotos);
+$("#btn-marcar-todo").addEventListener("click", () => {
+  const todas = $$("#listado-fotos .rev");
+  const marcarlas = marcadas.size < todas.length;
+  todas.forEach((f) => marcar(f, Number(f.dataset.id), marcarlas));
+});
+["#btn-aprobar-lote", "#btn-rechazar-lote"].forEach((sel) => {
+  $(sel).addEventListener("click", () => {
+    const nuevoEstado = sel.includes("aprobar") ? "ok" : "no";
+    const fichas = $$("#listado-fotos .rev").filter((f) => marcadas.has(Number(f.dataset.id)));
+    const ids = fichas.map((f) => Number(f.dataset.id));
+    if (nuevoEstado === "no" && !confirm("Se descartan " + ids.length + " sin vuelta atrás. ¿Seguro?")) return;
+    resolver(ids, nuevoEstado, fichas);
+  });
+});
 
 comprobarSesion();
