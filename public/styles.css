@@ -223,11 +223,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
   .barra__logo { height: 1.85rem; }
   .barra__nav { gap: 0.8rem; min-width: 0; }
   .barra__nav a { font-size: 0.64rem; letter-spacing: 0.06em; white-space: nowrap; }
-  /* Con «Manifiesto» son cinco enlaces y en 390 px caben tres. Se esconden los
-     dos que ya se alcanzan bajando por la portada: Lugares tiene su botón y el
-     muro es una sección de la misma página. */
+  /* En 390 px caben tres enlaces. Se esconde «Lugares», que ya tiene su propio
+     botón en la portada. */
   .barra__nav a:nth-child(2) { display: none; }   /* Lugares */
-  .barra__nav a:nth-child(5) { display: none; }   /* Muro de apoyo */
   /* «Qué está pasando» se queda en «Qué pasa»: con las cuatro palabras el cuarto
      enlace se salía de la pantalla y aparecía scroll horizontal. El nombre que
      lee un lector de pantalla no cambia, porque va en el aria-label. */
@@ -1729,3 +1727,15 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
 }
 .manifiesto__bajada a:hover,
 .manifiesto__bajada a:focus-visible { color: var(--oro); }
+
+/* El himno, al final del manifiesto: el texto termina cantándolo y hay que
+   llegar sabiéndoselo. La letra y la partitura no se copian aquí porque siguen
+   con derechos; se enlaza la fuente oficial de la Ciudad Autónoma. */
+.manif-himno {
+  background: var(--papel);
+  border-top: 2px solid var(--papel-linea);
+  padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem);
+}
+.manif-himno__cuerpo { max-width: 40rem; margin-inline: auto; }
+.manif-himno .seccion__texto { margin-bottom: 1rem; }
+.manif-himno .difunde__acciones { margin-top: 1.4rem; }
