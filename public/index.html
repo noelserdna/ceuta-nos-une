@@ -70,6 +70,7 @@
     <a href="https://porceuta.es/que-esta-pasando" target="_blank" rel="noopener"
        aria-label="Qué está pasando en Ceuta, en porceuta.es, se abre en una pestaña nueva"><span class="nav-texto">Qué<span class="nav-largo"> está</span> pasa<span class="nav-largo">ndo</span></span><svg class="fuera" viewBox="0 0 24 24" aria-hidden="true" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a>
     <a href="#lugares">Lugares</a>
+    <a href="/manifiesto"><span class="nav-texto">Manifiesto</span></a>
     <a href="/propon">Propón uno</a>
     <a href="#muro">Muro de apoyo</a>
   </nav>
@@ -178,19 +179,21 @@
 <section class="manifiesto" aria-labelledby="manifiesto-titulo">
   <div class="manifiesto__caja">
     <div class="manifiesto__texto">
-      <p class="manifiesto__antetitulo">Firma también el manifiesto</p>
+      <p class="manifiesto__antetitulo">Un manifiesto para firmar</p>
       <h2 class="manifiesto__titulo" id="manifiesto-titulo">Por Ceuta y por la Normalidad Cívica</h2>
       <p class="manifiesto__bajada">
         Una iniciativa ciudadana, transversal e independiente por la normalidad de la ciudad
         de Ceuta. Las firmas se recogen en un Libro de Apoyo que se entrega a las autoridades.
+        No es el que se lee el día 2: <a href="/manifiesto">ese es este otro</a>, y va más
+        allá del 2 de septiembre.
       </p>
     </div>
 
     <div class="manifiesto__accion">
       <a class="boton boton--brasa" href="https://porceuta.es/manifiesto"
          target="_blank" rel="noopener"
-         aria-label="Leer y firmar el manifiesto en porceuta.es, se abre en una pestaña nueva">
-        <span class="manifiesto__cta">Leer y firmar el manifiesto</span>
+         aria-label="Firmar el manifiesto por la Normalidad Cívica en porceuta.es, se abre en una pestaña nueva">
+        <span class="manifiesto__cta">Firmar el manifiesto</span>
         <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none"
              stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -458,6 +461,31 @@
         Al compartir el enlace aparece el cartel con la fecha y la hora, así que se entiende de
         un vistazo sin abrirlo. La imagen es para pantalla y móvil.
       </p>
+
+      <!-- El manifiesto va aquí, pegado al cartel, porque es la otra cosa que hay
+           que llevarse: el cartel convoca y el manifiesto es lo que se lee cuando
+           ya estás en la plaza. -->
+      <div class="difunde__manifiesto">
+        <h3 class="difunde__subtitulo">Y lleva el manifiesto</h3>
+        <p class="seccion__texto seccion__texto--claro">
+          Es el texto que se lee <strong>en voz alta</strong> en todas las concentraciones,
+          el mismo en cada plaza. Deja huecos para el nombre de tu municipio.
+        </p>
+        <div class="difunde__acciones">
+          <a class="boton boton--linea" href="/manifiesto">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8M8 16h5"/>
+            </svg>
+            Leer el manifiesto
+          </a>
+          <a class="boton boton--linea" href="/media/manifiesto.pdf" download="manifiesto-por-ceuta.pdf">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/>
+            </svg>
+            PDF para imprimir
+          </a>
+        </div>
+      </div>
 
     </div>
   </div>

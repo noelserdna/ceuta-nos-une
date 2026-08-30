@@ -844,6 +844,7 @@ async function sitemapXml(env: Env): Promise<Response> {
   const urls = [
     { loc: "https://ceutanosune.es/", lastmod: cambioLugares, priority: "1.0", freq: "daily" },
     { loc: "https://ceutanosune.es/lugares", lastmod: cambioLugares, priority: "0.9", freq: "daily" },
+    { loc: "https://ceutanosune.es/manifiesto", lastmod: cambioLugares, priority: "0.8", freq: "weekly" },
     { loc: "https://ceutanosune.es/propon", lastmod: cambioLugares, priority: "0.6", freq: "weekly" },
   ];
 
@@ -1183,6 +1184,18 @@ puede firmar una sola persona física. Siguen sin nada ${vacias} provincias.
   longitud, convoca, notas y enlace. Los campos vacíos van como null.
 - [Datos de la convocatoria](https://ceutanosune.es/api/config): fecha del acto y
   correo de contacto.
+
+## Qué se lee en la concentración
+
+- [Manifiesto por Ceuta](https://ceutanosune.es/manifiesto): el texto que se lee en
+  voz alta en todas las concentraciones del 2 de septiembre, el mismo en cada
+  plaza. Deja huecos para el nombre del municipio, que la página rellena. El
+  original en PDF está en https://ceutanosune.es/media/manifiesto.pdf
+  Pide expresamente que no se mencione ningún partido político: «el 2 de
+  septiembre pertenece a los ceutíes».
+- No confundirlo con el [manifiesto por la Normalidad
+  Cívica](https://porceuta.es/manifiesto), que es de porceuta.es, se FIRMA y va
+  más allá del día 2. El de aquí se LEE, ese día, en la plaza.
 
 ## Convocar una concentración donde no hay ninguna
 

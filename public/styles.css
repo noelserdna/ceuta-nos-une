@@ -223,7 +223,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
   .barra__logo { height: 1.85rem; }
   .barra__nav { gap: 0.8rem; min-width: 0; }
   .barra__nav a { font-size: 0.64rem; letter-spacing: 0.06em; white-space: nowrap; }
-  .barra__nav a:nth-child(2) { display: none; }   /* Lugares: la portada ya lleva su botón */
+  /* Con «Manifiesto» son cinco enlaces y en 390 px caben tres. Se esconden los
+     dos que ya se alcanzan bajando por la portada: Lugares tiene su botón y el
+     muro es una sección de la misma página. */
+  .barra__nav a:nth-child(2) { display: none; }   /* Lugares */
+  .barra__nav a:nth-child(5) { display: none; }   /* Muro de apoyo */
   /* «Qué está pasando» se queda en «Qué pasa»: con las cuatro palabras el cuarto
      enlace se salía de la pantalla y aparecía scroll horizontal. El nombre que
      lee un lector de pantalla no cambia, porque va en el aria-label. */
@@ -1585,3 +1589,119 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
 .barra__nav .nav-texto { display: inline; }
 .barra__nav .fuera { flex: none; opacity: 0.65; }
 .barra__nav a:hover .fuera, .barra__nav a:focus-visible .fuera { opacity: 1; }
+
+/* ------------------------------------------------- manifiesto del día 2 - */
+/* Esta página se lee EN VOZ ALTA desde un móvil, de pie en una plaza. Por eso
+   el cuerpo es mayor de lo normal y la medida más estrecha: lo que se busca es
+   no perder el renglón al levantar la vista. */
+
+.manif-cab {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: var(--papel-textura);
+  background-size: var(--papel-textura-escala);
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+}
+.manif-cab__cuerpo { position: relative; z-index: 1; max-width: 40rem; margin-inline: auto; }
+
+/* El municipio se escribe una vez y se queda: al recargar sigue puesto. */
+.manif-muni { margin-top: 1.6rem; max-width: 26rem; }
+.manif-muni label {
+  display: block; margin-bottom: 0.4rem;
+  font-size: 0.82rem; font-weight: 600; color: var(--gris);
+}
+.manif-muni input {
+  width: 100%; padding: 0.75rem 0.9rem;
+  font: inherit; font-size: 1.02rem; color: var(--tinta);
+  background: var(--papel-claro);
+  border: 2px solid var(--tinta); border-radius: 0;
+}
+.manif-muni input:focus-visible {
+  outline: 3px solid var(--oro); outline-offset: 2px;
+}
+
+.manif {
+  max-width: 40rem; margin: 0 auto; background: var(--papel);
+  padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1rem, 4vw, 3rem) clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.06rem, 0.98rem + 0.5vw, 1.22rem);
+  line-height: 1.72; color: var(--tinta);
+}
+.manif p { margin: 0 0 1.15rem; }
+
+.manif-aviso {
+  margin: 0 0 2rem; padding: 1rem 1.15rem;
+  background: var(--papel-claro); border-left: 5px solid var(--oro);
+  font-size: 0.95em; line-height: 1.6; color: var(--gris);
+}
+.manif-aviso p { margin: 0; }
+.manif-aviso strong { color: var(--tinta); }
+
+.manif-lista { margin: 0 0 1.15rem; padding-left: 1.3rem; }
+.manif-lista li { margin-bottom: 0.5rem; }
+
+/* Las consignas se gritan: van en el tipo del cartel y centradas, para que se
+   distingan de un vistazo del texto que se lee seguido. */
+.manif-grito {
+  margin: 1.8rem 0; text-align: center;
+  font-family: Anton, "Arial Narrow", sans-serif;
+  font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
+  line-height: 1.12; text-transform: uppercase;
+  /* El carmín del cartel da 3,3:1 y aquí esto no es adorno: es lo que
+     alguien lee en voz alta, a veces con sol de cara. Va el oscuro. */
+  color: var(--carmin-osc); letter-spacing: 0.01em;
+}
+.manif-grito--fin { color: var(--tinta); }
+
+.manif-cierre {
+  margin-top: 2rem; text-align: center;
+  font-style: italic; color: var(--gris-claro);
+}
+
+/* El hueco del municipio: subrayado mientras está vacío, para que se vea que
+   falta algo; una vez puesto, se lee como una palabra más de la frase. */
+.hueco {
+  border-bottom: 2px dotted var(--gris-claro);
+  color: var(--gris-claro); font-style: italic;
+}
+.hueco--puesto {
+  border-bottom: none; color: inherit; font-style: normal; font-weight: 700;
+}
+
+.manif-pie {
+  background: var(--papel-claro);
+  border-top: 2px solid var(--papel-linea);
+  padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem);
+}
+.manif-pie__cuerpo { max-width: 40rem; margin-inline: auto; }
+.manif-pie .difunde__acciones { margin-top: 1.4rem; }
+
+.manif-otro {
+  margin-top: 1.8rem; padding-top: 1.2rem;
+  border-top: 1px solid var(--papel-linea);
+  font-size: 0.92rem; line-height: 1.6; color: var(--gris);
+}
+
+/* El manifiesto dentro del bloque de difundir: cuelga del cartel, separado por
+   una línea, porque son dos cosas que llevarse y no una sola. */
+.difunde__manifiesto {
+  margin-top: 1.8rem; padding-top: 1.5rem;
+  border-top: 1px solid rgba(253, 241, 230, 0.28);
+}
+.difunde__subtitulo {
+  margin: 0 0 0.5rem;
+  font-family: Anton, "Arial Narrow", sans-serif;
+  font-size: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+  text-transform: uppercase; letter-spacing: 0.01em;
+  color: var(--papel-claro);
+}
+.difunde__manifiesto .difunde__acciones { margin-top: 1.1rem; }
+
+/* .difunde__nota nace en la sección de difundir, que tiene fondo oscuro: su
+   color es papel al 72 %. Sobre el fondo claro de esta página daba 1,12:1, o
+   sea, invisible. Aquí lleva el color del texto normal. */
+.manif-pie .difunde__nota {
+  color: var(--gris);
+  border-color: var(--papel-linea);   /* el borde claro tampoco se veía */
+}
+.manif-pie .difunde__nota--ok {
+  color: var(--carmin-osc); font-weight: 600; border-color: var(--carmin-osc);
+}
