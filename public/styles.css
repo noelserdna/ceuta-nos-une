@@ -1561,7 +1561,20 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
   font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
   color: rgba(247, 227, 211, 0.6);
 }
-.manifiesto__casa b { color: rgba(247, 227, 211, 0.9); font-weight: 700; }
+.manifiesto__casa a {
+  /* El texto es de 0,72rem, así que el enlace medía 12 px de alto: se pulsa con
+     el ratón pero no con el dedo. El padding le da los 24 px que pide WCAG sin
+     cambiar cómo se ve, porque es inline y el alto de línea no se mueve. */
+  display: inline-block; padding-block: 0.38rem;
+  color: rgba(247, 227, 211, 0.9); font-weight: 700;
+  text-decoration: underline; text-underline-offset: 0.25em;
+}
+.manifiesto__casa a:hover, .manifiesto__casa a:focus-visible { color: var(--oro); }
+
+/* El texto del botón es un hijo del flex igual que el icono, así que va envuelto:
+   el gap que los separa no debe meterse dentro de la frase. Es el mismo tropiezo
+   que partió «pasando» en el menú. */
+.manifiesto__accion .boton .manifiesto__cta { display: inline; }
 
 /* Los enlaces del menú que se van fuera llevan la flechita: en una barra donde
    todo lo demás son anclas de esta misma página, conviene saber cuál te saca. */
