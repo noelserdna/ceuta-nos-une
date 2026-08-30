@@ -5,7 +5,10 @@ node_modules/
 worker-configuration.d.ts
 *.log
 .playwright-mcp/
+# Capturas de pantalla y pruebas sueltas; las imágenes que sirve la web sí van.
 *.png
+!public/media/*.png
+!public/*.png
 site/
 
 .vercel
