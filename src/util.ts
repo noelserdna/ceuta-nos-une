@@ -204,3 +204,206 @@ export function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
+// ---------------------------------------------------------------------------
+// La fila cero
+// ---------------------------------------------------------------------------
+
+/**
+ * Clave para los limites por conexion.
+ *
+ * Con la IP literal el limite no sirve de nada en IPv6: cualquier maquina
+ * alquilada tiene un /64 entero para ella y cambia de direccion en cada
+ * peticion. Se agrupa por los cuatro primeros grupos, que es la red que de
+ * verdad identifica a alguien.
+ */
+export function claveRed(ip: string): string {
+  if (!ip.includes(":")) return ip;
+  return ip.split(":").slice(0, 4).join(":") + "::/64";
+}
+
+/**
+ * Deja el texto como lo lee una persona antes de clasificarlo.
+ *
+ * Sin esto, cambiar una "a" latina por una "а" cirilica salta cualquier lista de
+ * palabras, y los caracteres de ancho cero parten una palabra por dentro sin que
+ * se note en pantalla.
+ */
+const ANCHO_CERO = /[​-‍⁠﻿]/g;
+const CONFUSABLES: Record<string, string> = {
+  "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "ѕ": "s",
+  "і": "i", "ј": "j", "һ": "h", "ԁ": "d", "ɡ": "g", "ν": "v", "ο": "o", "ι": "i",
+  "α": "a", "ε": "e", "ρ": "p", "τ": "t", "υ": "u", "κ": "k", "μ": "m", "ѵ": "v",
+};
+export function normalizarTexto(value: string): string {
+  return value
+    .normalize("NFKC")
+    .replace(ANCHO_CERO, "")
+    .replace(/[Ѐ-ӿͰ-Ͽɐ-ʯ]/g, (c) => CONFUSABLES[c] ?? c)
+    .toLowerCase();
+}
+
+/** Un enlace en una pantalla con el nombre de la convocatoria detras es phishing. */
+export function llevaEnlace(value: string): boolean {
+  return /https?:\/\/|www\.|\b[a-z0-9-]+\.(com|es|net|org|io|me|link|xyz|top|ru|cc|gl|ly)\b/i
+    .test(normalizarTexto(value));
+}
+
+/** Tipos que admite la fila cero. El GIF se queda fuera a proposito: ver sniffMedia. */
+const MEDIA_SIGNATURES: Array<{ type: string; ext: string; clase: "foto" | "video"; test: (b: Uint8Array) => boolean }> = [
+  { type: "image/jpeg", ext: "jpg", clase: "foto", test: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
+  {
+    type: "image/png", ext: "png", clase: "foto",
+    test: (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47,
+  },
+  {
+    type: "image/webp", ext: "webp", clase: "foto",
+    test: (b) =>
+      b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 &&
+      b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50,
+  },
+  // Todo MP4 y MOV empieza con una caja "ftyp" en el byte 4. La marca de los
+  // bytes 8-12 dice el sabor; los moviles graban isom/mp42 (Android) o qt (iPhone).
+  {
+    type: "video/mp4", ext: "mp4", clase: "video",
+    test: (b) => b[4] === 0x66 && b[5] === 0x74 && b[6] === 0x79 && b[7] === 0x70,
+  },
+];
+
+/**
+ * Igual que sniffImage pero para el directo, con dos diferencias pensadas:
+ *
+ * - **Sin GIF.** El navegador no los recodifica (perderian la animacion), asi que
+ *   llegan tal cual: un GIF parpadeando a 20 Hz proyectado en una plaza es un
+ *   riesgo real para quien tiene epilepsia fotosensible, y un clasificador que
+ *   mira un fotograma no lo ve venir.
+ * - **Con video**, solo si se pide.
+ */
+export function sniffMedia(bytes: ArrayBuffer, conVideo = false): { type: string; ext: string; clase: "foto" | "video" } | null {
+  const head = new Uint8Array(bytes.slice(0, 16));
+  if (head.length < 12) return null;
+  const hallado = MEDIA_SIGNATURES.find((s) => s.test(head));
+  if (!hallado) return null;
+  if (hallado.clase === "video" && !conVideo) return null;
+  return { type: hallado.type, ext: hallado.ext, clase: hallado.clase };
+}
+
+/**
+ * Ancho y alto sin decodificar la imagen.
+ *
+ * Un PNG de 20.000 x 20.000 ocupa 300 KB comprimido y 1,6 GB al abrirlo. Aqui no
+ * se abre, pero se abriria en el movil de cada persona que ve el pase, y a
+ * pantalla completa eso es la pantalla congelada para todo el mundo.
+ */
+export function medidasImagen(bytes: ArrayBuffer): { ancho: number; alto: number } | null {
+  const b = new Uint8Array(bytes);
+  const dv = new DataView(bytes);
+
+  // PNG: el IHDR va siempre en la misma posicion.
+  if (b[0] === 0x89 && b[1] === 0x50) {
+    if (b.length < 24) return null;
+    return { ancho: dv.getUint32(16), alto: dv.getUint32(20) };
+  }
+
+  // WEBP: solo el formato simple (VP8X lleva las medidas en 24 bits).
+  if (b[0] === 0x52 && b[8] === 0x57) {
+    if (b[15] === 0x58 && b.length > 30) {
+      return { ancho: (b[24] | (b[25] << 8) | (b[26] << 16)) + 1, alto: (b[27] | (b[28] << 8) | (b[29] << 16)) + 1 };
+    }
+    return null;   // las otras variantes se dejan pasar: pesan poco por definicion
+  }
+
+  // JPEG: hay que recorrer los segmentos hasta dar con un SOFn.
+  if (b[0] === 0xff && b[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xff) { i++; continue; }
+      const marca = b[i + 1];
+      if (marca >= 0xc0 && marca <= 0xcf && marca !== 0xc4 && marca !== 0xc8 && marca !== 0xcc) {
+        return { alto: dv.getUint16(i + 5), ancho: dv.getUint16(i + 7) };
+      }
+      if (marca === 0xd8 || marca === 0x01 || (marca >= 0xd0 && marca <= 0xd7)) { i += 2; continue; }
+      i += 2 + dv.getUint16(i + 2);
+    }
+  }
+  return null;
+}
+
+/**
+ * Duracion de un MP4 en milisegundos, leyendo la cabecera de pelicula (mvhd).
+ *
+ * Se busca la caja por el fichero entero en vez de recorrer el arbol: el mvhd
+ * puede estar al principio o al final segun como se grabara, y para ocho megas
+ * en memoria no compensa escribir un lector de cajas completo.
+ */
+export function duracionMp4(bytes: ArrayBuffer): number | null {
+  const b = new Uint8Array(bytes);
+  const dv = new DataView(bytes);
+  for (let i = 0; i + 32 < b.length; i++) {
+    if (b[i] !== 0x6d || b[i + 1] !== 0x76 || b[i + 2] !== 0x68 || b[i + 3] !== 0x64) continue;
+    const version = b[i + 4];
+    const escala = version === 1 ? dv.getUint32(i + 20) : dv.getUint32(i + 12);
+    const duracion = version === 1 ? Number(dv.getBigUint64(i + 24)) : dv.getUint32(i + 16);
+    if (!escala || !duracion) return null;
+    return Math.round((duracion / escala) * 1000);
+  }
+  return null;
+}
+
+/**
+ * Si el JPEG lleva las coordenadas de donde se hizo la foto.
+ *
+ * El README promete que el EXIF se quita, pero eso lo hace el lienzo del
+ * navegador y tiene escapes: si createImageBitmap falla se sube el original, y
+ * quien envia con curl no pasa por ahi. Publicar el sitio exacto desde el que
+ * alguien fue a una concentracion es el peor dano que puede hacer esta pantalla,
+ * asi que la foto se rechaza y se le pide otra.
+ */
+export function llevaGps(bytes: ArrayBuffer): boolean {
+  const b = new Uint8Array(bytes);
+  if (b[0] !== 0xff || b[1] !== 0xd8) return false;
+  const dv = new DataView(bytes);
+  let i = 2;
+  while (i + 4 < b.length) {
+    if (b[i] !== 0xff) { i++; continue; }
+    if (b[i + 1] === 0xda) return false;                 // empieza la imagen: ya no hay metadatos
+    const largo = dv.getUint16(i + 2);
+    if (b[i + 1] === 0xe1 && i + 10 < b.length) {        // APP1, que es donde vive el EXIF
+      const fin = Math.min(i + 2 + largo, b.length);
+      const alineado = b[i + 10] === 0x4d;               // MM (big endian) o II (little)
+      for (let j = i + 10; j + 12 < fin; j += 2) {
+        const etiqueta = alineado ? dv.getUint16(j) : dv.getUint16(j, true);
+        if (etiqueta === 0x8825) return true;            // GPSInfo IFD
+      }
+    }
+    i += 2 + largo;
+  }
+  return false;
+}
+
+/**
+ * La ficha de quien entra en la fila cero.
+ *
+ * Se emite una sola vez, al entrar, despues de pasar el anti-robots. Turnstile no
+ * se puede pedir en cada mensaje: cada token vale una vez y tarda segundos en
+ * renovarse, asi que en un chat la mitad de los envios contestarian "no hemos
+ * podido comprobar que no eres un robot" sin que nadie hubiera hecho nada mal.
+ *
+ * Va firmada para que no valga inventarsela, y no lleva dentro nada de nadie:
+ * son ocho bytes al azar y una fecha de caducidad.
+ */
+export async function crearFicha(secret: string): Promise<string> {
+  const azar = toHex(crypto.getRandomValues(new Uint8Array(8)).buffer);
+  const cuerpo = azar + ":" + (Math.floor(Date.now() / 1000) + 60 * 60 * 12);
+  return cuerpo + "." + (await hmacHex(cuerpo, secret)).slice(0, 32);
+}
+
+export async function fichaValida(ficha: string, secret: string): Promise<boolean> {
+  const corte = ficha.lastIndexOf(".");
+  if (corte < 1) return false;
+  const cuerpo = ficha.slice(0, corte);
+  const firma = ficha.slice(corte + 1);
+  const exp = Number(cuerpo.split(":")[1]);
+  if (!Number.isFinite(exp) || exp < Math.floor(Date.now() / 1000)) return false;
+  return timingSafeEqual(firma, (await hmacHex(cuerpo, secret)).slice(0, 32));
+}

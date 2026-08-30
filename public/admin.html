@@ -41,6 +41,9 @@
       <button role="tab" class="pestana" data-vista="muro" aria-selected="false">
         Muro <span class="globo globo--alerta" id="globo-reportados" hidden>0</span>
       </button>
+      <button role="tab" class="pestana" data-vista="fotos" aria-selected="false">
+        Fotos <span class="globo globo--alerta" id="globo-espera" hidden>0</span>
+      </button>
       <button role="tab" class="pestana" data-vista="ajustes" aria-selected="false">Ajustes</button>
     </nav>
     <div class="cabecera__acciones">
@@ -65,6 +68,28 @@
       <p class="nota">Los mensajes se publican sin revisión previa: aquí puedes ocultarlos o borrarlos.</p>
     </div>
     <div class="rejilla-muro" id="listado-muro"></div>
+  </section>
+
+  <!-- ---- FOTOS: la cola de la fila cero ---- -->
+  <section class="vista" id="vista-fotos" hidden>
+    <div class="barra-filtros barra-filtros--pegajosa">
+      <div class="revision__cuenta">
+        <strong id="cuenta-espera">0</strong> esperando ·
+        <span id="cuenta-marcadas">0</span> marcadas
+      </div>
+      <div class="revision__acciones">
+        <button class="btn btn--primario" id="btn-aprobar-lote" disabled>Publicar las marcadas</button>
+        <button class="btn btn--peligro" id="btn-rechazar-lote" disabled>Descartar las marcadas</button>
+        <button class="btn btn--fantasma" id="btn-marcar-todo">Marcar todas</button>
+        <button class="btn btn--fantasma" id="btn-refrescar-fotos">Actualizar</button>
+      </div>
+      <p class="nota">
+        Nada de esto se ve todavía en la pantalla. Con el ratón, los botones de cada foto;
+        con teclado, <kbd>A</kbd> publica, <kbd>D</kbd> descarta y <kbd>espacio</kbd> marca.
+        <span id="nota-ia"></span>
+      </p>
+    </div>
+    <div class="revision" id="listado-fotos"></div>
   </section>
 
   <!-- ---- AJUSTES ---- -->

@@ -9,3 +9,8 @@ design/
 wrangler.jsonc
 worker-configuration.d.ts
 tsconfig.json
+
+# _headers es formato de Cloudflare Pages: Vercel no lo lee y, si se sube, lo
+# sirve como un fichero descargable en /_headers. Las cabeceras de produccion
+# estan en vercel.json; public/_headers se queda para el .com, que si lo aplica.
+public/_headers

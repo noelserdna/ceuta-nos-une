@@ -296,3 +296,49 @@ textarea { resize: vertical; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+/* ---- La cola de revisión de la fila cero -------------------------------- */
+
+/* Las tarjetas siguen la paleta del panel (fondo oscuro, texto crema): con
+   fondo blanco heredaban el color claro del cuerpo y no se leía nada. */
+
+.barra-filtros--pegajosa {
+  position: sticky; top: 0; z-index: 5;
+  background: var(--tinta);
+  border-bottom: 2px solid var(--linea);
+}
+.revision__cuenta { font-size: 1.05rem; color: var(--crema); }
+.revision__cuenta strong { color: var(--oro); font-size: 1.3rem; }
+.revision__acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0; }
+
+.revision {
+  display: grid; gap: 0.9rem; padding: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+/* La miniatura, grande de verdad: en una de ochenta píxeles no se ve lo que hay
+   que ver, y aquí se decide justamente mirando. */
+.rev {
+  border: 3px solid var(--linea); background: var(--tinta-2);
+  color: var(--crema);
+  display: flex; flex-direction: column; cursor: pointer;
+}
+.rev:focus-visible { outline: 4px solid var(--oro); outline-offset: 2px; }
+.rev.marcada { border-color: var(--oro); box-shadow: 0 0 0 4px rgba(252, 192, 24, 0.3); }
+.rev.hecha { opacity: 0.3; pointer-events: none; }
+
+.rev__media {
+  width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  background: var(--tinta-3); display: block;
+}
+.rev__cuerpo { padding: 0.6rem; flex: 1; }
+.rev__texto { margin: 0 0 0.3rem; font-size: 0.95rem; line-height: 1.35; color: var(--crema); }
+.rev__meta { margin: 0; font-size: 0.78rem; color: var(--gris); }
+.rev__motivo {
+  display: inline-block; margin-top: 0.4rem; font-size: 0.7rem;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--oro);
+  border: 1px solid var(--oro); padding: 0.1rem 0.35rem;
+}
+.rev__botones { display: grid; grid-template-columns: 1fr 1fr; }
+.rev__botones .btn { border-radius: 0; min-height: 46px; }
+.rev__vacio { padding: 3rem 1rem; text-align: center; color: var(--gris); grid-column: 1 / -1; }

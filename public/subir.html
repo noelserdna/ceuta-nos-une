@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Subir a la fila cero · Ceuta nos une</title>
+<meta name="description" content="Página para quien tiene un código de la organización: sube fotos y vídeos cortos de la concentración.">
+<meta name="theme-color" content="#2B0C14">
+<!-- Es una página de trabajo con un enlace privado: no pinta nada en un buscador. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/directo.css">
+</head>
+<body class="directo">
+
+<header class="barra">
+  <a class="barra__marca" href="/">
+    <span class="barra__gyronny" aria-hidden="true"></span>
+    <img class="barra__logo" src="/media/logo.svg" alt="Ceuta nos une" width="1837" height="816">
+  </a>
+  <nav class="barra__nav" aria-label="Secciones">
+    <a href="/directo">Ver la fila cero</a>
+  </nav>
+</header>
+
+<main class="subir">
+
+  <div class="subir__sin-codigo" id="sin-codigo" hidden>
+    <h1>Este enlace no vale</h1>
+    <p>Para subir fotos y vídeos hace falta el enlace personal que reparte la organización.
+      Si tenías uno, ábrelo otra vez desde el mensaje donde te lo mandaron.</p>
+  </div>
+
+  <div class="subir__caja" id="caja" hidden>
+    <p class="subir__eco">Fila cero · equipo</p>
+    <h1 class="subir__titulo" id="saludo">Hola</h1>
+    <p class="subir__pie">Lo que subas aquí sale en la pantalla del directo. Es lo que ve
+      quien hoy no ha podido venir a la plaza.</p>
+
+    <form id="forma" autocomplete="off">
+      <input id="s-media" name="media" type="file" class="visualmente-oculto"
+             accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime">
+      <label class="boton boton--brasa subir__elegir" for="s-media" id="s-label">
+        Elegir foto o vídeo
+      </label>
+
+      <div class="previa" id="s-previa" hidden>
+        <img id="s-previa-img" alt="Lo que vas a subir" hidden>
+        <video id="s-previa-video" muted playsinline controls hidden></video>
+        <button type="button" class="previa__quitar" id="s-quitar">Quitar</button>
+      </div>
+
+      <div class="participar__quien">
+        <label class="visualmente-oculto" for="s-origin">¿Desde qué plaza?</label>
+        <input id="s-origin" type="text" maxlength="60" placeholder="¿Desde qué pueblo?">
+      </div>
+      <div class="participar__quien">
+        <label class="visualmente-oculto" for="s-body">Una línea sobre lo que se ve</label>
+        <input id="s-body" type="text" maxlength="140" placeholder="Una línea sobre lo que se ve">
+      </div>
+
+      <button type="submit" class="boton boton--brasa" id="s-enviar">Subir a la pantalla</button>
+      <p class="estado" id="s-estado" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="subir__aviso">El vídeo, de quince segundos como mucho, y sale sin sonido.
+      Cuidado con las caras de menores: si se reconoce a alguien menor de edad, mejor no subirlo.</p>
+
+    <h2 class="subir__titulo subir__titulo--chico">Lo que has subido</h2>
+    <ul class="subir__lista" id="lista"><li class="subir__nada">Todavía nada.</li></ul>
+  </div>
+
+</main>
+
+<script src="/subir.js" type="module"></script>
+</body>
+</html>
