@@ -107,9 +107,38 @@ const ALIAS_PROV: Record<string, string> = {
   "comunidad madrid": "Madrid", "principado asturias": "Asturias",
 };
 
+/** ¿Se pasa de una a otra cambiando, quitando o metiendo una sola letra? */
+function aUnaLetra(a: string, b: string): boolean {
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, fallos = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++fallos > 1) return false;
+    if (a.length > b.length) i++;
+    else if (a.length < b.length) j++;
+    else { i++; j++; }
+  }
+  return fallos + (a.length - i) + (b.length - j) <= 1;
+}
+
 export function provincia(p: string | null | undefined): string | null {
   const n = norm(p);
-  return POR_NOMBRE.get(n) ?? ALIAS_PROV[n] ?? null;
+  const directa = POR_NOMBRE.get(n) ?? ALIAS_PROV[n];
+  if (directa) return directa;
+
+  /* Erratas de una letra: «Alicanhe» por Alicante. Se acepta SOLO si hay una
+     candidata y ninguna mas, y esa exigencia es lo que lo hace seguro: Palencia
+     y Valencia se distinguen en una sola letra, asi que «alencia» da dos
+     candidatas y se queda sin resolver en vez de inventarse una. Por eso mismo
+     «Oalencia», que esta a una letra de las dos, va resuelta arriba a mano en
+     ALIAS_PROV. Lo que no se parece a nada se queda como viene: «Florida
+     (EE. UU.)» y «Region de Bruselas-Capital» son convocatorias fuera de
+     España, no erratas. */
+  if (n.length >= 5) {
+    const cerca = PROVINCIAS.filter((q) => aUnaLetra(n, norm(q)));
+    if (cerca.length === 1) return cerca[0];
+  }
+  return null;
 }
 
 // ------------------------------------------------------------------ filas ---
@@ -162,21 +191,25 @@ function horaLimpia(t: string | null | undefined): string {
 }
 
 function fila(p: Partial<Fila> & { ciudadCruda: string; origen: Fila["origen"] }): Fila {
+  /* Espacios dobles y saltos de linea sueltos vienen de las dos bases. En una
+     hoja de calculo un salto dentro de una celda hace que el fichero parezca
+     tener mas filas de las que tiene. */
+  const limpio = (v: string | null | undefined) => (v ?? "").replace(/\s+/g, " ").trim();
   return {
-    municipio: (p.municipio ?? "").trim(),
-    provincia: provincia(p.provincia) ?? (p.provincia ?? "").trim(),
-    sitio: (p.sitio ?? "").trim(),
-    direccion: (p.direccion ?? "").trim(),
+    municipio: limpio(p.municipio),
+    provincia: provincia(p.provincia) ?? limpio(p.provincia),
+    sitio: limpio(p.sitio),
+    direccion: limpio(p.direccion),
     fecha: p.fecha ?? "",
     hora: (p.hora ?? "").trim(),
     lat: p.lat ?? null,
     lon: p.lon ?? null,
-    convoca: (p.convoca ?? "").trim(),
-    notas: (p.notas ?? "").trim(),
+    convoca: limpio(p.convoca),
+    notas: limpio(p.notas),
     estado: p.estado ?? "",
     fuente: p.fuente ?? "",
     pin: p.pin ?? "",
-    ciudadCruda: p.ciudadCruda.trim(),
+    ciudadCruda: limpio(p.ciudadCruda),
     origen: p.origen,
   };
 }

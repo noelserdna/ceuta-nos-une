@@ -6,6 +6,7 @@
  *  - Los MENSAJES del muro se publican al momento; el panel permite ocultarlos.
  */
 
+import { unir, type Lugar, type Suya, type Fila } from "./union";
 import {
   cleanCoord,
   cleanDate,
@@ -31,6 +32,8 @@ import {
 
 export interface Env {
   ASSETS: Fetcher;
+  /** Clave de la ruta del vuelco. Secret: no va en el repo, que es publico. */
+  UNION_TOKEN?: string;
   DB: D1Database;
   PHOTOS: R2Bucket;
   EMAIL?: SendEmail;
@@ -969,6 +972,142 @@ async function convocatoriasPublicas(env: Env): Promise<Response> {
   );
 }
 
+// ---------------------------------------------------------------------------
+// El cruce con porceuta.es
+//
+// La hoja de calculo lee un CSV con las dos listas ya cruzadas. El cruce cuesta
+// unos 18 ms de CPU, demasiado para hacerlo en cada visita, asi que lo hace el
+// cron una vez por hora y lo deja en la tabla `vuelcos`; la ruta solo lee.
+// ---------------------------------------------------------------------------
+
+const PORCEUTA = "https://porceuta.es/api/public/convocatorias";
+
+/** Su API, con la ultima copia buena de red por si no responde. */
+async function traerSuyas(env: Env): Promise<{ suyas: Suya[]; copiaDe: string | null }> {
+  try {
+    const ctrl = new AbortController();
+    const reloj = setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch(PORCEUTA, {
+      signal: ctrl.signal,
+      headers: { "user-agent": "ceutanosune.es (cruce de listados; info@ceutanosune.com)" },
+    });
+    clearTimeout(reloj);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const cuerpo = (await res.json()) as { convocatorias?: Suya[] };
+    const suyas = cuerpo.convocatorias ?? [];
+    if (suyas.length === 0) throw new Error("lista vacia");
+
+    await env.DB.prepare(
+      `INSERT INTO copias (clave, json, guardado) VALUES ('porceuta', ?1, datetime('now'))
+         ON CONFLICT(clave) DO UPDATE SET json = ?1, guardado = datetime('now')`,
+    ).bind(JSON.stringify(suyas)).run();
+
+    return { suyas, copiaDe: null };
+  } catch (err) {
+    // Que su API falle no puede dejar la hoja sin 122 convocatorias: se tira de
+    // la ultima copia buena y se avisa de que ese lado va con retraso.
+    console.error("porceuta.es no responde:", err);
+    const fila = await env.DB.prepare(
+      `SELECT json, guardado FROM copias WHERE clave = 'porceuta'`,
+    ).first<{ json: string; guardado: string }>();
+    if (!fila) return { suyas: [], copiaDe: null };
+    return { suyas: JSON.parse(fila.json) as Suya[], copiaDe: fila.guardado };
+  }
+}
+
+/** Las 14 columnas de siempre. Sin BOM y con coma decimal: ver `vuelcoUnion`. */
+function filasACsv(filas: Fila[], copiaDe: string | null): string {
+  const campo = (v: string | number | null): string => {
+    const t = v === null || v === undefined ? "" : String(v);
+    return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+  };
+
+  const coord = (v: number | null): string =>
+    v === null ? "" : v.toFixed(7).replace(/0+$/, "").replace(/\.$/, "").replace(".", ",");
+
+  const ojo = (f: Fila): string => {
+    const avisos: string[] = [];
+    if (!f.hora) avisos.push("SIN HORA");
+    else if (f.hora !== "20:00") avisos.push("NO son las 20:00");
+    if (f.fecha && f.fecha !== "2026-09-02") avisos.push("OTRA FECHA");
+    return avisos.join(" · ");
+  };
+
+  const estado = (f: Fila): string =>
+    f.estado.startsWith("Solo en porceuta.es") ? "Solo en porceuta.es" : f.estado;
+
+  const cabecera = [
+    "Municipio", "Provincia", "Lugar", "Dirección", "Fecha", "Hora", "Ojo",
+    "Latitud", "Longitud", "Convoca", "Marca en porceuta.es", "Notas", "Estado", "Fuente",
+  ];
+
+  const cuerpo = filas.map((f) =>
+    [f.municipio, f.provincia, f.sitio, f.direccion, f.fecha, f.hora, ojo(f),
+     coord(f.lat), coord(f.lon), f.convoca, f.pin, f.notas, estado(f), f.fuente]
+      .map(campo).join(","));
+
+  const aviso = copiaDe
+    ? [`AVISO,porceuta.es no respondió: sus datos son de ${copiaDe} UTC`,
+       ...Array(12).fill("")].join(",")
+    : null;
+
+  // Sin BOM a proposito: con IMPORTDATA el BOM acaba dentro de la primera celda.
+  return [cabecera.join(","), ...(aviso ? [aviso] : []), ...cuerpo].join("\n") + "\n";
+}
+
+/** Cruza, monta el CSV y lo guarda. Lo llama el cron. */
+async function generarVuelco(env: Env): Promise<{ filas: number; suyas: number; alDia: boolean }> {
+  const { results } = await env.DB.prepare(
+    `SELECT city, province, venue, address, event_date, event_time, lat, lon,
+            notes, organizer, status, review_note
+       FROM places
+      ORDER BY province COLLATE NOCASE, city COLLATE NOCASE`,
+  ).all<Lugar>();
+
+  const { suyas, copiaDe } = await traerSuyas(env);
+  const { filas } = unir(results ?? [], suyas, copiaDe);
+  const csv = filasACsv(filas, copiaDe);
+
+  await env.DB.prepare(
+    `INSERT INTO vuelcos (clave, csv, filas, suyas, al_dia, generado)
+          VALUES ('union', ?1, ?2, ?3, ?4, datetime('now'))
+       ON CONFLICT(clave) DO UPDATE SET
+          csv = ?1, filas = ?2, suyas = ?3, al_dia = ?4, generado = datetime('now')`,
+  ).bind(csv, filas.length, suyas.length, copiaDe ? 0 : 1).run();
+
+  return { filas: filas.length, suyas: suyas.length, alDia: !copiaDe };
+}
+
+/** Sirve el CSV guardado. Si aun no hay ninguno, lo genera en el momento. */
+async function vuelcoUnion(env: Env): Promise<Response> {
+  let fila = await env.DB.prepare(
+    `SELECT csv, filas, generado, al_dia FROM vuelcos WHERE clave = 'union'`,
+  ).first<{ csv: string; filas: number; generado: string; al_dia: number }>();
+
+  if (!fila) {
+    await generarVuelco(env);
+    fila = await env.DB.prepare(
+      `SELECT csv, filas, generado, al_dia FROM vuelcos WHERE clave = 'union'`,
+    ).first<{ csv: string; filas: number; generado: string; al_dia: number }>();
+  }
+  if (!fila) return fail("Todavía no hay ningún vuelco generado.", 503);
+
+  return new Response(fila.csv, {
+    headers: {
+      "content-type": "text/csv; charset=utf-8",
+      // Google relee IMPORTDATA una vez por hora; el cron lo regenera con la
+      // misma cadencia, asi que no tiene sentido cachear mas de unos minutos.
+      "cache-control": "public, max-age=300",
+      "x-robots-tag": "noindex, nofollow",
+      "x-filas": String(fila.filas),
+      "x-generado": fila.generado + " UTC",
+      "x-al-dia": fila.al_dia ? "si" : "no (porceuta.es no respondió)",
+      "content-disposition": 'inline; filename="ceuta-nos-une-y-porceuta.csv"',
+    },
+  });
+}
+
 async function llmsTxt(env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT city, province, event_time FROM places WHERE status = 'approved'`,
@@ -1456,6 +1595,13 @@ export default {
         return fail("Ruta no encontrada.", 404);
       }
 
+      // El vuelco del cruce, tras una clave: lleva las retiradas con su motivo
+      // y la propuesta sin revisar, que no son datos publicados.
+      if (env.UNION_TOKEN && path === `/d/${env.UNION_TOKEN}/union.csv` && method === "GET") {
+        return await vuelcoUnion(env);
+      }
+      if (path.startsWith("/d/")) return fail("Ruta no encontrada.", 404);
+
       if (path === "/lugares" && method === "GET") return await paginaLugares(env);
       if (path === "/lugares.csv" && method === "GET") return await lugaresCsv(env);
       if (path === "/sitemap.xml" && method === "GET") return await sitemapXml(env);
@@ -1468,5 +1614,14 @@ export default {
       console.error("Error en", method, path, err);
       return fail("Ha ocurrido un error inesperado. Inténtalo de nuevo.", 500);
     }
+  },
+
+  /** Cron horario: rehace el cruce y deja el CSV listo para la hoja. */
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(
+      generarVuelco(env)
+        .then((r) => console.log(`vuelco: ${r.filas} filas, ${r.suyas} suyas, al día: ${r.alDia}`))
+        .catch((err) => console.error("el vuelco ha fallado:", err)),
+    );
   },
 } satisfies ExportedHandler<Env>;

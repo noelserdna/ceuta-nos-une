@@ -13,3 +13,6 @@ site/
 # Los canvas de diseño publicados se generan a partir de los .dc.html y pesan megas
 design/**/*.html
 !design/**/*.dc.html
+
+# El vuelco del cruce se sirve desde el Worker, no como fichero.
+public/d/
