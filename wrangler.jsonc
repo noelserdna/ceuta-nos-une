@@ -18,6 +18,12 @@
   // de CPU, que en una peticion normal seria mucho y en un cron no es nada.
   "triggers": { "crons": ["0 * * * *"] },
 
+  // El feed del directo lo piden miles de personas cada pocos segundos con la
+  // misma URL. Esto hace dos cosas que el Cache API no hace: junta las peticiones
+  // que llegan a la vez (una ejecucion, no doscientas) y, cuando acierta, ni
+  // siquiera arranca el Worker.
+  "cache": { "enabled": true },
+
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
@@ -37,6 +43,15 @@
 
   // Correo de aviso: envío nativo de Cloudflare, sin proveedores externos.
   "send_email": [{ "name": "EMAIL" }],
+
+  // Clasifica lo que sube la gente antes de que salga en pantalla.
+  "ai": { "binding": "AI" },
+
+  // El aforo. En memoria, sin escribir en D1: ver src/aforo.ts.
+  "durable_objects": {
+    "bindings": [{ "name": "AFORO", "class_name": "Aforo" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Aforo"] }],
 
   "vars": {
     "EMAIL_FROM": "avisos@avisos.ceutanosune.com",
@@ -58,7 +73,14 @@
     { "name": "RL_GEOCODE", "namespace_id": "1003", "simple": { "limit": 20, "period": 60 } },
     { "name": "RL_REPORTS", "namespace_id": "1004", "simple": { "limit": 10, "period": 60 } },
     { "name": "RL_LOGIN", "namespace_id": "1005", "simple": { "limit": 5, "period": 60 } },
-    { "name": "RL_LIKES", "namespace_id": "1006", "simple": { "limit": 40, "period": 60 } }
+    { "name": "RL_LIKES", "namespace_id": "1006", "simple": { "limit": 40, "period": 60 } },
+    // El directo va por persona (ip + ficha), no por IP a secas: las operadoras
+    // moviles reparten la misma IPv4 entre muchos clientes, y con clave por IP
+    // seis personas en la misma plaza se bloquearian entre ellas.
+    { "name": "RL_DIRECTO", "namespace_id": "1007", "simple": { "limit": 8, "period": 60 } },
+    { "name": "RL_LATIDO", "namespace_id": "1008", "simple": { "limit": 10, "period": 60 } },
+    // Y encima un tope amplio solo por red, como red de seguridad contra un bucle.
+    { "name": "RL_RED", "namespace_id": "1009", "simple": { "limit": 240, "period": 60 } }
   ],
 
   "observability": { "enabled": true }

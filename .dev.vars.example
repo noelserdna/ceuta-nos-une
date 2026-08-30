@@ -14,5 +14,10 @@ IP_SALT=otra-cadena-larga-aleatoria
 # Sin esta clave el aviso queda igualmente guardado en D1 y visible en /admin.
 RESEND_API_KEY=
 
-# OPCIONAL - Turnstile (anti-bot). Sin estas claves el widget se desactiva solo.
-TURNSTILE_SECRET_KEY=
+# Turnstile (anti-bot). En el muro es opcional: sin claves, el widget no aparece.
+# En la fila cero NO lo es: sin ellas /api/directo/entrar responde 503 y nadie
+# puede participar, porque una pantalla publica sin puerta la noche del acto no
+# es una opcion. Para local valen estas dos, que son las de prueba de Cloudflare
+# y dan por bueno cualquier reto:
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
