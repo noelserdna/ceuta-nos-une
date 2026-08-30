@@ -1079,29 +1079,55 @@ async function generarVuelco(env: Env): Promise<{ filas: number; suyas: number; 
   return { filas: filas.length, suyas: suyas.length, alDia: !copiaDe };
 }
 
-/** Sirve el CSV guardado. Si aun no hay ninguno, lo genera en el momento. */
+/**
+ * Minutos que se da por bueno un vuelco antes de rehacerlo al pedirlo.
+ *
+ * El cron lo rehace cada hora, pero si solo se sirviera lo guardado, una
+ * lectura podria caer justo antes del siguiente cron y llevarse datos de hasta
+ * una hora antes; sumado a que Google relee una vez por hora, la hoja se iria a
+ * dos. Rehacerlo aqui cuesta 18 ms de CPU y una llamada a su API, asi que con
+ * Workers de pago —30 s de CPU por peticion— sale a cuenta: quien pida el CSV
+ * se lo lleva recien hecho, y el margen de 10 minutos evita que recargar la URL
+ * se traduzca en aporrear la API de porceuta.
+ */
+const FRESCURA_MINUTOS = 10;
+
+/** Sirve el vuelco. Lo rehace si el guardado ya tiene sus minutos. */
 async function vuelcoUnion(env: Env): Promise<Response> {
-  let fila = await env.DB.prepare(
+  const leer = () => env.DB.prepare(
     `SELECT csv, filas, generado, al_dia FROM vuelcos WHERE clave = 'union'`,
   ).first<{ csv: string; filas: number; generado: string; al_dia: number }>();
 
-  if (!fila) {
-    await generarVuelco(env);
-    fila = await env.DB.prepare(
-      `SELECT csv, filas, generado, al_dia FROM vuelcos WHERE clave = 'union'`,
-    ).first<{ csv: string; filas: number; generado: string; al_dia: number }>();
+  let fila = await leer();
+
+  // SQLite guarda «2026-08-30 12:31:11» en UTC y sin zona: hay que decirselo a
+  // Date, que si no lo interpreta como hora local.
+  const edad = fila
+    ? (Date.now() - Date.parse(fila.generado.replace(" ", "T") + "Z")) / 60000
+    : Infinity;
+
+  if (edad > FRESCURA_MINUTOS) {
+    try {
+      await generarVuelco(env);
+      fila = await leer();
+    } catch (err) {
+      // Que falle rehacerlo no puede dejar sin CSV: se sirve el que hubiera.
+      console.error("no se ha podido rehacer el vuelco:", err);
+    }
   }
   if (!fila) return fail("Todavía no hay ningún vuelco generado.", 503);
 
   return new Response(fila.csv, {
     headers: {
       "content-type": "text/csv; charset=utf-8",
-      // Google relee IMPORTDATA una vez por hora; el cron lo regenera con la
-      // misma cadencia, asi que no tiene sentido cachear mas de unos minutos.
-      "cache-control": "public, max-age=300",
+      // Corto a proposito: el vuelco se rehace solo cuando pasa de los
+      // FRESCURA_MINUTOS, y una cache larga por delante lo dejaria sin efecto.
+      "cache-control": "public, max-age=60",
       "x-robots-tag": "noindex, nofollow",
       "x-filas": String(fila.filas),
       "x-generado": fila.generado + " UTC",
+      "x-edad-minutos": String(Math.round(
+        (Date.now() - Date.parse(fila.generado.replace(" ", "T") + "Z")) / 60000)),
       "x-al-dia": fila.al_dia ? "si" : "no (porceuta.es no respondió)",
       "content-disposition": 'inline; filename="ceuta-nos-une-y-porceuta.csv"',
     },
