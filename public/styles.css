@@ -1510,12 +1510,11 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
    arriba y el botón de «ver dónde es», y tres rojos seguidos no dejan ver cuál
    manda. Aquí el color lo pone el botón. */
 
-/* Va lo primero, antes de la portada, así que se queda tan bajo como puede: si
-   crece, empuja el logo y la fecha fuera de la primera pantalla del móvil y la
-   web deja de decir de qué va antes de pedir nada. */
+/* Va justo al cerrarse la portada, antes que ninguna otra cosa. Ahí ya no
+   compite con el logo por la primera pantalla, así que puede respirar. */
 .manifiesto {
   background: var(--tinta);
-  padding: clamp(0.9rem, 2.4vw, 1.3rem) clamp(1rem, 4vw, 3rem);
+  padding: clamp(1.4rem, 3.4vw, 2rem) clamp(1rem, 4vw, 3rem);
   border-bottom: var(--borde-pieza) solid var(--carmin);
 }
 
@@ -1537,14 +1536,14 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
 .manifiesto__titulo {
   margin: 0 0 0.4rem;
   font-family: var(--display);
-  font-size: clamp(1.15rem, 3vw, 1.7rem);
+  font-size: clamp(1.3rem, 3.4vw, 1.95rem);
   line-height: 1.1; letter-spacing: 0.01em; text-transform: uppercase;
   color: var(--papel-claro);
 }
 
 .manifiesto__bajada {
-  margin: 0; max-width: 52ch;
-  font-size: 0.86rem; line-height: 1.5;
+  margin: 0; max-width: 50ch;
+  font-size: 0.9rem; line-height: 1.55;
   color: rgba(247, 227, 211, 0.82);
 }
 
