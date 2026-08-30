@@ -17,4 +17,8 @@ Disallow: /api/geocode
 Disallow: /api/admin/
 Disallow: /admin
 
+# Vuelcos de trabajo: llevan las convocatorias retiradas con su motivo y las
+# propuestas sin revisar. No son datos publicados, son material interno.
+Disallow: /d/
+
 Sitemap: https://ceutanosune.es/sitemap.xml
