@@ -223,7 +223,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
   .barra__logo { height: 1.85rem; }
   .barra__nav { gap: 0.8rem; min-width: 0; }
   .barra__nav a { font-size: 0.64rem; letter-spacing: 0.06em; white-space: nowrap; }
-  .barra__nav a:nth-child(2) { display: none; }
+  .barra__nav a:nth-child(2) { display: none; }   /* Lugares: la portada ya lleva su botón */
+  /* «Qué está pasando» se queda en «Qué pasa»: con las cuatro palabras el cuarto
+     enlace se salía de la pantalla y aparecía scroll horizontal. El nombre que
+     lee un lector de pantalla no cambia, porque va en el aria-label. */
+  .barra__nav .nav-largo { display: none; }
 }
 
 /* ---------------------------------------------------------------- portada - */
@@ -1812,3 +1816,9 @@ a.chip--hueco:focus-visible {
   color: rgba(247, 227, 211, 0.6);
 }
 .manifiesto__casa b { color: rgba(247, 227, 211, 0.9); font-weight: 700; }
+
+/* Los enlaces del menú que se van fuera llevan la flechita: en una barra donde
+   todo lo demás son anclas de esta misma página, conviene saber cuál te saca. */
+.barra__nav a { display: inline-flex; align-items: center; gap: 0.3rem; }
+.barra__nav .fuera { flex: none; opacity: 0.65; }
+.barra__nav a:hover .fuera, .barra__nav a:focus-visible .fuera { opacity: 1; }
