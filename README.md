@@ -6,6 +6,7 @@ proponer lugares nuevos y muro donde dejar mensajes de apoyo con foto.
 El frontend se sirve desde Vercel y el backend es un Worker de Cloudflare.
 
 - **En producción:** https://ceutanosune.es (servida desde Vercel)
+- **La fila cero:** https://ceutanosune.es/directo — la manifestación virtual del día 2
 - **Panel de revisión:** https://ceutanosune.es/admin
 - **Espejo de respaldo:** https://noelserdna.github.io/ceuta-nos-une/
 
@@ -29,6 +30,8 @@ del muro siga contando por persona y no por servidor de Vercel.
 | **Lugares** | Cualquiera, desde el formulario | Solo tras aprobarlos en `/admin`. Además llega un aviso por correo |
 | **Mensajes del muro** | Cualquiera | Al momento, sin revisión previa. Se pueden ocultar o borrar desde `/admin` |
 | **Fotos** | Adjuntas al mensaje | Al momento. Van a R2 y quedan enlazadas a su mensaje |
+| **Fila cero** | Cualquiera (una foto por persona) | Tras pasar el filtro automático, con 90 s de retraso |
+| **Fotos y vídeos del equipo** | Quien tiene un código de `/subir` | Con los mismos 90 s, sin pasar por el filtro |
 
 ## Piezas
 
@@ -38,7 +41,9 @@ del muro siga contando por persona y no por servidor de Vercel.
 | Worker (`src/`) | La API, las fotos y las teselas |
 | D1 `ceuta-nos-une` | Lugares, mensajes, ajustes y registro de avisos por correo |
 | R2 `ceuta-nos-une-fotos` | Fotos del muro |
-| Rate limiting | Frena el spam: 4 mensajes, 3 lugares y 5 intentos de acceso por minuto e IP |
+| Rate limiting | Frena el spam. En la fila cero la clave es IP + ficha, no la IP sola: las operadoras móviles reparten la misma IPv4 entre muchos clientes |
+| Workers AI | Clasifica textos y fotos antes de que salgan en pantalla |
+| Durable Object `AFORO` | Cuenta quién está conectado, en memoria, sin tocar la base |
 | Assets estáticos (`public/`) | Portada, panel, CSS, JS y Leaflet |
 
 El mapa usa OpenStreetMap. Las teselas **no** van directas al servidor de OSM: pasan por
@@ -86,7 +91,27 @@ Se cargan con `npx wrangler secret put NOMBRE`:
 | `IP_SALT` | Sí | Anonimiza las IP antes de guardarlas |
 | `PROXY_TOKEN` | Sí | Compartido con Vercel: valida la IP real del visitante que llega por el proxy |
 | `RESEND_API_KEY` | No | Alternativa de correo, por si falla el envío nativo de Cloudflare |
-| `TURNSTILE_SECRET_KEY` + `TURNSTILE_SITE_KEY` | No | Activan el anti-bot de Cloudflare en los dos formularios. Si no están, el widget ni aparece |
+| `TURNSTILE_SECRET_KEY` + `TURNSTILE_SITE_KEY` | **Sí para la fila cero** | El anti-bot. En el muro son opcionales (sin ellas el widget no aparece y se pasa igual); en `/directo` no: sin ellas nadie puede entrar, y es a propósito |
+
+### Retirar algo con prisa
+
+Si hay que quitar una foto o un mensaje de golpe, en este orden:
+
+```bash
+# 1. Que deje de salir, ya.
+npx wrangler d1 execute ceuta-nos-une --remote --command \
+  "UPDATE messages SET hidden = 1 WHERE id = <id>;"
+# 2. Y que la URL deje de servir.
+npx wrangler r2 object delete ceuta-nos-une-fotos/<clave>
+# 3. Purgar el CDN de Vercel desde su panel, o desplegar de nuevo.
+```
+
+Las fotos se sirven con `max-age=3600`, no con `immutable`: quien ya la vio la conserva una
+hora en su navegador, pero a quien llegue nuevo ya no le llega. **Prueba este procedimiento
+antes de que haga falta**, no a las 20:30 del día 2.
+
+Para reaccionar sin SQL están los interruptores de `/admin` → Ajustes (`directo_modo`) y el
+botón de purga, que esconde de golpe todo lo publicado en los últimos minutos.
 
 ### El correo
 
