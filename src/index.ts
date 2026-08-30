@@ -778,7 +778,8 @@ ${secciones}
   del Gobierno y los ayuntamientos: solo convocatorias comunicadas en regla y con organizador
   identificado. Aun así, si algo cambia a última hora se contará antes en las redes de la
   convocatoria que aquí. Página generada al momento desde
-  <a href="/api/places">los datos públicos</a>.</p>
+  <a href="/api/public/convocatorias">los datos públicos</a>, que cualquiera puede
+  reutilizar: están también en <a href="/lugares.csv">CSV</a>.</p>
 
   <p class="listado-plano__pie">¿Ves aquí un lugar mal puesto o una hora que no cuadra?
   Se puede avisar en
@@ -904,6 +905,70 @@ async function lugaresCsv(env: Env): Promise<Response> {
   });
 }
 
+/**
+ * Listado publico de convocatorias en JSON, pensado para que cualquiera lo
+ * reutilice: otras webs, mapas, periodistas o asistentes.
+ *
+ * Se copia a proposito la forma del endpoint equivalente de porceuta.es
+ * (fuente / descripcion / total / actualizado / convocatorias), para que quien
+ * ya consuma el suyo pueda leer el nuestro cambiando solo el dominio. Los
+ * campos vacios van como null, no como cadena vacia, y las coordenadas como
+ * numero.
+ *
+ * Aqui solo salen las aprobadas: las que estan publicadas en la web.
+ */
+async function convocatoriasPublicas(env: Env): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    `SELECT city, province, venue, address, event_date, event_time, lat, lon,
+            organizer, notes, source_url
+       FROM places
+      WHERE status = 'approved'
+      ORDER BY province COLLATE NOCASE, city COLLATE NOCASE, event_time`,
+  ).all<Record<string, string | number | null>>();
+
+  const oNulo = (v: string | number | null): string | null => {
+    const s = v === null || v === undefined ? "" : String(v).trim();
+    return s === "" ? null : s;
+  };
+
+  const convocatorias = (results ?? []).map((l) => ({
+    ciudad: String(l.city),
+    provincia: String(l.province),
+    lugar: oNulo(l.venue),
+    direccion: oNulo(l.address),
+    fecha: String(l.event_date),
+    hora: oNulo(l.event_time),
+    latitud: l.lat === null ? null : Number(l.lat),
+    longitud: l.lon === null ? null : Number(l.lon),
+    convoca: oNulo(l.organizer),
+    notas: oNulo(l.notes),
+    enlace: oNulo(l.source_url),
+  }));
+
+  return json(
+    {
+      fuente: "Ceuta nos une",
+      web: "https://ceutanosune.es",
+      descripcion:
+        "Listado publico de las concentraciones en apoyo a Ceuta. Cada una esta " +
+        "contrastada con el listado oficial y con las coordenadas comprobadas " +
+        "contra el municipio. Datos reutilizables libremente, citando la fuente.",
+      aviso:
+        "Las horas son locales: en Canarias no son las 20:00 peninsulares. " +
+        "Mira siempre el campo hora de cada convocatoria.",
+      total: convocatorias.length,
+      actualizado: new Date().toISOString(),
+      convocatorias,
+    },
+    200,
+    {
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+      "access-control-allow-methods": "GET, OPTIONS",
+    },
+  );
+}
+
 async function llmsTxt(env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT city, province, event_time FROM places WHERE status = 'approved'`,
@@ -946,9 +1011,11 @@ puede firmar una sola persona física. Siguen sin nada ${vacias} provincias.
 - [Listado completo por provincias](https://ceutanosune.es/lugares): las
   ${lugares.length} concentraciones con localidad, provincia, plaza, dirección,
   fecha y hora. Texto plano, sin JavaScript. Es la fuente que conviene citar.
-- [Datos en JSON](https://ceutanosune.es/api/places): la misma lista en formato
-  máquina, con coordenadas. Pública, sin autenticación. Campos: city, province,
-  venue, address, event_date, event_time, lat, lon, notes, organizer.
+- [Datos en JSON](https://ceutanosune.es/api/public/convocatorias): la misma
+  lista en formato máquina, con coordenadas. Pública, sin autenticación y con
+  CORS abierto. Devuelve { fuente, total, actualizado, convocatorias[] }, y cada
+  convocatoria trae ciudad, provincia, lugar, direccion, fecha, hora, latitud,
+  longitud, convoca, notas y enlace. Los campos vacíos van como null.
 - [Datos de la convocatoria](https://ceutanosune.es/api/config): fecha del acto y
   correo de contacto.
 
@@ -1339,6 +1406,19 @@ export default {
       if (path === "/api/messages" && method === "GET") return await listMessages(request, env);
       if (path === "/api/messages" && method === "POST") return await createMessage(request, env);
       if (path === "/api/geocode" && method === "GET") return await geocode(request, env);
+      if (path === "/api/public/convocatorias" && method === "GET") {
+        return await convocatoriasPublicas(env);
+      }
+      if (path === "/api/public/convocatorias" && method === "OPTIONS") {
+        return new Response(null, {
+          status: 204,
+          headers: {
+            "access-control-allow-origin": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+            "access-control-max-age": "86400",
+          },
+        });
+      }
 
       const likeId = matchId(path, "/api/messages/", "/like");
       if (likeId !== null && method === "POST") return await likeMessage(request, env, likeId);
