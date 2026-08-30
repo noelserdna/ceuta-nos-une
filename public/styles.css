@@ -1819,6 +1819,10 @@ a.chip--hueco:focus-visible {
 
 /* Los enlaces del menú que se van fuera llevan la flechita: en una barra donde
    todo lo demás son anclas de esta misma página, conviene saber cuál te saca. */
+/* El texto va envuelto en su propio span y es UN hijo del flex. Sin eso, el gap
+   que separa el icono separaba también los trozos de la palabra y se leía
+   «pasa ndo». */
 .barra__nav a { display: inline-flex; align-items: center; gap: 0.3rem; }
+.barra__nav .nav-texto { display: inline; }
 .barra__nav .fuera { flex: none; opacity: 0.65; }
 .barra__nav a:hover .fuera, .barra__nav a:focus-visible .fuera { opacity: 1; }
