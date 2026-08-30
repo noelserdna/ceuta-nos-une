@@ -1705,3 +1705,27 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
 .manif-pie .difunde__nota--ok {
   color: var(--carmin-osc); font-weight: 600; border-color: var(--carmin-osc);
 }
+
+/* El logo de porceuta.es, junto a su manifiesto. El girón es blanco y negro y
+   esta sección tiene el fondo casi negro: sin un disco claro detrás, la mitad
+   del logo se pierde contra el fondo. El disco es un poco mayor que el círculo
+   del dibujo, así que las plumas asoman por arriba, que es como es el logo. */
+.manifiesto__logo {
+  flex: none; display: block;
+  width: clamp(58px, 7vw, 78px);
+}
+.manifiesto__logo img {
+  display: block; width: 100%; height: auto;
+  background: var(--papel-claro);
+  border-radius: 50%;
+}
+
+/* Los enlaces globales usan el carmín oscuro, pensado para el papel: sobre el
+   fondo casi negro de esta sección dan 2,94:1, por debajo del mínimo. Aquí van
+   en claro y subrayados, como el de «en porceuta.es». */
+.manifiesto__bajada a {
+  color: rgba(247, 227, 211, 0.92);
+  text-decoration: underline; text-underline-offset: 0.18em;
+}
+.manifiesto__bajada a:hover,
+.manifiesto__bajada a:focus-visible { color: var(--oro); }
