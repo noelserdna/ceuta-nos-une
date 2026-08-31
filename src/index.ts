@@ -1730,12 +1730,12 @@ async function vuelcoUnion(env: Env): Promise<Response> {
   return new Response(fila.csv, {
     headers: {
       "content-type": "text/csv; charset=utf-8",
-      // Corta a proposito: el vuelco se rehace solo cuando pasa de los
-      // FRESCURA_MINUTOS, y una cache larga por delante lo dejaria sin efecto.
-      // Pero NO "no-store": el consumidor de esta URL es una hoja de calculo con
-      // IMPORTDATA, que necesita poder guardar lo que lee. "private" ya deja
-      // fuera a las caches compartidas, que es lo que aqui importa.
-      "cache-control": "private, max-age=60",
+      /* Corta, pero PUBLICA. Se probaron las tres y solo vale esta:
+         "no-store" prohibe guardar a todo el mundo, y una hoja de calculo
+         necesita guardar lo que lee; "private" excluye a las caches
+         compartidas, y Google Sheets es exactamente eso. Con 60 segundos el
+         vuelco no se queda viejo y nadie por delante lo retiene de mas. */
+      "cache-control": "public, max-age=60",
       "x-robots-tag": "noindex, nofollow",
       "x-filas": String(fila.filas),
       "x-generado": fila.generado + " UTC",
@@ -2549,10 +2549,19 @@ export default {
 
       // El vuelco del cruce, tras una clave: lleva las retiradas con su motivo
       // y la propuesta sin revisar, que no son datos publicados.
-      if (env.UNION_TOKEN && path === `/d/${env.UNION_TOKEN}/union.csv` && method === "GET") {
+      /* Dos rutas para lo mismo. /hoja/ es la buena: /d/ llego a estar
+         prohibida en robots.txt, IMPORTDATA respeta ese fichero y Google lo
+         cachea hasta un dia, asi que aquella ruta puede seguir rechazada un
+         rato aunque el robots.txt ya este arreglado. Se mantienen las dos para
+         no romper lo que apunte a la vieja. */
+      if (env.UNION_TOKEN && method === "GET" &&
+          (path === `/hoja/${env.UNION_TOKEN}/union.csv` ||
+           path === `/d/${env.UNION_TOKEN}/union.csv`)) {
         return await vuelcoUnion(env);
       }
-      if (path.startsWith("/d/")) return fail("Ruta no encontrada.", 404);
+      if (path.startsWith("/d/") || path.startsWith("/hoja/")) {
+        return fail("Ruta no encontrada.", 404);
+      }
 
       if (path === "/lugares" && method === "GET") return await paginaLugares(env);
       if (path === "/lugares.csv" && method === "GET") return await lugaresCsv(env);

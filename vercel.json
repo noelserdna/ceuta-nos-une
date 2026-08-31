@@ -35,6 +35,10 @@
     {
       "source": "/d/:ruta*",
       "destination": "https://ceuta-nos-une.andresleontest.workers.dev/d/:ruta*"
+    },
+    {
+      "source": "/hoja/:ruta*",
+      "destination": "https://ceuta-nos-une.andresleontest.workers.dev/img/hoja/:ruta*"
     }
   ],
   "headers": [
