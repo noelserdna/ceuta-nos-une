@@ -119,6 +119,19 @@ después de desplegar.
 enlace en `<span class="nav-texto">`. En móvil solo caben tres enlaces; hay reglas
 `nth-child` en `styles.css` que esconden los que ya tienen acceso desde la portada.
 
+**Una hoja de cálculo con `IMPORTDATA` no puede leer lo que `robots.txt` prohíbe.** Google
+respeta ese fichero también al importar, así que un `Disallow` sobre la ruta del vuelco
+devuelve `#N/A` en toda la hoja. Y es contraproducente incluso para su propio fin: bloquear el
+rastreo impide al buscador llegar a ver el `X-Robots-Tag: noindex` de la respuesta. Lo que
+protege esa ruta es su clave impredecible. Pasó el 31/08/2026 y costó encontrarlo.
+
+**Y tampoco puede leer lo que no se le deja guardar.** De las tres variantes de
+`cache-control`, solo la última sirve para una URL que alimenta una hoja: `no-store` prohíbe
+guardar a todo el mundo; `private` excluye a las cachés compartidas, y Google Sheets es una;
+**`public, max-age=60`** es la buena. Si la hoja se queda pegada con un error antiguo, un
+parámetro **fijo** (`?v=2`, `?v=3`…) la hace releer; uno variable tipo `?t=NOW()` tira las
+cachés en cada petición y no debe usarse.
+
 **Coordenadas para hojas de cálculo: coma decimal y entre comillas.** Google, en configuración
 española, lee `43.3710378` como cuarenta y tres millones. Y los CSV destinados a `IMPORTDATA`
 van **sin BOM**, al contrario que `/lugares.csv`, que sí lo lleva para Excel.
