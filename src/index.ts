@@ -1730,9 +1730,12 @@ async function vuelcoUnion(env: Env): Promise<Response> {
   return new Response(fila.csv, {
     headers: {
       "content-type": "text/csv; charset=utf-8",
-      // Corto a proposito: el vuelco se rehace solo cuando pasa de los
+      // Corta a proposito: el vuelco se rehace solo cuando pasa de los
       // FRESCURA_MINUTOS, y una cache larga por delante lo dejaria sin efecto.
-      "cache-control": "private, no-store",
+      // Pero NO "no-store": el consumidor de esta URL es una hoja de calculo con
+      // IMPORTDATA, que necesita poder guardar lo que lee. "private" ya deja
+      // fuera a las caches compartidas, que es lo que aqui importa.
+      "cache-control": "private, max-age=60",
       "x-robots-tag": "noindex, nofollow",
       "x-filas": String(fila.filas),
       "x-generado": fila.generado + " UTC",

@@ -17,8 +17,11 @@ Disallow: /api/geocode
 Disallow: /api/admin/
 Disallow: /admin
 
-# Vuelcos de trabajo: llevan las convocatorias retiradas con su motivo y las
-# propuestas sin revisar. No son datos publicados, son material interno.
-Disallow: /d/
+# Los vuelcos de /d/ NO se bloquean aquí, y es a propósito: la hoja de cálculo
+# los lee con IMPORTDATA, que respeta este fichero, así que un Disallow le
+# impedía leer la URL que se le pide leer y devolvía #N/A. Quien los protege es
+# la clave impredecible de la ruta; que no se indexen lo resuelve la cabecera
+# X-Robots-Tag: noindex de la propia respuesta, que además funciona mejor —
+# bloquear aquí el rastreo impediría al buscador llegar a leer ese noindex.
 
 Sitemap: https://ceutanosune.es/sitemap.xml
