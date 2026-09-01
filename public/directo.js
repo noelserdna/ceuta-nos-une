@@ -311,21 +311,10 @@ function tictac() {
 
 function textoCifra(datos) {
   const gente = datos.ahora === 1 ? "1 persona" : datos.ahora.toLocaleString("es-ES") + " personas";
-  const pueblos = datos.pueblos.length;
   if (datos.momento === "fin") {
-    return "Fuimos " + datos.total.toLocaleString("es-ES") + " personas de " + pueblos + " pueblos";
+    return "Concentración virtual: fuimos " + datos.total.toLocaleString("es-ES") + " personas";
   }
-  return "Somos " + gente + (pueblos ? " · " + pueblos + (pueblos === 1 ? " pueblo" : " pueblos") : "");
-}
-
-function pintarPueblos(lista) {
-  const caja = $("#pueblos");
-  caja.textContent = "";
-  lista.slice(0, 24).forEach((p, i) => {
-    if (i) caja.appendChild(document.createTextNode(" · "));
-    // El más reciente encendido: es la señal de que alguien acaba de sumarse.
-    caja.appendChild(i === 0 ? crear("b", null, p.nombre) : document.createTextNode(p.nombre));
-  });
+  return "Concentración virtual: somos " + gente;
 }
 
 function pintarRetransmision(video) {
@@ -361,7 +350,6 @@ async function sondear() {
 
     $("#cifra-texto").textContent = textoCifra(datos);
     $("#cifra").classList.toggle("cifra--parada", datos.momento === "fin" || datos.momento === "off");
-    pintarPueblos(datos.pueblos);
     pintarRetransmision(datos.video);
 
     // Las tarjetas con imagen primero: son las que llenan la pantalla. Los

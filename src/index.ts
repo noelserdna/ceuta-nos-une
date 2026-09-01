@@ -252,8 +252,14 @@ function isHttps(request: Request): boolean {
 // Endpoints publicos
 // ---------------------------------------------------------------------------
 
-async function getConfig(env: Env): Promise<Response> {
+async function getConfig(request: Request, env: Env): Promise<Response> {
   const settings = await loadSettings(env);
+  /* La portada ya pide esto al cargar, asi que el estado de la fila cero viaja
+     aqui y no hace falta una peticion mas. Cuando esta en marcha, la cuenta
+     atras ya no dice nada y el formulario del muro sobra: se manda desde el
+     directo, que es donde estan el Turnstile y la moderacion. */
+  const fase = momentoDeLaNoche(settings, enBancoDePruebas(request));
+  const filaCeroAbierta = fase !== "off" && fase !== "aviso" && fase !== "fin";
   return json(
     {
       ok: true,
@@ -265,9 +271,13 @@ async function getConfig(env: Env): Promise<Response> {
       places_open: settings.places_open !== "0",
       messages_open: settings.messages_open !== "0",
       turnstile_site_key: env.TURNSTILE_SITE_KEY ?? "",
+      fila_cero: filaCeroAbierta,
+      fila_cero_fase: fase,
     },
     200,
-    { "cache-control": "public, max-age=60" },
+    // Sin caché compartida: la respuesta cambia según el dominio por el que
+    // se entra, porque la fila cero se enciende antes en el banco de pruebas.
+    { "cache-control": "private, max-age=15" },
   );
 }
 
@@ -848,7 +858,15 @@ function momentoDeLaNoche(settings: Record<string, string>, enBanco = false): st
   // solo el dia 2 a las 20:00.
   const ensayo = (settings.directo_modo ?? "off") === "pruebas" ||
                  (settings.directo_banco ?? "0") === "1";
-  if (ensayo) return forzado;
+  if (ensayo) {
+    /* Y con directo_momento se fija la fase que se quiera ensayar: "aviso" (aun
+       falta), "antes" (la ultima hora), "fin"... Sin el reloj no hay forma de
+       ver hoy como estara la pantalla mañana a las 19:00. Solo cuenta en el
+       banco de pruebas, asi que no puede alterar la noche de verdad. */
+    const fase = (settings.directo_momento ?? "").trim();
+    if (enBanco && fase) return fase;
+    return forzado;
+  }
   if (forzado === "off" || forzado === "solo_lectura") return forzado;
 
   const dia = settings.event_date;
@@ -922,6 +940,11 @@ async function feedDirecto(env: Env, request: Request): Promise<Response> {
   const settings = await loadSettings(env);
   const momento = momentoDeLaNoche(settings, enBancoDePruebas(request));
   const apagado = momento === "off";
+  /* Ojo: se mira el MODO, no el momento. En la ultima hora antes del acto el
+     momento es "antes", no "solo_fotos", asi que comprobar el momento dejaba
+     entrar los textos justo en la antesala -que es cuando la pantalla ya esta
+     puesta y mirandola alguien-. */
+  const soloFotos = modoDirecto(settings, enBancoDePruebas(request)) === "solo_fotos";
   const retardo = Math.max(0, Number(settings.directo_retardo ?? "90") || 0);
   const cuantas = Math.max(6, Number(settings.directo_fotos ?? String(TARJETAS_FEED)) || TARJETAS_FEED);
 
@@ -930,7 +953,7 @@ async function feedDirecto(env: Env, request: Request): Promise<Response> {
   const corte = `datetime('now', '-${retardo} seconds')`;
   const visible = `estado = 'ok' AND hidden = 0 AND created_at <= ${corte}`;
 
-  const [conMedia, sueltos, pueblos] = await env.DB.batch<Record<string, never>>([
+  const [conMedia, sueltos] = await env.DB.batch<Record<string, never>>([
     env.DB.prepare(
       `SELECT id, author, origin, body, created_at, likes, photo_key, media_tipo, media_ms
          FROM messages WHERE ${visible} AND photo_key IS NOT NULL
@@ -941,11 +964,6 @@ async function feedDirecto(env: Env, request: Request): Promise<Response> {
          FROM messages WHERE ${visible} AND photo_key IS NULL AND body != ''
         ORDER BY id DESC LIMIT ?`,
     ).bind(MENSAJES_FEED),
-    env.DB.prepare(
-      `SELECT origin AS nombre, lat, lon, MAX(id) AS ultimo
-         FROM messages WHERE ${visible} AND origin IS NOT NULL AND origin != ''
-        GROUP BY lower(origin) ORDER BY ultimo DESC LIMIT 80`,
-    ),
   ]);
 
   const aforo: Aforado = await env.AFORO.get(env.AFORO.idFromName("global")).mirar();
@@ -978,13 +996,7 @@ async function feedDirecto(env: Env, request: Request): Promise<Response> {
          antes de mirar el momento, asi que si el servidor las manda, se ven.
          Y en solo_fotos, el texto suelto tampoco sale del servidor. */
       tarjetas: apagado ? [] : (conMedia.results ?? []).map(aTarjeta),
-      mensajes: apagado || momento === "solo_fotos"
-        ? [] : (sueltos.results ?? []).map(aTarjeta),
-      pueblos: (pueblos.results ?? []).map((r: Record<string, unknown>) => ({
-        nombre: String(r.nombre),
-        lat: (r.lat as number) ?? null,
-        lon: (r.lon as number) ?? null,
-      })),
+      mensajes: apagado || soloFotos ? [] : (sueltos.results ?? []).map(aTarjeta),
       sello: new Date().toISOString(),
     },
     200,
@@ -2522,7 +2534,7 @@ export default {
       }
 
       // ---- API publica --------------------------------------------------
-      if (path === "/api/config" && method === "GET") return await getConfig(env);
+      if (path === "/api/config" && method === "GET") return await getConfig(request, env);
       if (path === "/api/places" && method === "GET") return await listPlaces(env);
       if (path === "/api/places" && method === "POST") return await createPlace(request, env, ctx);
       if (path === "/api/messages" && method === "GET") return await listMessages(request, env);
@@ -2610,6 +2622,28 @@ export default {
       }
       if (path.startsWith("/d/") || path.startsWith("/hoja/")) {
         return fail("Ruta no encontrada.", 404);
+      }
+
+      /* El widget, servido por el Worker y no como asset suelto. Es la unica
+         forma de que salga sin las cabeceras de seguridad del resto: las de
+         _headers se SUMAN a las genericas en vez de sustituirlas, y ante dos
+         X-Frame-Options contradictorias el navegador se queda con la
+         restrictiva. Aqui se reescriben y punto. */
+      if ((path === "/embed" || path === "/embed/") && (method === "GET" || method === "HEAD")) {
+        /* Se pide "/embed", no "/embed.html": con html_handling en
+           auto-trailing-slash, pedir el .html devuelve una redireccion a
+           "/embed", que es esta misma ruta, y se entra en un bucle. */
+        const html = await env.ASSETS.fetch(new Request(new URL("/embed", url), request));
+        const cab = new Headers(html.headers);
+        cab.delete("x-frame-options");
+        cab.set(
+          "content-security-policy",
+          "default-src 'self'; base-uri 'self'; frame-ancestors *; object-src 'none'; " +
+            "img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'",
+        );
+        cab.set("x-robots-tag", "noindex");
+        cab.set("cache-control", "public, max-age=300");
+        return new Response(html.body, { status: html.status, headers: cab });
       }
 
       if (path === "/lugares" && method === "GET") return await paginaLugares(env);

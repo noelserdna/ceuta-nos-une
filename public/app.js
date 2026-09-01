@@ -155,7 +155,121 @@ async function cargarConfig() {
   if (c.places_open === false) cerrarFormulario("#form-lugar", "Las propuestas de lugares están cerradas.");
   if (c.messages_open === false) cerrarFormulario("#form-mensaje", "El muro está cerrado por ahora.");
 
+  // Con la fila cero en marcha, el muro deja de recoger mensajes y la cuenta
+  // atrás deja de contar: las dos cosas se sustituyen por la puerta de entrada.
+  if (c.fila_cero) abrirLaPuerta();
+
   if (c.turnstile_site_key) cargarTurnstile(c.turnstile_site_key);
+}
+
+/**
+ * La puerta a la fila cero.
+ *
+ * Cuando el directo arranca hay dos trozos de la portada que dejan de tener
+ * sentido a la vez: la cuenta atrás, que ya no cuenta nada, y el formulario del
+ * muro, porque a esa hora se manda desde el directo -que es donde están el
+ * Turnstile de entrada y la moderación de fotos-. Los dos se sustituyen por lo
+ * mismo, así que el bloque se fabrica una vez y se usa en los dos sitios.
+ */
+function puertaFilaCero(titular, texto, conPase) {
+  const caja = crear("div", "filacero");
+  caja.appendChild(crear("p", "filacero__eco", titular));
+  caja.appendChild(crear("p", "filacero__texto", texto));
+
+  /* El pase, pintado aquí mismo y no en un iframe. Un iframe traería otro
+     documento entero, con su CSS y su JS, y abriría un segundo sondeo a la
+     misma API: más espera al arrancar y los datos aislados de esta página.
+     Pintándolo aquí, el contador de gente que ya viene en la respuesta se
+     puede enseñar sin pedir nada más. El widget de /embed se queda para quien
+     lo incruste desde fuera, que es lo suyo. */
+  if (conPase) {
+    const pase = crear("div", "filacero__pase");
+    const gente = crear("p", "filacero__gente", "");
+    caja.appendChild(pase);
+    caja.appendChild(gente);
+    seguirLaFilaCero(pase, gente);
+  }
+  const boton = crear("a", "boton boton--brasa filacero__boton", "Entrar en la fila cero");
+  boton.href = "/directo";
+  caja.appendChild(boton);
+  return caja;
+}
+
+/**
+ * Sigue la fila cero desde la portada: pinta las fotos que van llegando y dice
+ * cuánta gente hay dentro.
+ *
+ * Sondea más despacio que el propio directo (allí la pantalla es el acto; aquí
+ * es un aperitivo) y no toca nada más de la página.
+ */
+function seguirLaFilaCero(caja, gente) {
+  const puestas = new Map();
+  let orden = [];
+  let i = 0;
+  let esperaMs = 10000;
+
+  const pintar = (tarjetas) => {
+    tarjetas.forEach((t) => {
+      if (!t.media || puestas.has(t.media)) return;
+      const img = new Image();
+      img.src = t.media;
+      img.alt = "";
+      img.loading = "lazy";
+      caja.appendChild(img);
+      puestas.set(t.media, img);
+      orden.push(img);
+    });
+    caja.classList.toggle("filacero__pase--vacio", orden.length === 0);
+  };
+
+  const pasar = () => {
+    if (!orden.length) return;
+    orden.forEach((img, n) => img.classList.toggle("visible", n === i));
+    i = (i + 1) % orden.length;
+  };
+
+  const sondear = async () => {
+    try {
+      const d = await pedir("/api/directo");
+      const n = d.ahora || 0;
+      gente.textContent = n
+        ? "Ahora mismo " + (n === 1 ? "hay 1 persona" : "hay " + n.toLocaleString("es-ES") + " personas") + " dentro"
+        : "";
+      pintar((d.tarjetas || []).slice(0, 24));
+      if (d.sondeo) esperaMs = Math.max(8000, d.sondeo * 2000);
+    } catch {
+      // Un fallo suelto no rompe la portada: se reintenta a la siguiente vuelta.
+    }
+    setTimeout(sondear, esperaMs);
+  };
+
+  sondear();
+  setInterval(pasar, 5000);
+}
+
+function abrirLaPuerta() {
+  const form = $("#form-mensaje");
+  if (form) {
+    form.replaceWith(puertaFilaCero(
+      "La fila cero ya está abierta",
+      "Esta noche los mensajes se mandan desde ahí, para que salgan en la pantalla.",
+    ));
+  }
+
+  /* El bloque de la fecha entero, no solo la cuenta atrás: anunciar el día y
+     la hora de algo que ya está empezando no dice nada, y deja al lector con
+     dos mensajes que se contradicen. La cuenta atrás se va dentro, y su
+     intervalo se para solo al quedarse el bloque fuera de la página. */
+  const fecha = document.querySelector(".fecha");
+  if (fecha) {
+    const puerta = puertaFilaCero(
+      "Concentración virtual",
+      "Si hoy no puedes ir a una plaza, la fila cero también es estar.",
+      true,
+    );
+    puerta.classList.add("filacero--portada");
+    fecha.replaceWith(puerta);
+  }
 }
 
 function cerrarFormulario(selector, motivo) {
@@ -198,6 +312,12 @@ function arrancarCuentaAtras(fechaISO) {
   const bloque = $("#cuenta");
   if (!bloque) return;
   const pintar = () => {
+    /* Si el bloque ya no está en la página, se para. Pasa cuando arranca la
+       fila cero y la puerta ocupa su hueco: sin esto el intervalo seguía
+       escribiendo en nodos que ya no existen, un error por segundo y para
+       siempre en la consola de cualquiera con la web abierta. */
+    if (!bloque.isConnected) return true;
+
     let resto = objetivo.getTime() - Date.now();
     if (resto <= 0) {
       bloque.classList.add("cuenta--pasado");

@@ -1,0 +1,56 @@
+/* El widget para incrustar. Se le da todo el alto que tenga el iframe y se
+   adapta: quien lo pega no sabe qué medidas tiene su hueco. */
+:root {
+  --fondo: #2A0C16; --papel: #FDF1E6; --carmin: #F02448;
+  --oro: #FCC018; --tenue: rgba(253, 241, 230, 0.62);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--fondo); color: var(--papel);
+  font-family: Archivo, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.w {
+  height: 100%; display: flex; flex-direction: column;
+  gap: 0.6rem; padding: clamp(0.7rem, 3vw, 1.1rem);
+}
+.w__cifra {
+  margin: 0; text-align: center;
+  font-size: clamp(0.72rem, 2.6vw, 0.9rem); font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--oro);
+}
+/* El pase se lleva todo el alto sobrante; las fotos se recortan para llenarlo
+   sin deformarse, que es como se ven bien en una caja de medidas ajenas. */
+.w__pase {
+  flex: 1; min-height: 0; position: relative;
+  background: rgba(0, 0, 0, 0.25); overflow: hidden;
+}
+.w__pase img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0; transition: opacity 0.6s ease;
+}
+.w__pase img.visible { opacity: 1; }
+.w__vacio {
+  position: absolute; inset: 0; margin: 0; display: flex;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 1rem; font-size: 0.9rem; line-height: 1.5; color: var(--tenue);
+}
+.w__boton {
+  display: block; padding: 0.7rem 1rem; text-align: center;
+  background: var(--carmin); color: var(--papel);
+  font-weight: 700; font-size: clamp(0.82rem, 3vw, 0.95rem);
+  letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none;
+  border: 2px solid var(--papel);
+}
+.w__boton:hover, .w__boton:focus-visible { background: var(--oro); color: var(--fondo); }
+.w__pie {
+  margin: 0; text-align: center;
+  font-size: 0.68rem; letter-spacing: 0.06em; color: var(--tenue);
+}
+
+/* Desnudo: dentro de la propia web, donde el marco ya lo pone la página. */
+body.desnudo .w__cifra,
+body.desnudo .w__boton,
+body.desnudo .w__pie { display: none; }
+body.desnudo { background: transparent; }
+body.desnudo .w { padding: 0; gap: 0; }

@@ -1739,3 +1739,58 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
 .manif-himno__cuerpo { max-width: 40rem; margin-inline: auto; }
 .manif-himno .seccion__texto { margin-bottom: 1rem; }
 .manif-himno .difunde__acciones { margin-top: 1.4rem; }
+
+/* ------------------------------------------------ la puerta a la fila cero - */
+/* Ocupa el hueco de la cuenta atrás y el del formulario del muro cuando el
+   directo arranca. Mismo bloque en los dos sitios: es la misma puerta. */
+.filacero {
+  display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
+  margin: 1.5rem 0; padding: clamp(1.2rem, 4vw, 2rem) clamp(1rem, 3vw, 2rem);
+  background: var(--papel-claro);
+  border: 3px solid var(--tinta); box-shadow: var(--sombra-dura);
+  text-align: center;
+}
+.filacero__eco {
+  margin: 0;
+  font-family: Anton, "Arial Narrow", sans-serif;
+  font-size: clamp(1.3rem, 1rem + 1.6vw, 2rem);
+  text-transform: uppercase; letter-spacing: 0.01em; color: var(--carmin-osc);
+}
+.filacero__texto {
+  margin: 0; max-width: 34rem;
+  font-size: 0.98rem; line-height: 1.5; color: var(--gris);
+}
+.filacero__boton { margin-top: 0.5rem; }
+
+/* En la portada ocupa el hueco del bloque de la fecha, que era la pieza fuerte
+   de la página: se queda con su presencia en lugar de ir suelta. */
+.filacero--portada {
+  margin: 0;
+  padding: clamp(1.6rem, 5vw, 2.6rem) clamp(1.2rem, 4vw, 2.4rem);
+}
+.filacero--portada .filacero__eco { font-size: clamp(1.8rem, 1.2rem + 3vw, 3.2rem); }
+.filacero--portada .filacero__texto { font-size: 1.05rem; }
+
+/* El pase dentro de la puerta: las fotos se apilan en el mismo hueco y se van
+   encendiendo por turnos. Alto por proporción, que si no la caja nace a cero y
+   no se ve nada hasta que carga la primera. */
+.filacero__pase {
+  position: relative; overflow: hidden;
+  width: 100%; max-width: 22rem; aspect-ratio: 3 / 4;
+  margin: 0.6rem auto 0;
+  border: 3px solid var(--tinta); background: var(--tinta);
+}
+.filacero__pase img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.filacero__pase img.visible { opacity: 1; }
+/* Mientras no hay ninguna, la caja no pinta nada: mejor que un marco vacío. */
+.filacero__pase--vacio { display: none; }
+
+.filacero__gente {
+  margin: 0.55rem 0 0;
+  font-size: 0.86rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--carmin-osc);
+}

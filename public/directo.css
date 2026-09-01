@@ -85,7 +85,14 @@
   background: var(--fondo);
   border-top: 1px solid var(--linea);
 }
-.rio__texto { margin: 0 0 0.25rem; font-size: 1.05rem; line-height: 1.35; }
+/* Dos líneas y se corta. Esto va en un proyector y las tarjetas pasan solas:
+   un texto largo no da tiempo a leerse, empuja la firma fuera de la tarjeta y
+   descuadra el pase. Quien quiera el mensaje entero lo tiene en el muro. */
+.rio__texto {
+  margin: 0 0 0.25rem; font-size: 1.05rem; line-height: 1.35;
+  display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
 .rio__firma { margin: 0; font-size: 0.8rem; color: var(--tenue); }
 .rio__firma b { color: var(--acento); font-weight: 700; }
 
@@ -132,13 +139,6 @@
   width: var(--avance, 0%); background: var(--acento);
 }
 
-.pueblos {
-  margin: 0; padding: 0.5rem clamp(0.8rem, 3vw, 2rem) 0.8rem;
-  font-family: var(--display); font-size: 0.8rem;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--tenue);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.pueblos b { color: var(--acento); font-weight: 400; }
 
 /* ---- Participar -------------------------------------------------------- */
 
@@ -239,7 +239,6 @@
 .directo.tele .cifra { font-size: clamp(1.2rem, 3vw, 2.2rem); padding: 1rem 2rem; }
 .directo.tele .rio__texto { font-size: clamp(1.2rem, 2.4vw, 2rem); }
 .directo.tele .rio__firma { font-size: clamp(0.9rem, 1.6vw, 1.3rem); }
-.directo.tele .pueblos { font-size: clamp(0.9rem, 1.8vw, 1.5rem); }
 
 /* ---- Quien pidió que las cosas no se muevan ---------------------------- */
 
