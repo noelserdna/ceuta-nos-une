@@ -192,7 +192,10 @@ Cosas que muerden si no se saben:
   `directo_retardo`, `directo_fotos`, `cron_pausado`. Se cambian desde `/admin` sin desplegar,
   que el día 2 es la diferencia entre reaccionar en un minuto o en veinte.
 - **`cron_pausado=1`** para la noche del acto: el cruce horario dispara a las 21:00, 22:00 y
-  23:00 y reescribe un CSV entero sobre la misma base.
+  23:00 y reescribe un CSV entero sobre la misma base. **Para las dos cosas, no solo el cron**:
+  `vuelcoUnion` rehacía el vuelco al pedirlo si tenía más de 10 minutos, así que la hoja de
+  cálculo —que relee cada hora— disparaba el cruce igual y la pausa no servía de nada. Ahora
+  con la pausa puesta se sirve lo guardado tal cual, sin tocar la base ni llamar a porceuta.es.
 
 ## Datos y contenido
 

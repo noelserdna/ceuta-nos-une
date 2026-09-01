@@ -1819,7 +1819,15 @@ async function vuelcoUnion(env: Env): Promise<Response> {
     ? (Date.now() - Date.parse(fila.generado.replace(" ", "T") + "Z")) / 60000
     : Infinity;
 
-  if (edad > FRESCURA_MINUTOS) {
+  /* `cron_pausado` tiene que parar TAMBIEN esto, no solo el cron. Si no, la
+     pausa no sirve de nada: la hoja de calculo relee cada hora, cae aqui con el
+     vuelco ya viejo y rehace el cruce igual —justo lo que se queria evitar
+     durante el acto—. Pausado se sirve lo guardado tal cual, sin tocar la base
+     ni llamar a porceuta.es. */
+  const settings = await loadSettings(env);
+  const pausado = settings.cron_pausado === "1";
+
+  if (!pausado && edad > FRESCURA_MINUTOS) {
     try {
       await generarVuelco(env);
       fila = await leer();
