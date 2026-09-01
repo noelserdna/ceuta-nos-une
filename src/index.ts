@@ -810,8 +810,38 @@ async function guardarMensaje(
 // La fila cero: los endpoints
 // ---------------------------------------------------------------------------
 
+/**
+ * Si la peticion entro por el banco de pruebas.
+ *
+ * El .com llega directo al Worker y se ve tal cual; el .es pasa por el proxy de
+ * Vercel, que borra la cabecera host y llama a la URL de workers.dev. Asi que el
+ * nombre por el que entra basta para distinguirlos, sin inventar cabeceras.
+ */
+function enBancoDePruebas(request: Request): boolean {
+  const h = new URL(request.url).hostname;
+  return h === "ceutanosune.com" || h === "www.ceutanosune.com" ||
+         h === "127.0.0.1" || h === "localhost";
+}
+
+/**
+ * El modo del directo, ya resuelto.
+ *
+ * "pruebas" existe para poder ver la fila cero cualquier dia sin abrirla al
+ * publico: vale como "abierto", pero SOLO en el banco de pruebas. Desde el .es
+ * es "off", asi que quien entre por la web de verdad no ve nada.
+ */
+function modoDirecto(settings: Record<string, string>, enBanco: boolean): string {
+  const modo = settings.directo_modo ?? "off";
+  if (modo === "pruebas") return enBanco ? "abierto" : "off";
+  return modo;
+}
+
 /** El estado de la noche sale del reloj; el ajuste solo manda si lo fuerzan. */
-function momentoDeLaNoche(settings: Record<string, string>): string {
+function momentoDeLaNoche(settings: Record<string, string>, enBanco = false): string {
+  // En pruebas se salta el reloj a proposito: la gracia es poder verlo hoy y no
+  // solo el dia 2 a las 20:00.
+  if ((settings.directo_modo ?? "off") === "pruebas") return enBanco ? "abierto" : "off";
+
   const forzado = settings.directo_modo ?? "off";
   if (forzado === "off" || forzado === "solo_lectura") return forzado;
 
@@ -882,7 +912,7 @@ interface Tarjeta {
  * Nada de anadir un parametro para "refrescar": eso convierte cada peticion en
  * una URL distinta y tira la cache de Cloudflare y la de Vercel a la vez.
  */
-async function feedDirecto(env: Env): Promise<Response> {
+async function feedDirecto(env: Env, request: Request): Promise<Response> {
   const settings = await loadSettings(env);
   const retardo = Math.max(0, Number(settings.directo_retardo ?? "90") || 0);
   const cuantas = Math.max(6, Number(settings.directo_fotos ?? String(TARJETAS_FEED)) || TARJETAS_FEED);
@@ -927,7 +957,7 @@ async function feedDirecto(env: Env): Promise<Response> {
   return json(
     {
       ok: true,
-      momento: momentoDeLaNoche(settings),
+      momento: momentoDeLaNoche(settings, enBancoDePruebas(request)),
       sondeo: Math.max(3, Number(settings.directo_sondeo ?? "4") || 4),
       titulo: settings.site_title ?? "Ceuta nos une",
       fecha: settings.event_date ?? "",
@@ -1001,7 +1031,7 @@ async function latidoDirecto(request: Request, env: Env): Promise<Response> {
 /** El canal abierto: un mensaje corto y, como mucho, una foto. */
 async function mensajeDirecto(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const settings = await loadSettings(env);
-  const modo = settings.directo_modo ?? "off";
+  const modo = modoDirecto(settings, enBancoDePruebas(request));
   if (modo === "off" || modo === "solo_lectura") {
     return fail("La fila cero no está abierta ahora mismo.", 403);
   }
@@ -2481,7 +2511,7 @@ export default {
       if (path === "/api/geocode" && method === "GET") return await geocode(request, env);
 
       // ---- La fila cero -------------------------------------------------
-      if (path === "/api/directo" && method === "GET") return await feedDirecto(env);
+      if (path === "/api/directo" && method === "GET") return await feedDirecto(env, request);
       if (path === "/api/directo/entrar" && method === "POST") return await entrarDirecto(request, env);
       if (path === "/api/directo/latido" && method === "POST") return await latidoDirecto(request, env);
       if (path === "/api/directo/mensaje" && method === "POST") {
