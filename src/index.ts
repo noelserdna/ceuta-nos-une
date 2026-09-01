@@ -832,17 +832,23 @@ function enBancoDePruebas(request: Request): boolean {
  */
 function modoDirecto(settings: Record<string, string>, enBanco: boolean): string {
   const modo = settings.directo_modo ?? "off";
+  // Con directo_banco=1 el directo solo existe en el .com: fuera de ahi es
+  // "off". Asi se ensaya el modo que se vaya a usar de verdad -solo_fotos,
+  // abierto- y no un sucedaneo. "pruebas" se acepta aun como sinonimo por si
+  // quedo escrito en los ajustes.
   if (modo === "pruebas") return enBanco ? "abierto" : "off";
+  if ((settings.directo_banco ?? "0") === "1" && !enBanco) return "off";
   return modo;
 }
 
 /** El estado de la noche sale del reloj; el ajuste solo manda si lo fuerzan. */
 function momentoDeLaNoche(settings: Record<string, string>, enBanco = false): string {
-  // En pruebas se salta el reloj a proposito: la gracia es poder verlo hoy y no
+  const forzado = modoDirecto(settings, enBanco);
+  // Ensayando se salta el reloj a proposito: la gracia es poder verlo hoy y no
   // solo el dia 2 a las 20:00.
-  if ((settings.directo_modo ?? "off") === "pruebas") return enBanco ? "abierto" : "off";
-
-  const forzado = settings.directo_modo ?? "off";
+  const ensayo = (settings.directo_modo ?? "off") === "pruebas" ||
+                 (settings.directo_banco ?? "0") === "1";
+  if (ensayo) return forzado;
   if (forzado === "off" || forzado === "solo_lectura") return forzado;
 
   const dia = settings.event_date;
@@ -914,6 +920,8 @@ interface Tarjeta {
  */
 async function feedDirecto(env: Env, request: Request): Promise<Response> {
   const settings = await loadSettings(env);
+  const momento = momentoDeLaNoche(settings, enBancoDePruebas(request));
+  const apagado = momento === "off";
   const retardo = Math.max(0, Number(settings.directo_retardo ?? "90") || 0);
   const cuantas = Math.max(6, Number(settings.directo_fotos ?? String(TARJETAS_FEED)) || TARJETAS_FEED);
 
@@ -957,7 +965,7 @@ async function feedDirecto(env: Env, request: Request): Promise<Response> {
   return json(
     {
       ok: true,
-      momento: momentoDeLaNoche(settings, enBancoDePruebas(request)),
+      momento,
       sondeo: Math.max(3, Number(settings.directo_sondeo ?? "4") || 4),
       titulo: settings.site_title ?? "Ceuta nos une",
       fecha: settings.event_date ?? "",
@@ -965,8 +973,13 @@ async function feedDirecto(env: Env, request: Request): Promise<Response> {
       ahora: aforo.ahora,
       total: aforo.total,
       pico: aforo.pico,
-      tarjetas: (conMedia.results ?? []).map(aTarjeta),
-      mensajes: (sueltos.results ?? []).map(aTarjeta),
+      /* Con el directo apagado no viaja NADA al navegador. No basta con que el
+         cliente sepa que esta en "off": el pase mete las tarjetas en el rio
+         antes de mirar el momento, asi que si el servidor las manda, se ven.
+         Y en solo_fotos, el texto suelto tampoco sale del servidor. */
+      tarjetas: apagado ? [] : (conMedia.results ?? []).map(aTarjeta),
+      mensajes: apagado || momento === "solo_fotos"
+        ? [] : (sueltos.results ?? []).map(aTarjeta),
       pueblos: (pueblos.results ?? []).map((r: Record<string, unknown>) => ({
         nombre: String(r.nombre),
         lat: (r.lat as number) ?? null,
@@ -1074,6 +1087,12 @@ async function mensajeDirecto(request: Request, env: Env, ctx: ExecutionContext)
 
   const media = form.get("foto");
   const foto = media instanceof File && media.size > 0 ? media : null;
+
+  // En solo_fotos el pase es de fotos: aceptar un texto que nadie va a ver en
+  // la pantalla es hacerle perder el rato a quien lo escribe.
+  if (modo === "solo_fotos" && !foto) {
+    return fail("Esta noche la pantalla es solo de fotos: manda una y saldrá en el pase.", 400);
+  }
 
   if (foto) {
     if (modo === "solo_lectura") return fail("Ahora mismo no se pueden mandar fotos.", 403);
