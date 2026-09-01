@@ -462,7 +462,7 @@ async function listMessages(request: Request, env: Env): Promise<Response> {
   );
 }
 
-async function createMessage(request: Request, env: Env): Promise<Response> {
+async function createMessage(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const settings = await loadSettings(env);
   if (settings.messages_open === "0") {
     return fail("El muro de apoyo está cerrado por ahora.", 403);
@@ -510,6 +510,8 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
   let photoKey: string | null = null;
   let photoType: string | null = null;
   let photoBytes = 0;
+  // Se guarda para poder mirar la foto después de haber contestado.
+  let bufferFoto: ArrayBuffer | null = null;
 
   const photo = form.get("photo");
   if (photo instanceof File && photo.size > 0) {
@@ -520,9 +522,12 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
     const kind = sniffImage(buffer);
     if (!kind) return fail("El archivo no parece una imagen (admitimos JPG, PNG, WEBP o GIF).");
 
-    photoKey = randomKey("muro", kind.ext);
+    // A cuarentena, no publicada: hasta ahora la foto del muro salía directa y
+    // por ahí entraban al pase imágenes que no había mirado nadie.
+    photoKey = randomKey("espera", kind.ext);
     photoType = kind.type;
     photoBytes = buffer.byteLength;
+    bufferFoto = buffer;
     await env.PHOTOS.put(photoKey, buffer, {
       httpMetadata: { contentType: kind.type, cacheControl: "public, max-age=31536000, immutable" },
     });
@@ -530,23 +535,60 @@ async function createMessage(request: Request, env: Env): Promise<Response> {
 
   const ipHash = await hashIp(ipVisitante(request, env), env.IP_SALT ?? "sin-sal");
 
+  /* El muro también se clasifica. No lo hacía, y no era inocuo: sus fotos
+     alimentan el pase que se proyecta, así que entraban a la pantalla sin que
+     las hubiera mirado nadie. El texto se juzga aquí mismo -medio segundo- y
+     la foto después, para no tener a nadie esperando con el móvil en la mano. */
+  const veredicto = await moderarTexto(env, body, author);
+  const estadoInicial: Estado =
+    photoKey && veredicto.estado === "ok" ? "espera" : veredicto.estado;
+
   try {
     const row = await env.DB.prepare(
-      `INSERT INTO messages (author, origin, body, photo_key, photo_type, photo_bytes, ip_hash)
-       VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, created_at`,
+      `INSERT INTO messages (author, origin, body, photo_key, photo_type, photo_bytes, ip_hash,
+                             canal, estado, moderacion)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'muro', ?, ?) RETURNING id, created_at`,
     )
-      .bind(author, origin || null, body, photoKey, photoType, photoBytes || null, ipHash)
+      .bind(author, origin || null, body, photoKey, photoType, photoBytes || null, ipHash,
+            estadoInicial, veredicto.motivo ?? null)
       .first<{ id: number; created_at: string }>();
+
+    const id = row?.id ?? 0;
+    if (photoKey && id && estadoInicial === "espera") {
+      const claveEspera = photoKey;
+      const bytesFoto = bufferFoto;
+      ctx.waitUntil(
+        (async () => {
+          const v = settings.directo_ia_fotos === "1" && bytesFoto
+            ? await moderarFoto(env, bytesFoto, photoType ?? "image/jpeg")
+            : { estado: "espera" as Estado, motivo: "para revisar a mano" };
+          let estado: Estado = v.estado;
+          let clave: string | null = claveEspera;
+          if (v.estado === "ok") {
+            clave = await publicarMedia(env, claveEspera);
+            if (!clave) { estado = "espera"; clave = claveEspera; }
+          } else if (v.estado === "no") {
+            await env.PHOTOS.delete(claveEspera).catch(() => {});
+            clave = null;
+          }
+          await env.DB.prepare(
+            `UPDATE messages SET estado = ?, moderacion = ?, photo_key = ? WHERE id = ?`,
+          ).bind(estado, v.motivo, clave, id).run();
+        })(),
+      );
+    }
 
     return json({
       ok: true,
       message: {
-        id: row?.id ?? 0,
+        id,
         author,
         origin: origin || null,
         body,
         created_at: row?.created_at ?? new Date().toISOString(),
-        photo_url: photoKey ? "/img/" + photoKey : null,
+        // Sin URL mientras está en cuarentena: el navegador pinta su copia local.
+        photo_url: photoKey && estadoInicial === "ok" ? "/img/" + photoKey : null,
+        estado: estadoInicial,
       },
     });
   } catch (err) {
@@ -2538,7 +2580,7 @@ export default {
       if (path === "/api/places" && method === "GET") return await listPlaces(env);
       if (path === "/api/places" && method === "POST") return await createPlace(request, env, ctx);
       if (path === "/api/messages" && method === "GET") return await listMessages(request, env);
-      if (path === "/api/messages" && method === "POST") return await createMessage(request, env);
+      if (path === "/api/messages" && method === "POST") return await createMessage(request, env, ctx);
       if (path === "/api/geocode" && method === "GET") return await geocode(request, env);
 
       // ---- La fila cero -------------------------------------------------
