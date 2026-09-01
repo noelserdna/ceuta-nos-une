@@ -70,7 +70,11 @@ const CATEGORIAS: Record<string, { estado: Estado; que: string }> = {
  */
 const TERMINOS = [
   "moro", "moros", "mora de mierda", "sudaca", "sudacas", "negrata", "negratas",
-  "puto moro", "putos moros", "mena", "menas", "invasion", "invasión",
+  "puto moro", "putos moros", "mena", "menas",
+  // "invasion" estuvo aqui y se quito a proposito: es la palabra con la que la
+  // gente cuenta lo que paso el 30 de julio, no un insulto. Bloquearla tumbaba
+  // mensajes legitimos. Lo que de verdad importa -si el mensaje es de odio- lo
+  // sigue juzgando Llama Guard, que lee la frase entera y no una palabra suelta.
   "remigracion", "remigración", "deportalos", "deportadlos", "cazarlos",
   "a por ellos", "que se ahoguen", "al agua", "gas a", "hijos de puta",
   "muerte a", "matar a", "quemarlos", "raza", "subhumano", "subhumanos",
