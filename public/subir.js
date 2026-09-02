@@ -14,6 +14,10 @@
 
 const $ = (sel) => document.querySelector(sel);
 const CLAVE = "cnu:pase";
+/* El sitio desde el que se manda no cambia en toda la noche: se guarda para no
+   reescribirlo foto a foto, y para que sobreviva a que el movil recargue la
+   pagina en mitad del acto. */
+const CLAVE_ORIGEN = "cnu:origen";
 
 async function pedir(url, opciones = {}) {
   let res;
@@ -150,7 +154,9 @@ async function enviar(ev) {
 
   const datos = new FormData();
   datos.set("codigo", estado.codigo);
-  datos.set("origin", $("#s-origin").value.trim());
+  const origen = $("#s-origin").value.trim();
+  datos.set("origin", origen);
+  try { localStorage.setItem(CLAVE_ORIGEN, origen); } catch { /* modo privado */ }
   datos.set("body", $("#s-body").value.trim());
   datos.set("media", estado.archivo);
 
@@ -200,6 +206,10 @@ function arrancar() {
 
   $("#caja").hidden = false;
   $("#saludo").textContent = "Sube lo que estás viendo";
+  try {
+    const previo = localStorage.getItem(CLAVE_ORIGEN);
+    if (previo) $("#s-origin").value = previo;
+  } catch { /* modo privado: se escribe a mano y ya */ }
   $("#s-media").addEventListener("change", elegir);
   $("#s-quitar").addEventListener("click", quitar);
   $("#forma").addEventListener("submit", enviar);
