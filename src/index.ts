@@ -993,7 +993,21 @@ async function feedDirecto(env: Env, request: Request): Promise<Response> {
   // El retardo es lo que de verdad protege la pantalla: da margen a retirar algo
   // antes de que llegue al proyector, y en un bucle nadie nota minuto y medio.
   const corte = `datetime('now', '-${retardo} seconds')`;
-  const visible = `estado = 'ok' AND hidden = 0 AND created_at <= ${corte}`;
+
+  /* Solo la jornada del acto. El pase salia de las ultimas fotos del muro sin
+     mirar la fecha, asi que arrastraba los ensayos de los dias anteriores y los
+     mezclaba con lo que estaba pasando en la plaza: en la pantalla no se
+     distingue una foto de hoy de una del 29 de agosto.
+
+     El dia se cuenta en hora local, no en UTC: `created_at` se guarda en UTC y
+     España va dos horas por delante en septiembre, asi que la medianoche de aqui
+     son las 22:00 del dia anterior alli. Sin ese ajuste se perderian las fotos
+     de la madrugada del propio dia. */
+  const dia = settings.event_date ?? "";
+  const desde = dia
+    ? `AND created_at >= datetime('${dia} 00:00:00', '-2 hours')`
+    : "";
+  const visible = `estado = 'ok' AND hidden = 0 AND created_at <= ${corte} ${desde}`;
 
   const [conMedia, sueltos] = await env.DB.batch<Record<string, never>>([
     env.DB.prepare(
