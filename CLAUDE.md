@@ -191,6 +191,12 @@ Cosas que muerden si no se saben:
 - **Los interruptores están en `settings`**, no en el código: `directo_modo`, `directo_sondeo`,
   `directo_retardo`, `directo_fotos`, `cron_pausado`. Se cambian desde `/admin` sin desplegar,
   que el día 2 es la diferencia entre reaccionar en un minuto o en veinte.
+- **`directo_banco=1` es una llave de dos filos, no un interruptor de ensayo.** Enciende la
+  fila cero en el `.com` **apagándola en el `.es`**: son la misma llave. Con él puesto,
+  `/api/config` del `.es` devuelve `fila_cero=false` y el widget de `/embed` dice «Aún no ha
+  empezado» —lo que desde fuera se lee como un iframe roto, y no lo está—. Antes de dar por
+  averiado un embebido, mira este ajuste. Y quitarlo abre la fila cero al público de verdad,
+  así que no se baja «para probar un momento» sin contar con que la web queda abierta.
 - **`cron_pausado=1`** para la noche del acto: el cruce horario dispara a las 21:00, 22:00 y
   23:00 y reescribe un CSV entero sobre la misma base. **Para las dos cosas, no solo el cron**:
   `vuelcoUnion` rehacía el vuelco al pedirlo si tenía más de 10 minutos, así que la hoja de
