@@ -61,6 +61,17 @@
 </svg>
 
 
+<!-- Aviso de la fila cero, lo primero que se ve al entrar. Nace oculto y lo
+     enciende app.js solo cuando la fila cero esta abierta: si el aviso saliera
+     siempre, prometeria un directo que aun no existe. -->
+<aside class="avisodirecto" id="aviso-directo" hidden>
+  <p class="avisodirecto__texto">
+    <span class="avisodirecto__punto" aria-hidden="true"></span><strong>Manifestación virtual en directo.</strong>
+    Mándanos tu foto y sal en la pantalla.
+  </p>
+  <a class="avisodirecto__boton" href="/directo">Ver el directo</a>
+</aside>
+
 <header class="barra">
   <a class="barra__marca" href="#inicio">
     <span class="barra__gyronny" aria-hidden="true"></span>

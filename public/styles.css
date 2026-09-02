@@ -178,6 +178,72 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 /* ------------------------------------------------------------ barra sup -- */
 
+/* --------------------------------------------------------------------------
+   Aviso de la fila cero: la primera franja de la pagina el dia del acto.
+   Va ANTES de la barra y no es sticky: la barra ya se queda pegada arriba y
+   dos franjas fijas se comerian media pantalla de movil. Quien baje se topa
+   igual con la puerta de la fila cero, que sustituye al bloque de la fecha.
+   -------------------------------------------------------------------------- */
+.avisodirecto {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 0.5rem 0.9rem;
+  padding: 0.7rem clamp(1rem, 4vw, 3rem);
+  background: var(--carmin-osc);
+  color: var(--papel-claro);
+  border-bottom: var(--borde-pieza) solid var(--tinta);
+  text-align: center;
+}
+
+/* El punto que late. Es lo que dice «esto esta pasando ahora» sin escribirlo.
+   Va DENTRO del parrafo y en linea: como hermano flex, el texto -que es largo-
+   se llevaba el ancho entero y lo empujaba a una fila para el solo. */
+.avisodirecto__punto {
+  display: inline-block; vertical-align: middle;
+  width: 0.6rem; height: 0.6rem;
+  margin-right: 0.45rem; margin-top: -0.15rem;
+  border-radius: 50%;
+  background: var(--oro);
+  animation: latido 1.6s ease-in-out infinite;
+}
+
+@keyframes latido {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.78); }
+}
+
+/* Quien haya pedido menos movimiento no tiene por que aguantar el parpadeo. */
+@media (prefers-reduced-motion: reduce) {
+  .avisodirecto__punto { animation: none; }
+}
+
+.avisodirecto__texto { margin: 0; font-size: 1rem; line-height: 1.35; }
+
+.avisodirecto__boton {
+  flex: none;
+  padding: 0.4rem 1rem;
+  background: var(--oro);
+  color: var(--tinta);
+  border: var(--borde-pieza) solid var(--tinta);
+  font-family: var(--display); font-size: 1rem;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  text-decoration: none;
+  transition: transform var(--transicion);
+}
+.avisodirecto__boton:hover,
+.avisodirecto__boton:focus-visible { transform: translateY(-2px); }
+
+/* En movil el boton pasa debajo y ocupa el ancho: en una linea de 390 px el
+   texto se partiria en cuatro renglones y el boton quedaria en un rincon. */
+@media (max-width: 560px) {
+  .avisodirecto { gap: 0.5rem; padding: 0.75rem 1rem 0.8rem; }
+  .avisodirecto__texto { font-size: 0.95rem; }
+  /* El boton a ancho completo empuja solo la segunda linea: punto y texto se
+     quedan juntos arriba sin sacar el punto del flujo. Posicionarlo absoluto
+     lo hacia caer sobre la caja del parrafo, que aqui ocupa todo el ancho. */
+  .avisodirecto__boton { flex: 1 0 100%; padding: 0.55rem 1rem; }
+}
+
 .barra {
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;

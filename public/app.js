@@ -248,6 +248,12 @@ function seguirLaFilaCero(caja, gente) {
 }
 
 function abrirLaPuerta() {
+  /* La franja de arriba del todo. Nace con `hidden` en el HTML y se enciende
+     aquí, no al revés: si se pintara siempre y se ocultara con JS, quien
+     entrase con la red lenta vería un instante un directo que no existe. */
+  const aviso = $("#aviso-directo");
+  if (aviso) aviso.hidden = false;
+
   const form = $("#form-mensaje");
   if (form) {
     form.replaceWith(puertaFilaCero(
