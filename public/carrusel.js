@@ -131,9 +131,19 @@ function lugarDe(f, separador) {
   return f.provincia && f.provincia !== f.municipio ? f.municipio + separador + f.provincia : f.municipio;
 }
 
+/* Lo que la imagen es primero (vídeo, texto) y luego el papel que tuvo. Antes
+   todo salía como «foto del acto», carteles incluidos. */
+const QUE_ES = {
+  cartel: "Cartel de la convocatoria en ",
+  acto: "Foto del acto en ",
+  cartel_y_acto: "Cartel y foto del acto en ",
+  prensa: "Foto de prensa en ",
+};
+
 function textoAlt(f) {
-  return (f.clase === "portada" ? "Fotograma de un vídeo del acto en " : "Foto del acto en ") +
-    lugarDe(f, ", ");
+  if (f.clase === "portada") return "Fotograma de un vídeo del acto en " + lugarDe(f, ", ");
+  if (f.clase === "texto") return "Comunicado o carta publicado en " + lugarDe(f, ", ");
+  return (QUE_ES[f.tipo] ?? "Imagen de ") + lugarDe(f, ", ");
 }
 
 function numero(n) {
@@ -487,7 +497,8 @@ function pintarPie(f) {
   $("#pie-provincia").textContent = f.provincia && f.provincia !== f.municipio ? " · " + f.provincia : "";
 
   $("#pie-credito-linea").hidden = !f.credito;
-  $("#pie-rotulo").textContent = f.clase === "portada" ? "Vídeo:" : "Foto:";
+  $("#pie-rotulo").textContent = f.clase === "portada" ? "Vídeo:" : f.clase === "texto" ? "Publicado por:"
+    : f.tipo === "cartel" ? "Cartel:" : "Foto:";
   $("#pie-credito").textContent = f.credito || "";
 
   $("#pie-convoca-linea").hidden = !f.convocante;

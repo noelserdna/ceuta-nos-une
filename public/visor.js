@@ -21,6 +21,8 @@ const TIPO = {
   cartel_y_acto: "Cartel y foto del acto",
   prensa: "Foto de prensa",
 };
+// Cartas, comunicados y declaraciones escaneados (clase «texto»).
+const TEXTO = "Comunicado o carta";
 
 let dialogo = null;
 let partes = null;
@@ -115,12 +117,15 @@ function pintar() {
   partes.img.src = "/img/" + f.clave;
   partes.img.width = f.ancho || 1200;
   partes.img.height = f.alto || 900;
-  partes.img.alt = `${f.clase === "portada" ? "Fotograma de un vídeo" : TIPO[f.tipo] ?? "Foto"} en ` +
+  /* Lo que la imagen es manda sobre el papel que tuvo: un comunicado publicado
+     junto a las fotos del acto sigue siendo un texto, no una foto. */
+  const que = f.clase === "texto" ? TEXTO : TIPO[f.tipo];
+  partes.img.alt = `${f.clase === "portada" ? "Fotograma de un vídeo" : que ?? "Imagen"} en ` +
     (municipio === provincia ? municipio : `${municipio}, ${provincia}`);
   const lugar = municipio === provincia ? municipio : `${municipio} · ${provincia}`;
   partes.donde.textContent = lugar +
-    (TIPO[f.tipo] ? ` — ${TIPO[f.tipo]}` : "") + (f.clase === "portada" ? " (vídeo)" : "");
-  partes.credito.textContent = `Foto: ${f.credito}`;
+    (que ? ` — ${que}` : "") + (f.clase === "portada" ? " (vídeo)" : "");
+  partes.credito.textContent = `${f.clase === "texto" ? "Publicado por" : "Foto"}: ${f.credito}`;
   partes.convoca.textContent = f.convocante ? `Convoca: ${f.convocante}` : "";
   partes.convoca.hidden = !f.convocante;
   /* Una galería de prensa que cubre varios pueblos puede traer la foto de otro

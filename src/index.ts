@@ -316,6 +316,10 @@ const VIVA = `f.retirada IS NULL AND p.retirada IS NULL AND v.tipo != 'descartad
    antes que los carteles. Lo primero importa más de lo que parece: una galería
    de prensa que cubre diez municipios ponía la misma foto de portada a los
    diez, y la rejilla enseñaba tres tarjetas seguidas iguales. */
+/* `clase` es lo que la imagen ES —foto, fotograma de un vídeo o texto (una
+   carta o un comunicado escaneado)—; `tipo`, en el vínculo, es qué papel tuvo
+   en ese pueblo. Un comunicado no es una foto del acto aunque se publicara
+   con las fotos del acto, y por eso va en la foto y no en el vínculo. */
 const ANTES_EL_ACTO = `(SELECT COUNT(*) FROM publicacion_municipio x
                          WHERE x.publicacion_id = p.id AND x.tipo != 'descartada') = 1 DESC,
                        (v.tipo IN ('acto', 'cartel_y_acto', 'prensa')) DESC, (f.clase = 'foto') DESC`;
@@ -439,6 +443,10 @@ async function paseDelActo(env: Env, ambito: string, pagina: number): Promise<Re
        GROUP BY f.id
     ), fila AS (
       SELECT f.clave, f.clave_mini, f.ancho, f.alto, f.clase,
+             /* Para rotularla: sin esto el pase llamaba «foto del acto» a
+                cualquier cartel. El del municipio con el que sale. */
+             (SELECT v2.tipo FROM publicacion_municipio v2
+               WHERE v2.publicacion_id = p.id AND v2.municipio_id = m.id) AS tipo,
              p.credito, p.url, p.convocante, m.id AS municipio_id, m.municipio, m.provincia,
              ROW_NUMBER() OVER (PARTITION BY m.provincia ORDER BY f.id) AS turno
         FROM una u

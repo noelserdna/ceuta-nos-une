@@ -248,11 +248,15 @@ async function abrirFicha(id, { mover = true } = {}) {
     const li = crear("li", "ficha__foto");
     const b = crear("button", "ficha__abrir");
     b.type = "button";
-    const tipo = f.clase === "portada" ? "Vídeo" : f.tipo === "cartel" ? "Cartel" : "Acto";
-    b.setAttribute("aria-label", `Ampliar: ${tipo.toLowerCase()} en ${contexto.municipio}`);
+    /* Sin clasificar no lleva etiqueta: mejor callar que llamar «acto» a lo
+       que igual es un cartel. */
+    const tipo = f.clase === "portada" ? "Vídeo" : f.clase === "texto" ? "Comunicado"
+      : f.tipo === "cartel" ? "Cartel" : f.tipo === "sin_clasificar" ? "" : "Acto";
+    b.setAttribute("aria-label", `Ampliar: ${(tipo || "imagen").toLowerCase()} en ${contexto.municipio}`);
     const img = miniatura(f.clave_mini, "");
     if (f.ancho && f.alto) { img.width = 400; img.height = Math.round(400 * f.alto / f.ancho); }
-    b.append(img, crear("span", "ficha__tipo", tipo));
+    b.append(img);
+    if (tipo) b.append(crear("span", "ficha__tipo", tipo));
     b.addEventListener("click", () => abrirVisor(datos.fotos, i, contexto));
     const pie = crear("p", "ficha__credito", f.credito);
     if (f.convocante) pie.append(crear("span", "ficha__convoca", ` · Convoca: ${f.convocante}`));
