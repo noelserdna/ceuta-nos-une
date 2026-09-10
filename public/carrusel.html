@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fotos del 2 de septiembre · Ceuta nos une</title>
+<meta name="description" content="Las fotos de las concentraciones del 2 de septiembre en apoyo a Ceuta, una tras otra y a pantalla completa: municipio a municipio, de toda España, cada una con su autoría.">
+<!-- Pantalla oscura: sin esto, la barra de estado del móvil se queda color papel
+     encima de una página negra. -->
+<meta name="theme-color" content="#2B0C14">
+<meta property="og:title" content="Fotos del 2 de septiembre · Ceuta nos une">
+<meta property="og:description" content="Las plazas de toda España el 2 de septiembre, en apoyo a Ceuta. Un pase de fotos para ver, proyectar y compartir.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<link rel="canonical" href="https://ceutanosune.es/carrusel">
+<meta property="og:url" content="https://ceutanosune.es/carrusel">
+<meta property="og:site_name" content="Ceuta nos une">
+<meta property="og:image" content="https://ceutanosune.es/media/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/carrusel.css">
+</head>
+<body class="carrusel">
+
+<a class="saltar" href="#mando">Ir a los controles del pase</a>
+
+<header class="barra">
+  <a class="barra__marca" href="/">
+    <span class="barra__gyronny" aria-hidden="true"></span>
+    <img class="barra__logo" src="/media/logo.svg" alt="Ceuta nos une" width="1837" height="816">
+  </a>
+  <h1 class="pase__titulo">Fotos del 2 de septiembre</h1>
+</header>
+
+<main class="pase" id="pase">
+
+  <!-- La foto y su pie son una sola pieza: el crédito va debajo, en una banda
+       sólida, nunca encima de la imagen. Sobre una foto cualquiera el contraste
+       es una lotería, y el nombre de quien la hizo no puede depender de eso. -->
+  <figure class="pase__escena">
+    <!-- Aquí dentro carrusel.js pone dos capas de imagen que se turnan: mientras
+         una se ve, la otra recibe la siguiente foto. Así el cambio es un fundido
+         y no un parpadeo negro. -->
+    <div class="pase__lienzo" id="lienzo">
+      <div class="pase__aviso" id="aviso">
+        <p class="pase__aviso-titulo" id="aviso-titulo">Cargando las fotos…</p>
+        <p class="pase__aviso-texto" id="aviso-texto"></p>
+        <button type="button" class="mando__boton mando__boton--lleno" id="aviso-boton" hidden></button>
+        <noscript>
+          <p class="pase__aviso-texto">Este pase necesita JavaScript. Las mismas fotos
+            están en el <a href="/#archivo">archivo de la portada</a>.</p>
+        </noscript>
+      </div>
+    </div>
+
+    <div class="pase__avance" id="avance" aria-hidden="true"><span></span></div>
+
+    <figcaption class="pase__pie" id="pie" hidden>
+      <p class="pase__lugar">
+        <span id="pie-municipio"></span><span class="pase__provincia" id="pie-provincia"></span>
+      </p>
+      <p class="pase__credito" id="pie-credito-linea"><span class="pase__rotulo" id="pie-rotulo">Foto:</span> <span id="pie-credito"></span></p>
+      <p class="pase__credito" id="pie-convoca-linea" hidden><span class="pase__rotulo">Convoca:</span> <span id="pie-convoca"></span></p>
+      <p class="pase__enlaces">
+        <a id="pie-original" href="/" target="_blank" rel="noopener noreferrer nofollow">ver publicación original<span class="visualmente-oculto"> (se abre en una pestaña nueva)</span><svg class="pase__fuera" viewBox="0 0 24 24" aria-hidden="true" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a>
+        <a id="pie-todas" href="/#archivo">ver todas las de <span id="pie-todas-municipio"></span></a>
+      </p>
+    </figcaption>
+  </figure>
+
+  <!-- El mando. En modo proyección se esconde a los tres segundos sin tocar nada
+       y vuelve con cualquier movimiento o tecla: la pausa tiene que estar siempre
+       a un gesto de distancia (WCAG 2.2.2). -->
+  <div class="mando" id="mando" role="group" aria-label="Controles del pase" tabindex="-1">
+    <div class="mando__grupo">
+      <button type="button" class="mando__boton mando__boton--icono" id="anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <span class="visualmente-oculto">Foto anterior</span>
+      </button>
+      <button type="button" class="mando__boton mando__boton--lleno" id="pausa">
+        <svg class="mando__icono-pausa" viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+        <svg class="mando__icono-seguir" viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="currentColor" hidden><path d="M7 4.5v15l12-7.5z"/></svg>
+        <span id="pausa-texto">Pausar</span>
+      </button>
+      <button type="button" class="mando__boton mando__boton--icono" id="siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        <span class="visualmente-oculto">Foto siguiente</span>
+      </button>
+      <span class="mando__cuenta" id="cuenta"></span>
+    </div>
+
+    <div class="mando__grupo mando__grupo--ancho">
+      <label class="visualmente-oculto" for="provincia">Qué fotos ver</label>
+      <select class="mando__ambito" id="provincia">
+        <option value="espana">Toda España</option>
+      </select>
+      <button type="button" class="mando__boton" id="compartir">
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4"/><path d="m15.4 6.5-6.8 4"/></svg>
+        <span class="mando__texto">Compartir</span>
+      </button>
+      <button type="button" class="mando__boton mando__boton--icono" id="pantalla" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        <span class="visualmente-oculto" id="pantalla-texto">Pantalla completa</span>
+      </button>
+    </div>
+
+    <p class="mando__nota" id="nota" role="status"></p>
+  </div>
+
+  <!-- Sólo habla cuando alguien mueve el pase a mano. En el avance automático
+       leería un municipio cada seis segundos, para siempre. -->
+  <p class="visualmente-oculto" id="anuncio" aria-live="polite"></p>
+</main>
+
+<script src="/carrusel.js" type="module"></script>
+<script src="/analitica.js" defer></script>
+</body>
+</html>

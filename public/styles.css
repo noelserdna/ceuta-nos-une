@@ -1860,3 +1860,187 @@ html { scroll-padding-top: 5rem; }   /* la barra fija tapaba 73 px al saltar a u
   font-size: 0.86rem; font-weight: 700; letter-spacing: 0.06em;
   text-transform: uppercase; color: var(--carmin-osc);
 }
+
+/* ======================================================= el archivo ===== */
+/* Lo que se vio el día 2. Reutiliza la maqueta de .lugares (mapa pegajoso a
+   un lado, panel al otro) porque ya estaba probada en móvil y en escritorio. */
+
+#mapa-acto {
+  height: clamp(320px, 56vh, 600px);
+  background: var(--papel-claro);
+  border: var(--borde-panel) solid var(--tinta);
+  box-shadow: var(--sombra-dura);
+  z-index: 1;
+}
+
+/* El pin es la foto. 46 px: por encima de los 24 de la WCAG 2.5.8 y lo bastante
+   grande para reconocer una plaza llena, no tanto como para tapar el mapa. */
+.pin-foto {
+  position: relative; width: 46px; height: 46px;
+  background: var(--papel-claro);
+  border: var(--borde-pieza) solid var(--tinta);
+  box-shadow: 3px 3px 0 var(--tinta);
+  transition: transform 160ms ease;
+}
+.pin-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Varias fotos: se apilan por detrás, como un taco de copias. Sólo con CSS. */
+.pin-foto--varias::before,
+.pin-foto--varias::after {
+  content: ""; position: absolute; inset: -3px;
+  border: var(--borde-pieza) solid var(--tinta); background: var(--oro);
+  z-index: -1; transform: translate(5px, 5px);
+}
+.pin-foto--varias::after { background: var(--carmin); transform: translate(9px, 9px); z-index: -2; }
+.pin-foto__n {
+  position: absolute; top: -10px; right: -12px; min-width: 22px; height: 22px;
+  padding: 0 5px; display: grid; place-items: center;
+  font: 0.72rem/1 var(--display); color: var(--papel);
+  background: var(--tinta); border: 2px solid var(--papel-claro);
+}
+.leaflet-marker-icon:hover .pin-foto,
+.leaflet-marker-icon:focus-visible .pin-foto { transform: scale(1.12); }
+
+.chip--sin-mapa { justify-self: start; background: var(--papel-claro); border-style: dashed; }
+
+/* La rejilla de municipios: tres por fila en el móvil, cuatro a partir de 560. */
+.rejilla-fotos {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 0.75rem; grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (min-width: 560px) { .rejilla-fotos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .rejilla-fotos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1150px) { .rejilla-fotos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.tarjeta-foto__boton {
+  width: 100%; padding: 0; text-align: left; cursor: pointer;
+  background: var(--papel-claro); color: var(--tinta);
+  border: var(--borde-pieza) solid var(--tinta);
+  box-shadow: var(--sombra-suave);
+  display: grid; font: inherit;
+  transition: transform var(--transicion), box-shadow var(--transicion);
+}
+.tarjeta-foto__boton:hover,
+.tarjeta-foto__boton:focus-visible { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--tinta); }
+.tarjeta-foto__boton img {
+  width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+  border-bottom: var(--borde-pieza) solid var(--tinta); background: var(--papel-linea);
+}
+.tarjeta-foto__texto { display: grid; gap: 0.1rem; padding: 0.45rem 0.5rem 0.55rem; min-width: 0; }
+.tarjeta-foto__nombre {
+  font: 1rem/1.05 var(--display); text-transform: uppercase;
+  overflow-wrap: anywhere; hyphens: auto;
+}
+.tarjeta-foto__prov { font-size: 0.68rem; color: var(--gris); }
+.tarjeta-foto__n { font-size: 0.68rem; font-weight: 700; color: var(--carmin-osc); }
+
+/* La ficha de un municipio */
+.ficha { display: grid; gap: 0.6rem; }
+.ficha__volver {
+  justify-self: start; background: none; border: 0; padding: 0.2rem 0; cursor: pointer;
+  font: 700 0.85rem var(--texto); color: var(--carmin-osc); text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ficha__titulo {
+  margin: 0; font: clamp(2rem, 5vw, 3rem)/0.95 var(--display); text-transform: uppercase;
+}
+.ficha__titulo:focus { outline: none; }
+.ficha__sub { margin: 0 0 0.6rem; color: var(--gris); font-size: 0.9rem; }
+.ficha__fotos {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.ficha__foto { display: grid; gap: 0.3rem; align-content: start; }
+.ficha__abrir {
+  position: relative; padding: 0; cursor: zoom-in; background: var(--papel-linea);
+  border: var(--borde-pieza) solid var(--tinta); box-shadow: var(--sombra-suave);
+  transition: transform var(--transicion);
+}
+.ficha__abrir:hover, .ficha__abrir:focus-visible { transform: translate(-2px, -2px); }
+.ficha__abrir img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.ficha__tipo {
+  position: absolute; left: 6px; bottom: 6px; padding: 0.15rem 0.4rem;
+  font: 0.7rem/1 var(--display); text-transform: uppercase; letter-spacing: 0.04em;
+  background: var(--oro); color: var(--tinta); border: 2px solid var(--tinta);
+}
+.ficha__credito { margin: 0; font-size: 0.72rem; color: var(--gris); overflow-wrap: anywhere; }
+.ficha__convoca { color: var(--carmin-osc); font-weight: 700; }
+.ficha__original { font-size: 0.72rem; color: var(--carmin-osc); }
+.ficha__cargando { color: var(--gris); font-size: 0.9rem; }
+
+/* El visor: la foto a pantalla grande, con su pie siempre debajo y nunca
+   encima. Sobre tinta, como el directo, para que la foto mande. */
+.visor {
+  width: min(100vw, 1400px); max-width: 100vw; height: 100dvh; max-height: 100dvh;
+  margin: auto; padding: 0; border: 0;
+  background: #2B0C14; color: var(--papel);
+  display: none;
+}
+.visor[open] {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center;
+}
+.visor::backdrop { background: rgba(20, 5, 9, 0.88); }
+html.visor-abierto { overflow: hidden; }
+
+.visor__figura {
+  margin: 0; height: 100dvh; min-width: 0;
+  display: grid; grid-template-rows: minmax(0, 1fr) auto;
+}
+.visor__img {
+  width: 100%; height: 100%; min-height: 0; object-fit: contain; display: block;
+}
+.visor__img--entra { animation: visor-entra 220ms ease-out; }
+@keyframes visor-entra { from { opacity: 0.2; } to { opacity: 1; } }
+
+.visor__pie {
+  display: grid; gap: 0.25rem; padding: 0.8rem clamp(0.9rem, 3vw, 1.6rem) 1rem;
+  background: #2B0C14; border-top: 1px solid rgba(247, 227, 211, 0.22);
+  font-size: 0.85rem;
+}
+.visor__pie p { margin: 0; }
+.visor__donde { font: 1.2rem/1.1 var(--display); text-transform: uppercase; }
+.visor__credito { color: rgba(247, 227, 211, 0.82); overflow-wrap: anywhere; }
+.visor__convoca { color: var(--oro); font-weight: 700; }
+.visor__aviso { color: #FF5C78; font-size: 0.78rem; }
+.visor__enlace { color: var(--oro); justify-self: start; }
+.visor__cuenta { color: rgba(247, 227, 211, 0.62); font-size: 0.75rem; }
+
+.visor__cerrar,
+.visor__flecha {
+  cursor: pointer; background: none; color: var(--papel); border: 0;
+  font: 2.6rem/1 var(--display); padding: 0.4rem 0.8rem;
+}
+.visor__cerrar {
+  position: absolute; top: 0.4rem; right: 0.6rem; z-index: 2; font-size: 2.2rem;
+  background: rgba(43, 12, 20, 0.7);
+}
+.visor__flecha { align-self: stretch; }
+.visor__flecha:hover, .visor__cerrar:hover,
+.visor__flecha:focus-visible, .visor__cerrar:focus-visible { color: var(--oro); }
+.visor__flecha[hidden] { display: block; visibility: hidden; }
+@media (max-width: 600px) {
+  /* En el móvil se pasa con el dedo: las flechas se quedan, pero estrechas. */
+  .visor__flecha { padding: 0.4rem 0.3rem; font-size: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .visor__img--entra { animation: none; }
+  .pin-foto, .tarjeta-foto__boton, .ficha__abrir { transition: none; }
+}
+
+/* En el móvil, las provincias en una sola fila que se desliza: en rejilla,
+   cuarenta y cinco chips ocupaban una pantalla entera antes de ver una foto. */
+@media (max-width: 899px) {
+  .lugares .chips {
+    flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
+    padding-bottom: 0.5rem; scrollbar-width: thin;
+    -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, #000 88%, transparent);
+  }
+  .lugares .chip { flex: 0 0 auto; }
+}
+
+.tarjeta-foto__boton { position: relative; }
+.tarjeta-foto__galeria {
+  position: absolute; top: 6px; left: 6px; padding: 0.12rem 0.35rem;
+  font: 0.6rem/1.1 var(--texto); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  background: var(--tinta); color: var(--papel);
+}

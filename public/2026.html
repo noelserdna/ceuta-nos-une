@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>La convocatoria del 2 de septiembre · Ceuta nos une</title>
+<meta name="description" content="El mapa de la convocatoria del 2 de septiembre de 2026: dónde y a qué hora fue cada concentración en apoyo a Ceuta, en toda España. Se conserva como archivo.">
+<meta name="theme-color" content="#F7E3D3">
+<meta property="og:title" content="La convocatoria del 2 de septiembre · Ceuta nos une">
+<meta property="og:description" content="Las fotos, carteles y vídeos de las concentraciones del 2 de septiembre en toda España, municipio a municipio.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<!-- Seis hosts sirven este mismo directorio (los dos dominios con y sin www, la
+     URL del Worker y el espejo de GitHub Pages). Sin esto, Google elige por su
+     cuenta cuál es el bueno, y podría elegir el .com, bloqueado en España. -->
+<!-- Verificación de Google Search Console. La alternativa era un TXT en el DNS,
+     que en el .es está en DonDominio y no en Cloudflare; esto se despliega solo. -->
+<meta name="google-site-verification" content="96PO-Ewck6rlxQW0i_jHp5qXrw20m0zmS4Fptc7Bwz8">
+<link rel="canonical" href="https://ceutanosune.es/2026">
+<meta property="og:url" content="https://ceutanosune.es/2026">
+<meta property="og:site_name" content="Ceuta nos une">
+<!-- El cartel oficial compuesto a 1200x630: al pegar el enlace en WhatsApp o
+     redes se ve el cartel con la fecha y la hora, sin abrir la web. -->
+<meta property="og:image" content="https://ceutanosune.es/media/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cartel de la convocatoria Ceuta nos une: concentración en toda España el 2 de septiembre a las 20:00 h, frente a cada ayuntamiento o Delegación del Gobierno.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="La convocatoria del 2 de septiembre · Ceuta nos une">
+<meta name="twitter:description" content="Las fotos, carteles y vídeos de las concentraciones del 2 de septiembre, pueblo a pueblo.">
+<meta name="twitter:image" content="https://ceutanosune.es/media/og.jpg">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400..700;1,400..600&display=swap">
+<link rel="stylesheet" href="/vendor/leaflet.css">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<a class="saltar" href="#lugares">Saltar al listado de lugares</a>
+
+<!-- Los iconos de las redes se definen una vez y se reutilizan donde hagan falta,
+     para no repetir los trazados en cada sitio donde aparecen. -->
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+  <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2.5" y="2.5" width="19" height="19" rx="5.4"/>
+    <circle cx="12" cy="12" r="4.2"/>
+    <circle cx="17.6" cy="6.4" r="1.15" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-facebook" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 12.07C24 5.44 18.63.07 12 .07S0 5.44 0 12.07c0 5.99 4.39 10.95 10.13 11.85v-8.38H7.08v-3.47h3.05V9.43c0-3.01 1.79-4.67 4.53-4.67 1.31 0 2.69.24 2.69.24v2.95h-1.51c-1.49 0-1.96.93-1.96 1.87v2.25h3.33l-.53 3.47h-2.8v8.38C19.61 23.02 24 18.06 24 12.07z"/>
+  </symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </symbol>
+  <symbol id="i-tiktok" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 1 1 .77-5.06V9.66a5.67 5.67 0 0 0-.77-.05A5.68 5.68 0 1 0 15.54 15.3V8.9a7.34 7.34 0 0 0 4.28 1.37V7.18a4.28 4.28 0 0 1-3.22-1.36z"/>
+  </symbol>
+</svg>
+
+
+<!-- Aviso de la fila cero, lo primero que se ve al entrar. Nace oculto y lo
+     enciende app.js solo cuando la fila cero esta abierta: si el aviso saliera
+     siempre, prometeria un directo que aun no existe. -->
+<aside class="avisodirecto" id="aviso-directo" hidden>
+  <p class="avisodirecto__texto">
+    <span class="avisodirecto__punto" aria-hidden="true"></span><strong>Manifestación virtual en directo.</strong>
+    Mándanos tu foto y sal en la pantalla.
+  </p>
+  <a class="avisodirecto__boton" href="/directo">Ver el directo</a>
+</aside>
+
+<header class="barra">
+  <a class="barra__marca" href="/">
+    <span class="barra__gyronny" aria-hidden="true"></span>
+    <img class="barra__logo" src="/media/logo.svg" alt="Ceuta nos une" width="1837" height="816">
+  </a>
+  <nav class="barra__nav" aria-label="Secciones">
+    <a href="https://porceuta.es/que-esta-pasando" target="_blank" rel="noopener"
+       aria-label="Qué está pasando en Ceuta, en porceuta.es, se abre en una pestaña nueva"><span class="nav-texto">Qué<span class="nav-largo"> está</span> pasa<span class="nav-largo">ndo</span></span><svg class="fuera" viewBox="0 0 24 24" aria-hidden="true" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a>
+    <a href="/2026"><span class="nav-texto">La convocatoria</span></a>
+    <a href="/#archivo">Fotos</a>
+    <a href="/#muro">Muro de apoyo</a>
+  </nav>
+
+  <!-- Las redes en la barra: se ven en pantallas anchas, donde sobra sitio. En el
+       móvil se esconden y aparecen en la portada, porque el logo, los enlaces y
+       cuatro iconos piden 474 px y no caben en 390. -->
+  <div class="redes redes--barra">
+    <ul class="redes__lista">
+      <li><a href="https://www.instagram.com/franpaul95/" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Fran Paul, se abre en una pestaña nueva"><svg aria-hidden="true"><use href="#i-instagram"></use></svg></a></li>
+      <li><a href="https://www.facebook.com/francisco.detorresredondo" target="_blank" rel="noopener noreferrer" aria-label="Facebook de Fran Paul, se abre en una pestaña nueva"><svg aria-hidden="true"><use href="#i-facebook"></use></svg></a></li>
+      <li><a href="https://x.com/franpaul95" target="_blank" rel="noopener noreferrer" aria-label="X de Fran Paul, se abre en una pestaña nueva"><svg aria-hidden="true"><use href="#i-x"></use></svg></a></li>
+      <li><a href="https://www.tiktok.com/@franpaul95" target="_blank" rel="noopener noreferrer" aria-label="TikTok de Fran Paul, se abre en una pestaña nueva"><svg aria-hidden="true"><use href="#i-tiktok"></use></svg></a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="contenido">
+
+<!-- El archivo de la convocatoria. El mapa y las tarjetas los pinta app.js, el
+     mismo fichero de siempre: cada una de sus piezas pregunta si su trozo de
+     página existe, y aquí sólo existe éste. Nada se ha copiado, así que no hay
+     dos versiones del mapa que puedan dejar de coincidir. -->
+<section class="lugares" id="lugares">
+  <div class="seccion__cabecera">
+    <p class="etiqueta">La convocatoria</p>
+    <h1 class="seccion__titulo">Dónde fue cada concentración</h1>
+    <p class="seccion__texto">
+      Este es el mapa con el que se convocó el 2 de septiembre de 2026: cada punto, una
+      concentración confirmada, casi todas a las 20:00 h frente al ayuntamiento o la Delegación
+      del Gobierno. Se conserva tal cual, como archivo. Lo que se vio ese día está
+      <a href="/#archivo">en las fotos</a>.
+    </p>
+  </div>
+
+  <div class="lugares__cuerpo">
+    <div class="lugares__mapa">
+      <div id="mapa" role="application" aria-label="Mapa con los lugares de concentración"></div>
+      <p class="mapa__pie">Arrastra para moverte · pulsa un punto para ver dónde y a qué hora fue</p>
+    </div>
+
+    <div class="lugares__panel">
+      <div class="filtros">
+        <label class="buscador">
+          <span class="visualmente-oculto">Buscar por localidad, provincia o lugar</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" id="buscador" placeholder="Busca tu ciudad…" autocomplete="off">
+        </label>
+
+        <!-- Buscar por cercanía. El navegador da la posición y el cálculo se hace
+             aquí mismo, con los lugares que ya están cargados: la ubicación no
+             viaja a ningún sitio, y por eso se puede decir sin letra pequeña. -->
+        <button type="button" class="cerca" id="btn-cerca" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/>
+            <circle cx="12" cy="10" r="2.6"/>
+          </svg>
+          <span id="btn-cerca-texto">¿Cuál me pilla más cerca?</span>
+        </button>
+        <p id="cerca-estado" class="estado" role="status" aria-live="polite"></p>
+
+        <div class="chips" id="chips-provincia" role="group" aria-label="Filtrar por provincia"></div>
+      </div>
+
+      <p class="lugares__contador" id="lugares-contador" aria-live="polite"></p>
+      <ol class="tarjetas" id="lista-lugares"></ol>
+
+      <div class="mas-lugares">
+        <button type="button" class="boton boton--linea" id="btn-mas-lugares" hidden></button>
+      </div>
+
+      <!-- Enlace de verdad, en el HTML servido: es el único camino por el que un
+           buscador o un modelo puede llegar al listado completo, porque lo de
+           arriba se pinta con JavaScript y ellos no lo ven. -->
+      <p class="lugares__todos">
+        <a href="/lugares">Ver el listado completo de todas las concentraciones, ciudad por ciudad</a>
+      </p>
+
+      <p class="aviso aviso--sutil">
+        Los lugares salieron del listado confirmado con las Delegaciones del Gobierno y los
+        ayuntamientos: sólo convocatorias comunicadas en regla y con organizador identificado.
+        Los mismos datos, en abierto: <a href="/lugares.csv">CSV</a> y
+        <a href="/api/public/convocatorias">JSON</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pie">
+  <div class="pie__gyronny" aria-hidden="true"></div>
+  <p class="pie__marca"><img src="/media/logo.svg" alt="Ceuta nos une" width="1837" height="816"></p>
+  <!-- Redes de quien lleva la convocatoria: es donde se cuenta lo de última hora,
+       que en un acto con fecha y hora importa más que cualquier texto de esta web. -->
+  <nav class="redes" aria-label="Redes sociales de la convocatoria">
+    <p class="redes__titulo">Síguelo al minuto en</p>
+    <ul class="redes__lista">
+      <li>
+        <a href="https://www.instagram.com/franpaul95/" target="_blank" rel="noopener noreferrer"
+           aria-label="Instagram de Fran Paul, se abre en una pestaña nueva">
+          <svg aria-hidden="true"><use href="#i-instagram"></use></svg>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.facebook.com/francisco.detorresredondo" target="_blank" rel="noopener noreferrer"
+           aria-label="Facebook de Fran Paul, se abre en una pestaña nueva">
+          <svg aria-hidden="true"><use href="#i-facebook"></use></svg>
+        </a>
+      </li>
+      <li>
+        <a href="https://x.com/franpaul95" target="_blank" rel="noopener noreferrer"
+           aria-label="X de Fran Paul, se abre en una pestaña nueva">
+          <svg aria-hidden="true"><use href="#i-x"></use></svg>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.tiktok.com/@franpaul95" target="_blank" rel="noopener noreferrer"
+           aria-label="TikTok de Fran Paul, se abre en una pestaña nueva">
+          <svg aria-hidden="true"><use href="#i-tiktok"></use></svg>
+        </a>
+      </li>
+    </ul>
+    <p class="redes__cuenta">@franpaul95</p>
+    <p class="redes__nota">
+      Ahí sigue contándose lo que pasa en Ceuta.
+    </p>
+  </nav>
+
+  <p class="pie__texto">
+    Web ciudadana, sin ánimo de lucro y sin publicidad. Las fotos son de sus autores y se enseñan
+    con su nombre y su enlace; los mensajes del muro son responsabilidad de quien los firma.
+    <br>
+    ¿Ves algo que no debería estar aquí? Cada mensaje del muro tiene un botón
+    <b>Denunciar</b>: con diez denuncias de personas distintas se oculta solo y lo
+    revisamos<span id="pie-contacto"></span>.
+  </p>
+  <!-- El código es público: quien sepa, que arregle; quien vea un fallo, que lo
+       cuente. Va al final y en pequeño porque a quien viene a mirar dónde es su
+       concentración esto no le importa, pero a quien quiere echar una mano sí. -->
+  <p class="pie__codigo">
+    Esta web es de código abierto. Si sabes programar y quieres echar una mano, o si
+    has visto un lugar mal puesto, una hora que no cuadra o algo que no funciona,
+    puedes <a href="https://github.com/noelserdna/ceuta-nos-une/issues/new" target="_blank" rel="noopener noreferrer">abrir
+    un aviso</a> o mandar tus cambios en
+    <a href="https://github.com/noelserdna/ceuta-nos-une" target="_blank" rel="noopener noreferrer">GitHub</a>.
+    No hace falta saber de código para avisar de un dato equivocado.
+  </p>
+  <p class="pie__legal">
+    No pedimos ningún dato personal y no guardamos tu dirección IP: solo una huella anónima para frenar el spam.
+    Contamos las visitas de forma anónima, sin cookies y sin seguirte por otras webs.
+    Mapa © colaboradores de OpenStreetMap.
+    <a href="/admin">Administración</a>
+  </p>
+</footer>
+
+<script src="/vendor/leaflet.js"></script>
+<script src="/vendor/markercluster.js"></script>
+<script src="/app.js" type="module"></script>
+
+<script src="/analitica.js" defer></script>
+</body>
+</html>

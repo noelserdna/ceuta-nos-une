@@ -1,0 +1,246 @@
+/* El pase del 2 de septiembre.
+ *
+ * Una pantalla oscura para ver y proyectar las fotos de las plazas. Sale de la
+ * fila cero (directo.css), pero con nombres propios y sin enlazar aquella hoja:
+ * se hizo para una noche concreta y un retoque allí no debería descolocar esto.
+ *
+ * Sobre tinta se invierte quién manda. El carmín (#F02448) se queda en 4,1:1
+ * contra este fondo y no llega al mínimo para texto; el oro da 10,3:1, el papel
+ * 13,7:1 y el carmín aclarado (#FF5C78) 5,7:1. La paleta de :root está
+ * calibrada contra el papel: aquí no vale copiarla, hay que darle la vuelta.
+ */
+
+.carrusel {
+  --fondo:   #2B0C14;                  /* la tinta, un punto más honda */
+  --lienzo:  #150509;                  /* casi negro: una foto se lee mejor sobre nada */
+  --sobre:   var(--papel);             /* 13,7:1 */
+  --acento:  var(--oro);               /* 10,3:1 */
+  --acento2: #FF5C78;                  /* carmín aclarado: 5,7:1, sí vale para texto */
+  --linea:   rgba(247, 227, 211, 0.22);
+  --tenue:   rgba(247, 227, 211, 0.62); /* 6:1 sobre el fondo */
+
+  /* El desplegable de provincias en oscuro: sin esto, la lista nativa se abre
+     blanca encima de una página negra. */
+  color-scheme: dark;
+
+  /* Sin textura de papel: sobre oscuro hace bandas. */
+  background: var(--fondo);
+  color: var(--sobre);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex; flex-direction: column;
+}
+
+.carrusel a { color: var(--acento); }
+.carrusel a:hover { color: var(--sobre); }
+
+/* El anillo de foco del sitio es carmín oscuro, y sobre tinta no se ve. */
+.carrusel :focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+
+/* ---- La barra ------------------------------------------------------------ */
+
+.pase__titulo {
+  font-size: clamp(0.95rem, 0.8rem + 0.9vw, 1.35rem);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  text-align: right; line-height: 1.1;
+  color: var(--papel);
+  min-width: 0;                        /* que parta en dos líneas antes que empujar el logo */
+}
+
+/* ---- El pase ------------------------------------------------------------- */
+
+.pase { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+
+.pase__escena { flex: 1; display: flex; flex-direction: column; min-height: 0; margin: 0; }
+
+.pase__lienzo {
+  position: relative; flex: 1;
+  /* En un móvil apaisado, mejor que la página se pueda bajar que aplastar la
+     foto hasta dejarla en una tira. */
+  min-height: 42vh;
+  background: var(--lienzo);
+  overflow: hidden;
+  /* El gesto horizontal es del pase; el desplazamiento vertical y el zoom con
+     dos dedos se le dejan al navegador. */
+  touch-action: pan-y pinch-zoom;
+  user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.pase__foto {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; max-width: none;
+  object-fit: contain;                 /* nunca recortar la foto de nadie */
+  opacity: 0;
+  transition: opacity 450ms ease;
+  -webkit-user-drag: none;
+}
+.pase__foto.activa { opacity: 1; }
+
+/* Cargando, vacío o sin red: ocupa el sitio de la foto, con fondo propio para
+   que no asome debajo una imagen que ya no tiene su crédito al lado. */
+.pase__aviso {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.8rem;
+  padding: clamp(1.5rem, 6vw, 3rem);
+  background: var(--lienzo);
+  text-align: center; color: var(--tenue);
+}
+.pase__aviso-titulo {
+  margin: 0; font-family: var(--display);
+  font-size: clamp(1.5rem, 1.1rem + 2.4vw, 2.6rem); line-height: 1.05;
+  color: var(--sobre); text-wrap: balance;
+}
+.pase__aviso-texto { margin: 0; max-width: 32rem; line-height: 1.5; }
+.pase__aviso-texto:empty { display: none; }
+
+/* La barra de avance. Se mueve con transform y no con width: así el navegador
+   no recalcula la maqueta sesenta veces por segundo. */
+.pase__avance { height: 3px; background: var(--linea); overflow: hidden; }
+.pase__avance span {
+  display: block; height: 100%;
+  background: var(--acento);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--avance, 0));
+}
+
+/* El crédito va en una banda sólida debajo, nunca encima de la imagen: el
+   contraste sobre una foto cualquiera es una lotería, y el nombre de quien la
+   hizo no puede depender de eso. */
+.pase__pie {
+  display: grid; gap: 0.2rem;
+  padding: 0.7rem clamp(0.8rem, 3vw, 2rem) 0.75rem;
+  background: var(--fondo);
+}
+.pase__lugar {
+  margin: 0 0 0.15rem;
+  font-family: var(--display); font-size: clamp(1.3rem, 1rem + 1.5vw, 2.1rem);
+  line-height: 1.05; letter-spacing: 0.02em;
+}
+.pase__provincia { color: var(--acento); }
+.pase__credito {
+  margin: 0; font-size: 0.88rem; line-height: 1.4;
+  overflow-wrap: anywhere;             /* una URL pegada como crédito no ensancha la página */
+}
+.pase__rotulo {
+  font-size: 0.84em; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--tenue);
+}
+.pase__enlaces {
+  margin: 0.1rem 0 0;
+  display: flex; flex-wrap: wrap; gap: 0 1.2rem;
+  font-size: 0.82rem;
+}
+.pase__enlaces a {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  min-height: 32px;                    /* dos enlaces pegados, a dedo, necesitan su hueco */
+  text-underline-offset: 0.2em;
+}
+.pase__fuera { flex: none; opacity: 0.75; }
+
+/* ---- El mando ------------------------------------------------------------ */
+
+.mando {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 0.5rem 0.8rem;
+  padding: 0.55rem clamp(0.8rem, 3vw, 2rem);
+  /* En un iPhone, sin esto los botones quedan debajo de la barra de casa. */
+  padding-bottom: calc(0.55rem + env(safe-area-inset-bottom));
+  background: var(--fondo);
+  border-top: 1px solid var(--linea);
+}
+
+.mando__grupo { display: flex; align-items: center; gap: 0.5rem; }
+/* En el móvil baja a su propia fila y el desplegable se lleva el ancho que sobra. */
+.mando__grupo--ancho { flex: 1 1 19rem; justify-content: flex-end; }
+
+.mando__boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+  min-height: 44px; min-width: 44px; padding: 0 0.9rem;
+  background: none; color: var(--sobre);
+  border: 1px solid var(--linea);
+  font-family: var(--texto); font-size: 0.76rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer;
+}
+.mando__boton:hover { border-color: var(--sobre); }
+.mando__boton:disabled { opacity: 0.4; cursor: default; }
+.mando__boton--icono { width: 44px; padding: 0; }
+/* La pausa se ve la primera: es el único control que un pase que se mueve solo
+   está obligado a tener a mano. */
+.mando__boton--lleno { background: var(--acento); border-color: var(--acento); color: var(--tinta); }
+.mando__boton--lleno:hover { background: var(--papel-claro); border-color: var(--papel-claro); }
+.mando__boton svg { flex: none; }
+
+.mando__cuenta {
+  min-width: 6.5em; padding-left: 0.2rem;
+  font-size: 0.8rem; color: var(--tenue);
+  font-variant-numeric: tabular-nums;  /* si no, la cifra baila al cambiar */
+  white-space: nowrap;
+}
+
+.mando__ambito {
+  flex: 1 1 auto; min-width: 0; max-width: 22rem;
+  min-height: 44px; padding: 0 0.7rem;
+  background: #1E0810; color: var(--sobre);
+  border: 1px solid var(--linea); border-radius: 0;
+  font-family: var(--texto); font-size: 0.95rem;
+  cursor: pointer;
+}
+.mando__ambito:hover { border-color: var(--sobre); }
+
+.mando__nota { flex: 1 0 100%; margin: 0; font-size: 0.85rem; color: var(--acento); overflow-wrap: anywhere; }
+.mando__nota:empty { display: none; }
+
+/* ---- Pantalla grande ----------------------------------------------------- */
+
+@media (min-width: 900px) {
+  .pase__credito { font-size: 0.95rem; }
+}
+
+/* ---- Modo proyección (?tele) --------------------------------------------- */
+
+/* Se deja puesto y no lo toca nadie: la foto a toda la pantalla, el crédito
+   debajo y el mando flotando arriba sólo mientras alguien mueve el ratón. Los
+   enlaces del pie se van: en una pared no los pulsa nadie y son ruido. */
+.carrusel.tele .barra,
+.carrusel.tele .saltar,
+.carrusel.tele .pase__enlaces { display: none; }
+
+.carrusel.tele .mando {
+  position: fixed; inset: 0 0 auto; z-index: 60;
+  padding-top: calc(0.55rem + env(safe-area-inset-top));
+  padding-bottom: 0.55rem;
+  border-top: 0; border-bottom: 1px solid var(--linea);
+  background: rgba(43, 12, 20, 0.94);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+.carrusel.tele.inactivo .mando { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+/* Quien llega con el tabulador ve dónde está aunque no mueva el ratón. */
+.carrusel.tele.inactivo .mando:has(:focus-visible),
+.carrusel.tele.inactivo .mando:has(select:focus) { opacity: 1; transform: none; pointer-events: auto; }
+
+.carrusel.tele.inactivo,
+.carrusel.tele.inactivo * { cursor: none; }
+
+/* Desde el fondo de una sala: todo más grande. */
+.carrusel.tele .pase__pie { padding: 0.9rem clamp(1rem, 3vw, 3rem) 1rem; }
+.carrusel.tele .pase__lugar { font-size: clamp(1.6rem, 1rem + 2.4vw, 3.4rem); }
+.carrusel.tele .pase__credito { font-size: clamp(1rem, 0.7rem + 0.9vw, 1.6rem); }
+
+/* ---- Quien pidió que las cosas no se muevan ------------------------------ */
+
+/* Ojo: esto apaga el fundido, pero el pase lo mueve un temporizador de
+   JavaScript y esta regla no lo toca. El avance automático se para en
+   carrusel.js, mirando la misma preferencia. */
+@media (prefers-reduced-motion: reduce) {
+  .pase__foto,
+  .carrusel.tele .mando { transition: none; }
+}
+
+/* A 390 px el desplegable, «Compartir» y la pantalla completa no caben en una
+   fila, y el último botón se salía por la derecha, cortado. Se deja que el
+   grupo baje de línea antes que perder un control. */
+.mando__grupo--ancho { min-width: 0; flex-wrap: wrap; }
