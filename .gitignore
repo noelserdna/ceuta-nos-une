@@ -19,3 +19,7 @@ design/**/*.html
 
 # El vuelco del cruce se sirve desde el Worker, no como fichero.
 public/d/
+
+# Lo bajado de fuentes externas: cientos de megas que no son nuestros, y los
+# textos de terceros. Lo que se publique acaba en R2, no en git.
+scripts/cosecha/datos/
