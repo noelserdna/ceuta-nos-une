@@ -28,7 +28,7 @@ después de desplegar, no solo en local (ver «Assets» más abajo).
 
 ## La arquitectura en una frase
 
-Un solo Worker (`src/index.ts`, ~1.700 líneas) sirve la web y la API; delante hay **dos
+Un solo Worker (`src/index.ts`, ~3.300 líneas) sirve la web y la API; delante hay **dos
 frentes** que se comportan distinto, y esa diferencia es la fuente de casi todos los fallos.
 
 | | `ceutanosune.es` (Vercel) | `ceutanosune.com` (Cloudflare) |
@@ -202,6 +202,47 @@ Cosas que muerden si no se saben:
   `vuelcoUnion` rehacía el vuelco al pedirlo si tenía más de 10 minutos, así que la hoja de
   cálculo —que relee cada hora— disparaba el cruce igual y la pausa no servía de nada. Ahora
   con la pausa puesta se sirve lo guardado tal cual, sin tocar la base ni llamar a porceuta.es.
+
+## El archivo del acto (desde el 10/09/2026)
+
+Pasado el 2 de septiembre la web dejó de convocar y pasó a enseñar lo que hubo. La portada es
+la galería del acto —mapa de municipios con foto, buscador, ficha y visor—, la convocatoria
+con sus lugares y horas quedó archivada en `/2026` (estática, reutiliza `app.js`) y `/carrusel`
+es el pase a pantalla completa. Las tablas son las de `0018_archivo_del_acto.sql`:
+`municipios_acto`, `publicaciones`, `publicacion_municipio` y `fotos`. Esa migración es **solo
+DDL** más dos `INSERT OR IGNORE` de ajustes, justo para no repetir la trampa de arriba.
+
+- **`mapa_acto` abre la galería; `cosecha_abierta` abre la importación.** Con `mapa_acto=0`,
+  `/api/acto` contesta `preparando` y la portada lo dice; así se puede importar sin que se vea
+  un mapa a medio llenar. `cosecha_abierta=0` cierra `/api/admin/cosecha` incluso para admin.
+- **Las imágenes del archivo viven en `acto/<fecha>/<sha>.webp` y `mini/…`.** `serveImage` las
+  admite con un regex propio, `CLAVE_ACTO`, **al lado** de `CLAVE_MURO`, que sigue intacto: la
+  cuarentena del muro no depende de este archivo. Salen con `x-robots-tag: noindex` porque
+  son fotos de terceros, con su crédito, no material nuestro para el buscador.
+- **La cosecha (`scripts/cosecha/`) guarda sus datos fuera del repo**, en
+  `/Volumes/1T/fotos_ceutaweb` (o `COSECHA_DATOS`). Si el disco no está montado, se para con
+  un aviso en vez de escribir cientos de megas en el sistema. Playwright usa un perfil de
+  Chrome propio (`~/.cosecha-ceuta/perfil`), nunca el personal, y se lanza por tandas con
+  `tandas.sh` y `nohup`: una sola sesión larga acababa matada por falta de memoria.
+- **El texto capturado de cada publicación NO se sube nunca** (`pie: null` en
+  `5-importar.mjs`). La auditoría encontró que arrastra comentarios de desconocidos y, en
+  Facebook, la columna de accesos directos de la cuenta que cosechó: lo que sigue esa persona.
+  Se queda en el disco de la cosecha, que es para auditar.
+- **La contraseña de `/admin` local no es la de producción.** Importar con la de local da 401
+  en el `.es`, y la de producción no se pide ni se escribe en ningún chat. Para importar se
+  pone un secreto temporal, `COSECHA_TOKEN` (≥ 32 caracteres), que abre **solo**
+  `POST /api/admin/cosecha` y su `GET …/recuento`, y se borra al acabar
+  (`wrangler secret delete COSECHA_TOKEN`). Sin el secreto puesto, esa vía no existe.
+- **La importación va contra el `workers.dev`, no contra el `.es`**, y en lotes de 8: Vercel
+  corta los cuerpos grandes. Es idempotente por huella (`sha256`): repetirla no duplica.
+  Al terminar, `…/recuento` debe dar `huerfanos: 0` (R2 y D1 cuadran).
+- **`medidasImagen` no sabe leer WebP con pérdida**, así que las medidas las manda el script
+  (las calculó `sharp`). Si faltan, el visor no puede reservar el hueco y la rejilla salta.
+- **Una galería de prensa documenta muchos municipios a la vez.** Para la portada de cada
+  municipio se prefiere una foto suya; la compartida sale con la marca «galería de prensa»
+  (`portada_compartida`), o todos los pueblos de Almería tendrían la misma cara.
+- **Lo firmado por un partido se guarda con su `convocante`**, no se esconde ni se borra: fue
+  decisión editorial en la auditoría, y la ficha lo enseña.
 
 ## Datos y contenido
 
